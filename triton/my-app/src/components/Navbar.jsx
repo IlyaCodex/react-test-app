@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Search, Heart, User, ShoppingCart, ChevronDown, MapPin } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 const Header = () => {
@@ -71,9 +72,12 @@ const Header = () => {
               <li>
                 <Link to="/#partners" className="header__link">Партнеры</Link>
               </li>
+              <li>
+                <Link to="/#" id='cartSidebar' className="header__link">Корзина</Link>
+              </li>
             </ul>
           </nav>
-          
+          {/* <ShoppingCart size={35} /> */}
           <div className="header__right">
             <div 
               ref={searchRef}

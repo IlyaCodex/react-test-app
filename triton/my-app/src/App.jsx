@@ -38,7 +38,7 @@ function App() {
           </>
         } />
         <Route path="/catalog" element={<CatalogPage title="Каталог продукции" />} />
-        <Route path="/about" element={<div>Страница О нас (добавьте компонент)</div>} />
+        <Route path="/about" element={<div>Страница О нас</div>} />
         <Route path="/catalog/:mainCategory?" element={<CatalogPage />} />
       </Routes>
       <Footer />

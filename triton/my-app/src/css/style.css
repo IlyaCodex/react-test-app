@@ -1880,3 +1880,148 @@ img {
 }
 
 /* Каталог стили конец */
+
+
+
+
+/* Стили модального окна начало */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.712);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 15px; /* Уменьшаем отступы для мобильных */
+  border-radius: 8px;
+  width: 90%; /* Адаптивная ширина */
+  max-width: 600px; /* Ограничение максимальной ширины */
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row; /* По умолчанию горизонтальная компоновка */
+  gap: 20px;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Колонка с изображением */
+.modal-image-column {
+  flex: 1;
+  max-width: 250px;
+}
+
+.modal-product-image {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Колонка с деталями и кнопкой */
+.modal-details-column {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modal-details p {
+  margin: 10px 0;
+  font-size: 1em; /* Базовый размер шрифта */
+}
+
+.modal-add-to-cart-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #ea0000;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-size: 1em; /* Базовый размер шрифта */
+}
+
+.modal-add-to-cart-btn:hover {
+  background-color: #9c0202;
+}
+
+.modal-add-to-cart-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Адаптивные стили для мобильных устройств (ширина экрана до 768px) */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%; /* Еще больше адаптивности */
+    flex-direction: column; /* Переключаем на вертикальную компоновку */
+    padding: 10px; /* Уменьшаем отступы */
+  }
+
+  .modal-image-column {
+    max-width: 100%; /* Изображение занимает всю ширину */
+    margin-bottom: 15px; /* Отступ между изображением и деталями */
+  }
+
+  .modal-product-image {
+    max-height: 200px; /* Уменьшаем максимальную высоту для мобильных */
+  }
+
+  .modal-details-column {
+    flex: none; /* Убираем гибкость, так как теперь одна колонка */
+  }
+
+  .modal-details p {
+    font-size: 0.9em; /* Уменьшаем размер шрифта для текста */
+  }
+
+  .modal-add-to-cart-btn {
+    font-size: 0.9em; /* Уменьшаем размер шрифта кнопки */
+    margin-top: 15px; /* Уменьшаем верхний отступ */
+  }
+
+  .modal-close-btn {
+    top: 5px;
+    right: 5px;
+    font-size: 20px; /* Уменьшаем размер кнопки закрытия */
+  }
+}
+
+/* Дополнительная оптимизация для очень маленьких экранов (до 480px) */
+@media (max-width: 480px) {
+  .modal-product-image {
+    max-height: 150px; /* Еще меньше для очень маленьких экранов */
+  }
+
+  .modal-details p {
+    font-size: 0.85em; /* Еще меньше текст */
+  }
+
+  .modal-add-to-cart-btn {
+    font-size: 0.85em; /* Еще меньше текст кнопки */
+  }
+}
+
+/* Стили модального окна конец */
