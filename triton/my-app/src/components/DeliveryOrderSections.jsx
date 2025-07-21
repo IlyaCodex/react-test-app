@@ -91,7 +91,7 @@ const OrderSection = () => {
   );
 
   return (
-    <section className="order indent">
+    <section className="order indent" id="delivery">
       <div className="container">
         <div className="order__inner">
           <div className="order__info">

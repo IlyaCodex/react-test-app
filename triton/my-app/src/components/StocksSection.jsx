@@ -73,7 +73,7 @@ const StocksSection = () => {
   };
 
   return (
-    <section className="stocks indent">
+    <section className="stocks indent" id="stocks">
       <div className="container">
         <h2 className="title-section">Акции</h2>
         

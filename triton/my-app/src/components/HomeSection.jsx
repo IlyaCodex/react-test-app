@@ -24,7 +24,7 @@ const HomeSection = () => {
           <p className="home__subtext">Всегда приятные цены <br /> и новые акции</p>
         </div>
         
-        <Link className="home__btn btn" to="/#">
+        <Link className="home__btn btn" to="/catalog">
           Заглянуть в каталог
           <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
             <path 

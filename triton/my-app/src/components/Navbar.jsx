@@ -32,7 +32,7 @@ const Header = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     console.log('Search submitted:', searchValue);
-    // логика поиска
+    // Логика поиска
   };
 
   return (
@@ -40,7 +40,7 @@ const Header = () => {
       <div className="container">
         <div className="header__inner">
           <div className="header__logo">
-            <Link className="header__logo-link" href="/">
+            <Link to="/" className="header__logo-link">
               <img 
                 className="header__img" 
                 src="../images/logo.png" 
@@ -54,22 +54,22 @@ const Header = () => {
           <nav className="header__nav">
             <ul className="header__list">
               <li>
-                <Link className="header__link desktop" href="#services">Акции</Link>
+                <Link to="/#stocks" className="header__link desktop">Акции</Link>
               </li>
               <li>
-                <Link className="header__link desktop" href="#comfort">Категории</Link>
+                <Link to="/#categories" className="header__link desktop">Категории</Link>
               </li>
               <li>
-                <Link className="header__link" href="catalog.html">Каталог</Link>
+                <Link to="/catalog" className="header__link">Каталог</Link>
               </li>
               <li>
-                <Link className="header__link" href="reviews.html">О нас</Link>
+                <Link to="/about" className="header__link">О нас</Link>
               </li>
               <li>
-                <Link className="header__link" href="faq.html">Доставка</Link>
+                <Link to="/#delivery" className="header__link">Доставка</Link>
               </li>
               <li>
-                <Link className="header__link" href="#contacts">Партнеры</Link>
+                <Link to="/#partners" className="header__link">Партнеры</Link>
               </li>
             </ul>
           </nav>
@@ -108,7 +108,6 @@ const Header = () => {
             </div>
             <button className="btn open-modal-btn" type="button">Оставить заявку</button>
           </div>
-          
         </div>
       </div>
     </header>

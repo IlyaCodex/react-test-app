@@ -1487,3 +1487,396 @@ img {
   white-space: nowrap;
   border: 0;
 }
+
+
+/* Каталог стили начало */
+.catalog__top {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.catalog__categories {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.catalog__categories-link {
+  font-size: 24px;
+  color: #c0c0c0;
+  font-weight: 500;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  transition: color 0.4s, border 0.4s;
+}
+
+.catalog__categories-link:hover {
+  color: #858585;
+}
+
+.catalog__categories-link:focus {
+  border-color: #007aff;
+  color: #4d4d4d;
+}
+
+.catalog__title {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.catalog__subcategories {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.catalog__subcategory {
+  color: #6B6B6B;
+  font-size: 20px;
+  border: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  padding-top: 4px;
+  padding-bottom: 5px;
+  transition: color 0.4s, border 0.4s;
+}
+
+.catalog__subcategory:hover {
+  color: #007aff;
+}
+
+.catalog__subcategory:focus {
+  border-color: #007aff;
+  color: #4d4d4d;
+}
+
+.catalog__subcategory.active {
+  color: #4d4d4d;
+  border-bottom-color: #4d4d4d;
+  pointer-events: none;
+  user-select: none;
+}
+
+.catalog__sub-subcategories {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 1000px;
+  margin-bottom: 50px;
+}
+
+.catalog__sub-subcategory {
+  border: 1px solid #4d4d4d;
+  border-radius: 40px;
+  padding: 8px 16px;
+  transition: background-color 0.4s, color 0.4s, border 0.4s;
+}
+
+.catalog__sub-subcategory:hover {
+  background-color: #e5e5e5;
+}
+
+.catalog__sub-subcategory:focus {
+  background-color: #007aff;
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.catalog__sub-subcategory.active {
+  background-color: #4d4d4d;
+  color: #ffffff;
+  pointer-events: none;
+  user-select: none;
+}
+
+.catalog__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 46px 18px;
+}
+
+.card__head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 400px;
+  background-color: #D9D9D9;
+  margin-bottom: 28px;
+  border-radius: 14px;
+}
+
+.card__head.short {
+  min-height: 260px;
+}
+
+.card__head.short img {
+  max-width: 100px;
+  height: auto;
+}
+
+.card__favorite {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
+.card__favorite:hover svg path {
+  stroke: #ff3232;
+  fill: #ff3232;
+}
+
+.card__favorite.short {
+  width: 27px;
+  height: 27px;
+}
+
+.card__add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background-color: #4d4d4d;
+  border: 1px solid transparent;
+  transition: background-color 0.4s, border 0.4s;
+  margin: -70px 16px 15px auto;
+  position: relative;
+  z-index: 10;
+}
+
+.card__add:hover {
+  background-color: #3d3d3d;
+}
+
+.card__add.short {
+  width: 49px;
+  height: 49px;
+}
+
+.card__add.short svg {
+  height: 24px;
+  width: 24px;
+}
+
+.card__price {
+  font-size: 32px;
+  line-height: 1;
+  display: inline-block;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.card__price.short {
+  font-size: 20px;
+}
+
+.card__name {
+  font-size: 20px;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card__name.short {
+  font-size: 18px;
+}
+
+/* Адаптивность для планшетов (768px - 1024px) */
+@media (max-width: 1024px) {
+  .catalog__list {
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 30px 15px;
+  }
+  
+  .catalog__title {
+    font-size: 36px;
+  }
+  
+  .catalog__categories-link {
+    font-size: 20px;
+  }
+  
+  .catalog__subcategory {
+    font-size: 18px;
+  }
+  
+  .catalog__sub-subcategories {
+    margin-bottom: 40px;
+  }
+  
+  .card__head {
+    min-height: 320px;
+  }
+  
+  .card__head.short {
+    min-height: 200px;
+  }
+  
+  .card__price {
+    font-size: 28px;
+  }
+  
+  .card__name {
+    font-size: 18px;
+  }
+}
+
+/* Адаптивность для мобильных устройств (до 768px) */
+@media (max-width: 768px) {
+  .catalog__top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .catalog__categories {
+    gap: 15px;
+  }
+  
+  .catalog__title {
+    font-size: 28px;
+  }
+  
+  .catalog__categories-link {
+    font-size: 18px;
+  }
+  
+  .catalog__subcategories {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .catalog__subcategory {
+    font-size: 16px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+  }
+  
+  .catalog__sub-subcategories {
+    gap: 6px;
+    margin-bottom: 30px;
+  }
+  
+  .catalog__sub-subcategory {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+  
+  .catalog__list {
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px 12px;
+  }
+  
+  .card__head {
+    min-height: 250px;
+    margin-bottom: 20px;
+  }
+  
+  .card__head.short {
+    min-height: 160px;
+  }
+  
+  .card__favorite {
+    width: 32px;
+    height: 32px;
+    right: 12px;
+    top: 12px;
+  }
+  
+  .card__favorite.short {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .card__add {
+    width: 60px;
+    height: 60px;
+    margin: -50px 10px 10px auto;
+  }
+  
+  .card__add.short {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .card__add.short svg {
+    height: 20px;
+    width: 20px;
+  }
+  
+  .card__price {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .card__price.short {
+    font-size: 18px;
+  }
+  
+  .card__name {
+    font-size: 16px;
+  }
+  
+  .card__name.short {
+    font-size: 16px;
+  }
+}
+
+/* Адаптивность для маленьких мобильных устройств (до 480px) */
+@media (max-width: 480px) {
+  .catalog__subcategories {
+    gap: 8px;
+  }
+  
+  .catalog__subcategory {
+    font-size: 14px;
+  }
+  
+  .catalog__sub-subcategories {
+    gap: 4px;
+  }
+  
+  .catalog__sub-subcategory {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .catalog__list {
+    grid-gap: 15px 8px;
+  }
+  
+  .card__head {
+    min-height: 200px;
+  }
+  
+  .card__head.short {
+    min-height: 140px;
+  }
+  
+  .card__price {
+    font-size: 20px;
+  }
+  
+  .card__name {
+    font-size: 14px;
+  }
+}
+
+/* Каталог стили конец */

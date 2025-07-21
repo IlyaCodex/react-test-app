@@ -53,7 +53,7 @@ const CategoriesSection = () => {
   );
 
   return (
-    <section className="categories indent">
+    <section className="categories indent" id="categories">
       <div className="container">
         <h2 className="title-section">Категории товаров</h2>
         
