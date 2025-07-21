@@ -1,49 +1,37 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CategoriesSection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  
+  const navigate = useNavigate();
+
   const categories = [
     {
       id: 1,
       title: "Врачам",
       description: "Перчатки, шприцы, маски, профессиональные инструменты и многое другое",
-      subcategories: [
-        "Перчатки",
-        "Шприцы",
-        "Маски",
-        "Профессиональные инструменты",
-        "Антисептики",
-      ]
+      subcategories: ["Перчатки", "Шприцы", "Маски", "Профессиональные инструменты", "Антисептики"],
     },
     {
       id: 2,
       title: "Ученикам",
       description: "Модели, манекены, базовые инструменты и другое",
-      subcategories: [
-        "Учебные модели",
-        "Фантомы",
-        "Базовые инструменты",
-        "Учебные пособия",
-        "Наборы для практики"
-      ]
+      subcategories: ["Учебные модели", "Фантомы", "Базовые инструменты", "Учебные пособия", "Наборы для практики"],
     },
     {
       id: 3,
       title: "Зуботехникам",
       description: "Модели, манекены, базовые инструменты и другое",
-      subcategories: [
-        "Зубопротезные материалы",
-        "Артикуляторы",
-        "Воски и восковки",
-        "Керамика",
-        "Полировочные материалы"
-      ]
-    }
+      subcategories: ["Зубопротезные материалы", "Артикуляторы", "Воски и восковки", "Керамика", "Полировочные материалы"],
+    },
   ];
 
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
+  };
+
+  const handleSubcategoryClick = (mainCategory, subcategory) => {
+    navigate(`/catalog/${encodeURIComponent(mainCategory)}?subcategory=${encodeURIComponent(subcategory)}`);
   };
 
   const ArrowIcon = () => (
@@ -76,12 +64,16 @@ const CategoriesSection = () => {
                 {category.description}
               </p>
               
-              {/* Подкатегории внутри карточки */}
               {selectedCategory === category.id && (
                 <div className="subcategories">
                   <ul className="subcategories__list">
                     {category.subcategories.map((sub, index) => (
-                      <li key={index} className="subcategories__item">
+                      <li 
+                        key={index} 
+                        className="subcategories__item"
+                        onClick={() => handleSubcategoryClick(category.title, sub)}
+                        style={{ cursor: 'pointer' }}
+                      >
                         {sub}
                       </li>
                     ))}
