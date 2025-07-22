@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import cardData from '../data/cardData';
 import ModalWindow from './ModalWindow';
+import { ProductsContext } from '../context/ProductsContext';
 
 
 const CatalogPage = () => {
+  const cardData = useContext(ProductsContext).data;
+
   const { mainCategory: urlMainCategory } = useParams();
   const [searchParams] = useSearchParams();
   const initialSubcategory = searchParams.get('subcategory') || 'Все';
@@ -41,7 +43,7 @@ const CatalogPage = () => {
     }
 
     setFilteredProducts(result);
-  }, [activeMainCategory, activeCategory, activeSubcategory, urlMainCategory]);
+  }, [cardData, activeMainCategory, activeCategory, activeSubcategory, urlMainCategory]);
 
   const handleMainCategoryClick = (category) => {
     setActiveMainCategory(category);

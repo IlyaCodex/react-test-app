@@ -9,6 +9,9 @@ import CategoriesSection from "./components/Categories";
 import PartnersSection from "./components/Partners";
 import DeliveryOrderSections from "./components/DeliveryOrderSections";
 import ContactsSection from "./components/ContactsSection";
+import { CartContextProvider } from './context/CartContext';
+import { CookiesProvider } from 'react-cookie';
+import { ProductsContextProvider } from './context/ProductsContext';
 
 function App() {
   const location = useLocation();
@@ -25,23 +28,29 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
-      <Routes>
-        <Route path="/" element={
-          <>
-            <HomeSection />
-            <div id="stocks"><StocksSection /></div>
-            <div id="categories"><CategoriesSection /></div>
-            <div id="delivery"><DeliveryOrderSections /></div>
-            <div id="partners"><PartnersSection /></div>
-            <ContactsSection />
-          </>
-        } />
-        <Route path="/catalog" element={<CatalogPage title="Каталог продукции" />} />
-        <Route path="/about" element={<div>Страница О нас</div>} />
-        <Route path="/catalog/:mainCategory?" element={<CatalogPage />} />
-      </Routes>
-      <Footer />
+      <CookiesProvider defaultSetOptions={{path: '/', maxAge: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)}}>
+        <ProductsContextProvider>
+          <CartContextProvider>
+            <Header />
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <HomeSection />
+                  <div id="stocks"><StocksSection /></div>
+                  <div id="categories"><CategoriesSection /></div>
+                  <div id="delivery"><DeliveryOrderSections /></div>
+                  <div id="partners"><PartnersSection /></div>
+                  <ContactsSection />
+                </>
+              } />
+              <Route path="/catalog" element={<CatalogPage title="Каталог продукции" />} />
+              <Route path="/about" element={<div>Страница О нас</div>} />
+              <Route path="/catalog/:mainCategory?" element={<CatalogPage />} />
+            </Routes>
+            <Footer />
+          </CartContextProvider>
+        </ProductsContextProvider>
+      </CookiesProvider>
     </div>
   );
 }

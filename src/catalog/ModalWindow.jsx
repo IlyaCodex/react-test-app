@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import cardData from '../data/cardData';
+import { useState, useEffect, useContext } from 'react';
 import modalWindowData from '../data/modalWindow';
+import { ProductsContext } from '../context/ProductsContext';
+import { CartContext } from '../context/CartContext';
 
-const ModalWindow = ({ productId, onClose, addToCart }) => {
+const ModalWindow = ({ productId, onClose }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const cardData = useContext(ProductsContext).data;
+  const {addItems: addToCart} = useContext(CartContext);
 
   useEffect(() => {
     const variant = modalWindowData.find(item => item.id === productId);
@@ -29,14 +32,7 @@ const ModalWindow = ({ productId, onClose, addToCart }) => {
 
   const handleAddToCart = () => {
     if (addToCart && selectedVariant) {
-      addToCart({
-        id: selectedVariant.id,
-        name: selectedVariant.name,
-        price: selectedVariant.price,
-        image: selectedVariant.image,
-        quantity: 1,
-      });
-      onClose();
+      addToCart(selectedVariant.id);
     }
   };
 

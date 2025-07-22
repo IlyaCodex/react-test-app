@@ -1,5 +1,16 @@
 /* стили корзины начало */
 
+.cart_dialog {
+  position: fixed;
+  width: 400px;
+  height: 100%;
+  z-index: 11;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
 .cart {
   position: fixed;
   top: 0;
@@ -9,88 +20,207 @@
   background: white;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease-in-out;
-  z-index: 2000;
-  overflow-x: hidden;
+  z-index: 10;
+}
+
+.cart:before {
+  content: "";
+  display: none;
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+}
+
+.open:before {
+  display: block;
 }
 
 .cart.open {
+  display: block;
   width: 400px;
 }
 
-.content {
+.empty {
+  
+  text-align: center;
+  background-color: #cecece;
+  margin: 0 20%;
   padding: 20px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  border-radius: 10px;
 }
 
-.close_btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
+.content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    :first-child,:last-child {
+      width: 15%;
+    }
+
+    p {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    button {
+        background: none;
+        border: none;
+        font-size: 40px;
+        cursor: pointer;
+    }
 }
 
 .items {
-  flex-grow: 1;
   overflow-y: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 15px;
 }
 
 .item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  background-color: rgb(232, 232, 232);
+}
+
+.description {
+  display: flex;
 }
 
 .image {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  margin-right: 15px;
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: #cecece;
 }
 
-.details h3 {
-  margin: 0 0 5px 0;
-  font-size: 1.1em;
+.details {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
 }
 
-.details p {
-  margin: 5px 0;
+.item_name {
+  font-size: 1em;
+}
+
+.item_description {
   font-size: 0.9em;
   color: #666;
 }
 
-.separator {
-  border: 0;
-  height: 1px;
-  background: #ccc;
-  margin: 10px 0;
+.item_price {
+  height: 30px;
+  line-height: 30px;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
 
-.total {
-  margin-top: 20px;
-  font-size: 1.2em;
-  padding-top: 10px;
-  border-top: 1px solid #ccc;
+.buttons {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+  padding: 8px 8px;
+  padding-left: 0;
 }
 
-.checkout {
-  width: 100%;
-  padding: 10px;
-  background-color: #ff0000;
-  color: white;
-  border: none;
+.delete {
+  font-size: 24px;
+  font-weight: 200;
+  height: fit-content;
+  line-height: 10px;
+}
+
+.counter {
+  display: flex;
+  background-color: #cecece;
   border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-  font-size: 1em;
+  width: 80px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  * {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  button:hover {
+    background-color: #dbdbdb;
+  }
 }
 
-.checkout:hover {
-  background-color: #c10202;
+.footer {
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+  /* border-top: 1px solid #ccc; */
+  padding: 10px 0;
+
+  .row {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 10%;
+  }
+
+  .total {
+    display: flex;
+    flex-direction: column;
+    text-wrap: nowrap;
+    align-items: start;
+    justify-content: space-evenly;
+
+    .count {
+      color: #747474;
+      font-size: 0.9em;
+    }
+    .price {
+      font-weight: bold;
+      font-size: 1.3em;
+    }
+  }
+
+  .checkout {
+    width: 100%;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.847);
+    }
+  }
 }
 
 /* Адаптивные стили для мобильных устройств */
