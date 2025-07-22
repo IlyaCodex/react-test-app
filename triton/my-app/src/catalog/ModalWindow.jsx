@@ -78,6 +78,10 @@ const ModalWindow = ({ productId, onClose, addToCart }) => {
 
 export default ModalWindow;
 
+
+/////
+
+
 // const ModalWindow = ({ productId, onClose, addToCart }) => {
 //   const [selectedVariant, setSelectedVariant] = useState(null);
 

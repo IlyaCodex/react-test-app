@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard';
 import cardData from '../data/cardData';
 import ModalWindow from './ModalWindow';
 
+
 const CatalogPage = () => {
   const { mainCategory: urlMainCategory } = useParams();
   const [searchParams] = useSearchParams();
