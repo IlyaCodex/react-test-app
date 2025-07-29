@@ -5,6 +5,7 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import styles from './StocksSection.module.css';
 
 const StocksSection = () => {
   const stocks = [
@@ -40,7 +41,7 @@ const StocksSection = () => {
     </svg>
   );
 
-  // Настройки для Swiper
+
   const swiperOptions = {
     modules: [Autoplay, Pagination, Navigation],
     spaceBetween: 30,
@@ -56,7 +57,7 @@ const StocksSection = () => {
       disableOnInteraction: false,
     },
     breakpoints: {
-      // Настройки для разных размеров экранов
+      
       576: {
         slidesPerView: 1,
         autoplay: false
@@ -73,26 +74,25 @@ const StocksSection = () => {
   };
 
   return (
-    <section className="stocks indent" id="stocks">
-      <div className="container">
-        <h2 className="title-section">Акции</h2>
+    <section className={styles.stocks} id="stocks">
+      <div className={styles.container}>
+        <h2 className={styles.titleSection}>Акции</h2>
         
-        <Swiper {...swiperOptions} className="stocks-swiper">
+        <Swiper {...swiperOptions} className={styles.stocksSwiper}>
           {stocks.map((stock) => (
             <SwiperSlide key={stock.id}>
-              <div className="stocks__card">
-                <div className="stocks__img-container">
+              <div className={styles.stocksCard}>
+                <div className={styles.stocksImgContainer}>
                   <img 
-                    className="stocks__img" 
+                    className={styles.stocksImg} 
                     src={stock.image} 
                     alt={stock.alt} 
                   />
                 </div>
-                <h3 className="stocks__name">{stock.title}</h3>
-                <p className="stocks__description">{stock.description}</p>
-                <Link className="stocks__link" to={`/stocks/${stock.id}`}>
-                  Подробнее
-                  <ArrowIcon />
+                <h3 className={styles.stocksName}>{stock.title}</h3>
+                <p className={styles.stocksDescription}>{stock.description}</p>
+                <Link to={`/catalog`} className={styles.stocksLink}>
+                  Перейти к покупке <ArrowIcon />
                 </Link>
               </div>
             </SwiperSlide>

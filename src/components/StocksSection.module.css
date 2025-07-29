@@ -1,0 +1,129 @@
+.stocks {
+  margin-top: 50px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0px;
+}
+
+.titleSection {
+  font-size: 48px;
+  line-height: 1.1;
+  margin-bottom: 46px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.stocksSwiper {
+  width: 100%;
+}
+
+.stocksCard {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #d9d9d94e;
+  border-radius: 10px;
+}
+
+.stocksCard h3 {
+    font-size: 17px;
+}
+
+.stocksImgContainer {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.stocksImg {
+  object-fit: cover;
+  object-position: center;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  border-radius: 15px;
+  height: 250px;
+}
+
+.stocksName {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.stocksDescription {
+  max-width: 350px;
+  line-height: 1.5;
+  margin-bottom: 35px;
+  color: rgba(23, 23, 23, 0.8); 
+  text-align: left;
+}
+
+.stocksLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: color 0.4s, border 0.4s;
+  text-decoration: none;
+  color: inherit;
+  text-align: left;
+}
+
+.stocksLink:hover {
+  color: rgba(0, 0, 0, 0.7); 
+}
+
+.stocksLink:focus {
+  color: #007bff;
+  outline: none;
+}
+
+.stocksLink:focus svg {
+  transform: translateX(2px);
+  transition: transform 0.3s ease;
+}
+
+
+@media (max-width: 1024px) {
+  .stocksDescription {
+    max-width: 100%;
+    margin-bottom: 25px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .stocksImg {
+    margin-bottom: 15px;
+  }
+  
+  .stocksName {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .stocksDescription {
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stocksName {
+    font-size: 18px;
+  }
+  
+  .stocksLink {
+    font-size: 14px;
+    gap: 8px;
+  }
+  
+  .stocksLink svg {
+    width: 14px;
+    height: 14px;
+  }
+}

@@ -7,11 +7,15 @@ import HomeSection from "./components/HomeSection";
 import StocksSection from "./components/StocksSection";
 import CategoriesSection from "./components/Categories";
 import PartnersSection from "./components/Partners";
-import DeliveryOrderSections from "./components/DeliveryOrderSections";
+// import DeliveryOrderSections from "./components/DeliveryOrderSections";
+import OrderSection from './components/OrderSections';
 import ContactsSection from "./components/ContactsSection";
+import WhyUsSection from './components/WhyUsSection';
+import Faq from './components/Faq';
 import { CartContextProvider } from './context/CartContext';
 import { CookiesProvider } from 'react-cookie';
 import { ProductsContextProvider } from './context/ProductsContext';
+import { FavoriteProvider } from './context/FavoriteContext';
 import { AdminPage } from './components/admin/AdminPage';
 
 function MainApp() {
@@ -24,13 +28,14 @@ function MainApp() {
             <HomeSection />
             <div id="stocks"><StocksSection /></div>
             <div id="categories"><CategoriesSection /></div>
-            <div id="delivery"><DeliveryOrderSections /></div>
+            <div id="aboutUs"><WhyUsSection /></div>
+            <div id="delivery"><OrderSection /></div>
             <div id="partners"><PartnersSection /></div>
+            <Faq />
             <ContactsSection />
           </>
         } />
         <Route path="/catalog" element={<CatalogPage title="Каталог продукции" />} />
-        <Route path="/about" element={<div>Страница О нас</div>} />
         <Route path="/catalog/:mainCategory?" element={<CatalogPage />} />
       </Routes>
       <Footer />
@@ -56,10 +61,12 @@ function App() {
       <CookiesProvider defaultSetOptions={{path: '/', maxAge: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)}}>
         <ProductsContextProvider>
           <CartContextProvider>
+            <FavoriteProvider>
             <Routes>
               <Route path={'/'} element={<MainApp />}/>
               <Route path="/admin" element={<AdminPage />} />
             </Routes>
+            </FavoriteProvider>
           </CartContextProvider>
         </ProductsContextProvider>
       </CookiesProvider>

@@ -1,0 +1,140 @@
+.whyUsSection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px; 
+  background-color: #f6f6f6;
+  box-sizing: border-box;
+  margin-top: 25px;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 auto 40px;
+  color: #000;
+  line-height: 1.2;
+  max-width: 800px;
+  padding: 0 20px; 
+}
+
+.whyUsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 20px;
+  margin: 0 auto;
+  width: 100%; 
+  max-width: 1200px; 
+  box-sizing: border-box; 
+}
+
+.whyUsCard {
+  background-color: #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 160px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.whyUsCard h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: #000;
+  line-height: 1.3;
+  text-align: left;
+  padding-right: 40px; 
+}
+
+.whyUsCard p {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  line-height: 1.4;
+  text-align: left; 
+}
+
+.iconWrapper {
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 5px; 
+  right: 5px; 
+}
+
+.iconWrapper img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block; 
+}
+
+
+.gray {
+  background-color: #c2c2c2;
+}
+
+
+.wide {
+  grid-column: span 2;
+  height: 160px;
+}
+
+
+@media (max-width: 1024px) {
+  .whyUsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .whyUsSection {
+    padding: 40px 15px; 
+    width: 100%;
+    max-width: none;
+  }
+
+  .whyUsGrid {
+    max-width: 100%; 
+  }
+}
+
+@media (max-width: 640px) {
+  .whyUsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: span 1;
+  }
+
+  .sectionTitle {
+    font-size: 28px;
+    padding: 0 15px;
+  }
+
+  .whyUsCard {
+    height: auto;
+    min-height: 160px;
+  }
+  
+  .iconWrapper {
+    top: 5px;
+    right: 5px;
+  }
+}

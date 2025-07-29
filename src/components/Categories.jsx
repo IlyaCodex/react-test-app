@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from './CategoriesSection.module.css';
 
 const CategoriesSection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -41,38 +42,37 @@ const CategoriesSection = () => {
   );
 
   return (
-    <section className="categories indent" id="categories">
-      <div className="container">
-        <h2 className="title-section">Категории товаров</h2>
+    <section className={styles.categories}>
+      <div className={styles.container}>
+        <h2 className={styles.titleSection}>Категории товаров</h2>
         
-        <ul className="categories__list">
+        <ul className={styles.categoriesList}>
           {categories.map((category) => (
             <li 
               key={category.id}
-              className={`categories__item ${selectedCategory === category.id ? 'active' : ''}`}
+              className={`${styles.categoriesItem} ${selectedCategory === category.id ? styles.active : ''}`}
               tabIndex={0}
               onClick={() => handleCategoryClick(category.id)}
               onKeyDown={(e) => e.key === 'Enter' && handleCategoryClick(category.id)}
             >
-              <div className="categories__head">
+              <div className={styles.categoriesHead}>
                 {category.title}
-                <div className="categories__btn">
+                <div className={`${styles.categoriesBtn} ${selectedCategory === category.id ? styles.rotated : ''}`}>
                   <ArrowIcon />
                 </div>
               </div>
-              <p className="categories__text">
+              <p className={styles.categoriesText}>
                 {category.description}
               </p>
               
               {selectedCategory === category.id && (
-                <div className="subcategories">
-                  <ul className="subcategories__list">
+                <div className={styles.subcategories}>
+                  <ul className={styles.subcategoriesList}>
                     {category.subcategories.map((sub, index) => (
                       <li 
                         key={index} 
-                        className="subcategories__item"
+                        className={styles.subcategoriesItem}
                         onClick={() => handleSubcategoryClick(category.title, sub)}
-                        style={{ cursor: 'pointer' }}
                       >
                         {sub}
                       </li>
@@ -83,6 +83,12 @@ const CategoriesSection = () => {
             </li>
           ))}
         </ul>
+
+        <div className={styles.discountBlock}>
+          <h2 className={styles.discountTitle}>Скидка 10% на первый заказ</h2>
+          <p className={styles.discountText}>Получите скидку на ваш первый заказ при регистрации</p>
+          <button className={styles.discountBtn} onClick={() => navigate('/catalog')}>Перейти в каталог</button>
+        </div>
       </div>
     </section>
   );
