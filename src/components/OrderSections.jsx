@@ -27,7 +27,6 @@ const OrderSection = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Форма отправлена:', formData);
   };
 
   return (

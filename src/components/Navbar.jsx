@@ -38,7 +38,6 @@ const Header = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log('Search submitted');
   };
 
   const handleCartClick = (e) => {

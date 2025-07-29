@@ -5,7 +5,7 @@ import { EditContent } from "./EditContent";
 
 
 export const AdminPage = () => {
-    const [auth, setAuth] = useState(undefined);
+    const [auth, setAuth] = useState('admin');
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
 

@@ -27,12 +27,10 @@ export const CartContextProvider = ({children}) => {
 
             item.count++;
         }
-        console.log(`Add items: ${JSON.stringify(items)}`);
         setCookie(cookieName, [...items]);
     }, [items]);
 
     const removeItems = useCallback((...newItems) => {
-        console.log(JSON.stringify(newItems));
         for (const newItem of newItems) {
             let item = items.find(item => item?.id === newItem);
             if (item) {

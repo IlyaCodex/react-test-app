@@ -1,0 +1,102 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  gap: 2%;
+}
+
+.textInput {
+  display: flex;
+  flex-direction: column;
+  > input {
+    border: 1px solid black;
+    padding: 5px;
+  }
+}
+
+.images {
+  border: 1px solid black;
+  display: flex;
+  justify-content: start;
+  gap: 2%;
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  > * {
+    /* height: 80px;
+    width: 80px; */
+    border: 1px solid gray;
+    border-radius: 5px;
+  }
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.imageButton {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  aspect-ratio: 1 / 1;
+  * {
+    line-height: 100%;
+    font-size: 3em;
+    color: gray;
+  }
+}
+
+.position {
+  display: flex;
+  flex-direction: column;
+  > input {
+    border: 1px solid black;
+    padding: 5px;
+    width: 70px;
+  }
+}
+
+.categories {
+  display: flex;
+  border: 1px solid black;
+  padding: 5px;
+  gap: 1vw;
+  max-width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  text-wrap: nowrap;
+  > * {
+    border: 1px solid gray;
+    padding: 0 5px;
+  }
+}
+
+.actions {
+    display: flex;
+    gap: 10%;
+    > * {
+      flex-grow: 1;
+      text-align: center;
+      padding: 10px;
+      cursor: pointer;
+      &:active {
+        box-shadow: inset 0 0 2px 1px black;
+      }
+    }
+}
+
+.save {
+  background-color: rgb(4, 185, 4);
+}
+
+.cancel {
+  background-color: gray;
+}
+
+.delete {
+  background-color: red;
+}
