@@ -1,0 +1,64 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+}
+
+.navigation {
+    height: 100%;
+    flex-basis: 20vw;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background-color: lightblue;
+}
+
+.content {
+    height: 100%;
+    flex-grow: 1;
+    background-color: aliceblue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5vw;
+    flex-wrap: wrap;
+}
+
+.category {
+    padding: 20px;
+    flex-basis: 15vw;
+    height: 15vh;
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    gap: 30%;
+    cursor: pointer;
+}
+
+.edit {
+    background-color: wheat;
+    padding: 5px;
+    border-radius: 5px;
+    &:not(:active) {
+        box-shadow: 2px 2px 1px 0 black;
+    }
+    &:active {
+        box-shadow: inset 2px 2px 1px 0 black;
+    }
+}
+
+.item {
+    padding: 20px;
+    flex-basis: 15vw;
+    height: 15vh;
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30%;
+    cursor: pointer;
+    text-align: center;
+}
