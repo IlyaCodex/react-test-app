@@ -1,0 +1,250 @@
+
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0px;
+  min-height: 448px;
+}
+
+.titleSection {
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.orderInner {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  height: 100%;
+}
+
+.orderInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.orderStep {
+  background-color: #e9ecef;
+  padding: 15px 25px;
+  width: 580px;
+  height: 105px;
+  border-radius: 5px;
+}
+
+.orderSubtitle {
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 5px;
+  color: #000;
+  position: relative; 
+}
+
+.orderSubtitle:before {
+  content: '';
+  position: absolute;
+  left: -10px; 
+  top: 50%;
+  transform: translateY(-50%); 
+  width: 2px; 
+  height: 28px; 
+  background-color: #000; 
+}
+
+.orderText {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  max-width: 410px;
+}
+
+.orderForm {
+  flex: 0 0 580px;
+  background-color: #e9ecef;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.formHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.formText {
+  flex: 1;
+}
+
+.orderFormTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #000;
+}
+
+.orderFormText {
+  font-size: 14px;
+  color: #6B6B6B;
+  width: 285px;
+}
+
+.orderFormType {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.typeOption {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
+  position: relative;
+}
+
+.typeOption input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.typeOption.selected {
+  background-color: #000;
+}
+
+.orderFormItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.input {
+  width: 500px;
+  height: 49px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.orderBtn {
+  width: 500px;
+  height: 52px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.orderBtn:hover {
+  background-color: #333;
+}
+
+.hiddenRadio {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .orderInner {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .orderStep {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .orderForm {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .input {
+    width: 100%;
+  }
+
+  .orderBtn {
+    width: 100%;
+  }
+
+  .formHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orderFormType {
+    flex-direction: column;
+  }
+
+  .typeOption {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .titleSection {
+    font-size: 24px;
+  }
+
+  .orderSubtitle {
+    font-size: 16px;
+  }
+
+  .orderText {
+    font-size: 12px;
+  }
+
+  .orderFormTitle {
+    font-size: 18px;
+  }
+
+  .input {
+    height: 40px;
+    font-size: 12px;
+  }
+
+  .orderBtn {
+    height: 45px;
+    font-size: 14px;
+  }
+
+  .typeOption {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+}

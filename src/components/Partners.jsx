@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import styles from './PartnersSection.module.css';
 
 const PartnersSection = () => {
   const partners = [
@@ -11,6 +12,7 @@ const PartnersSection = () => {
       name: "R.O.C.S.",
       country: "Россия",
       description: "Бренд, производящий инновационные средства по уходу за полостью рта с акцентом на натуральные компоненты и безопасность",
+      modalDescription: "Инновационные средства по уходу за полостью рта с акцентом на натуральные компоненты. Инновационные средства по уходу за полостью рта с акцентом на натуральные компоненты",
       image: "../images/rocs.png",
       alt: "Логотип компании R.O.C.S."
     },
@@ -19,6 +21,7 @@ const PartnersSection = () => {
       name: "SPLAT",
       country: "Россия",
       description: "Известен производством зубных паст, щёток и ополаскивателей для полости рта",
+      modalDescription: "",
       image: "../images/splat.png",
       alt: "Логотип компании SPLAT"
     },
@@ -27,6 +30,7 @@ const PartnersSection = () => {
       name: "Straumann Group",
       country: "Швейцария",
       description: "Ведущий производитель систем имплантации и цифровых решений для стоматологии",
+      modalDescription: "",
       image: "../images/straumann.png",
       alt: "Логотип компании Straumann Group"
     },
@@ -35,6 +39,7 @@ const PartnersSection = () => {
       name: "Dentsply Sirona",
       country: "Германия",
       description: "Мировой лидер в производстве стоматологического оборудования и материалов",
+      modalDescription: "",
       image: "../images/dentsply.png",
       alt: "Логотип компании Dentsply Sirona"
     },
@@ -43,12 +48,14 @@ const PartnersSection = () => {
       name: "Septodont",
       country: "Франция",
       description: "Известен разработкой и выпуском профессиональных стоматологических материалов",
+      modalDescription: "",
       image: "../images/septodont.png",
       alt: "Логотип компании Septodont"
     }
   ];
 
   const swiperRef = useRef(null);
+  const [selectedPartner, setSelectedPartner] = useState(null);
 
   const swiperOptions = {
     modules: [Autoplay, Navigation],
@@ -83,28 +90,47 @@ const PartnersSection = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const openModal = (partner) => {
+    setSelectedPartner(partner);
+    document.body.style.overflow = 'hidden'; 
+  };
+
+  const closeModal = () => {
+    setSelectedPartner(null);
+    document.body.style.overflow = 'auto';
+  };
+
+  
+  const splitDescription = (desc) => {
+    const halfLength = Math.ceil(desc.length / 2);
+    return [
+      desc.slice(0, halfLength),
+      desc.slice(halfLength),
+    ];
+  };
+
   return (
-    <section className="partners indent" id="partners">
-      <div className="container">
-        <h2 className="title-section">Наши партнёры</h2>
-        <div className="partners__container">
-          <Swiper {...swiperOptions} className="partners__swiper">
+    <section className={styles.partners} id="partners">
+      <div className={styles.container}>
+        <h2 className={styles.titleSection}>Наши партнёры</h2>
+        <div className={styles.partnersContainer}>
+          <Swiper {...swiperOptions} className={styles.partnersSwiper}>
             {partners.map((partner) => (
               <SwiperSlide key={partner.id}>
-                <div className="partners__card">
-                  <div className="partners__img-container">
+                <div className={styles.partnersCard} onClick={() => openModal(partner)}>
+                  <div className={styles.partnersImgContainer}>
                     <img
-                      className="partners__img"
+                      className={styles.partnersImg}
                       src={partner.image}
                       width="250"
                       height="150"
                       alt={partner.alt}
                     />
                   </div>
-                  <h3 className="partners__name">{partner.name}</h3>
-                  <p className="partners__country">Страна: {partner.country}</p>
-                  <div className="partners__description-container">
-                    <p className="partners__description">{partner.description}</p>
+                  <h3 className={styles.partnersName}>{partner.name}</h3>
+                  <p className={styles.partnersCountry}>Страна: {partner.country}</p>
+                  <div className={styles.partnersDescriptionContainer}>
+                    <p className={styles.partnersDescription}>{partner.description}</p>
                   </div>
                 </div>
               </SwiperSlide>
@@ -112,6 +138,29 @@ const PartnersSection = () => {
           </Swiper>
         </div>
       </div>
+
+      {selectedPartner && (
+        <div className={styles.modalOverlay} onClick={closeModal}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={closeModal}>
+              ×
+            </button>
+            <div className={styles.modalImgContainer}>
+              <img
+                src={selectedPartner.image}
+                alt={selectedPartner.alt}
+                className={styles.modalImg}
+              />
+            </div>
+            <h3 className={styles.modalName}>{selectedPartner.name}</h3>
+            <p className={styles.modalCountry}>Страна: {selectedPartner.country}</p>
+            <div className={styles.modalDescription}>
+              <p>{splitDescription(selectedPartner.modalDescription)[0]}</p>
+              <p>{splitDescription(selectedPartner.modalDescription)[1]}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

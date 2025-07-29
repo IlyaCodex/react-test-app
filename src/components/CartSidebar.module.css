@@ -223,7 +223,55 @@
   }
 }
 
-/* Адаптивные стили для мобильных устройств */
+.summary {
+  font-weight: bold;
+  font-size: 16px;
+  margin: 16px 20px 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+}
+
+.recommend {
+  margin: 20px 0;
+}
+
+.recommend_title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-left: 16px;
+  margin-bottom: 8px;
+}
+
+.recommend_scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 0 16px;
+}
+
+.recommend_item {
+  flex: 0 0 auto;
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  background: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.recommend_item img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+
+.arrow {
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+
 @media (max-width: 768px) {
   .cart.open {
     width: 100%; 

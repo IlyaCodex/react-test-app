@@ -1,0 +1,276 @@
+.header {
+  /* margin: 30px 0 120px; */
+  font-family: "Manrope", sans-serif;
+   margin-bottom: 57px;
+    height: 74px;
+    background-color: #e4e4e4;
+}
+
+.container {
+  max-width: 1306px;
+  padding: 12px 15px;
+  margin: 0 auto;
+  
+}
+
+.headerInner {
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerLogo,
+.headerRight {
+  max-width: 270px;
+  width: 100%;
+}
+
+.headerList {
+  display: flex;
+  align-items: center;
+  gap: 27px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.headerLink {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 1px 2px;
+  transition: color 0.4s, border 0.4s;
+  color: #000000;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.headerLink:hover {
+  color: #34495e;
+}
+
+.headerLink:focus {
+  color: #2c3e50;
+  border-color: #3498db;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  justify-content: flex-end;
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  transition: all 0.3s ease;
+}
+
+.searchForm {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.searchInput {
+  width: 0;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.searchContainer.active .searchForm {
+  opacity: 1;
+  visibility: visible;
+}
+
+.searchContainer.active .searchInput {
+  width: 850px;
+  padding: 10px 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.headerSearchBtn,
+.favoritesBtn,
+.requestBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 39px;
+  height: 39px;
+  background-color: #fff;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.4s;
+}
+
+.headerSearchBtn:hover,
+.favoritesBtn:hover,
+.requestBtn:hover {
+  background-color: #ecf0f1;
+}
+
+.requestBtn {
+  width: 150px;
+  color: #000000;
+  background-color: #ffffff;
+  font-size: 14px;
+  padding: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.menuBtn {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 80px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menuBtn span {
+  width: 100%;
+  height: 3px;
+  background-color: #000;
+  transition: all 0.3s ease;
+}
+
+.menuBtn.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menuBtn.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.menuBtn.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+.mobileMenu {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.mobileMenuInner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #fff;
+  padding: 20px;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.mobileMenu.open .mobileMenuInner {
+  transform: translateX(0);
+}
+
+.mobileNav {
+  margin-top: 50px;
+}
+
+.mobileList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobileLink {
+  display: block;
+  padding: 10px 0;
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.mobileLink:hover {
+  color: #34495e;
+}
+
+.desktop {
+  display: block;
+}
+
+
+@media (max-width: 768px) {
+  .headerNav {
+    display: none;
+  }
+
+  .menuBtn {
+    display: flex;
+    width: 34px;
+    height: 23px;
+  }
+
+    
+
+  .headerRight {
+    gap: 15px;
+  }
+
+  .searchContainer.active .searchInput {
+    width: 405px;
+  }
+
+  .headerSearchBtn,
+  .favoritesBtn,
+  .requestBtn {
+    width: 39px;
+    height: 39px;
+   
+  }
+
+  .requestBtn {
+    padding: 0 10px;
+    font-size: 12px;
+     display: none;
+  }
+
+  .mobileMenu {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchContainer.active .searchInput {
+    width: 162px;
+  }
+
+  .menuBtn {
+    display: flex;
+    width: 80px !important;
+    height: 20px !important;
+  }
+
+  .requestBtn {
+    font-size: 10px;
+    padding: 0 8px;
+     display: none;
+  }
+}

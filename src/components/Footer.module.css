@@ -1,0 +1,173 @@
+/* Footer.module.css */
+
+.container {
+  width: 1306px; /* Set container width to 1306px as requested */
+  margin: 0 auto; /* Center the container */
+}
+
+.footer {
+  padding: 45px 0 20px;
+  background-color: #171717;
+  color: #ffffff;
+  margin-top: 20px;
+}
+
+.footerInner {
+  display: flex;
+  gap: 40px;
+}
+
+.footerColumns {
+  margin-left: auto;
+  display: flex;
+  gap: 100px;
+  margin-bottom: 40px;
+}
+
+.footerColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.footerLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.footerLink {
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: color 0.4s ease, border 0.4s ease;
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  color: #007bff;
+}
+
+.footerLink:focus {
+  border-color: #007bff;
+  color: #ffffff;
+  outline: none;
+}
+
+.footerSubtitle {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.footerAuthor {
+  text-align: center;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.footerSocials {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footerSocial {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  transition: background-color 0.4s ease, border 0.4s ease;
+}
+
+.footerSocial:hover svg path {
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+.footerSocial:focus {
+  background-color: #007bff;
+  outline: none;
+}
+
+.footerSocial:focus svg path {
+  fill: #ffffff;
+}
+
+/* Специфичные трансформации для иконок */
+.footerSocial svg.transform {
+  transform: translateX(-2px);
+}
+
+.footerSocial svg.y.transform {
+  transform: translateY(2px) translateX(-2px);
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) {
+  .footerColumns {
+    gap: 60px;
+  }
+  
+  .footerInner {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .footerColumns {
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .footer {
+    padding: 30px 0 15px;
+  }
+  
+  .footerColumns {
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  
+  .footerColumn {
+    gap: 15px;
+  }
+  
+  .footerSubtitle {
+    font-size: 18px;
+  }
+  
+  .footerLink {
+    font-size: 14px;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+  .footerColumns {
+    gap: 20px;
+    flex-direction: column;
+  }
+  
+  .footerInner {
+    gap: 25px;
+  }
+  
+  .footerSocials {
+    gap: 10px;
+  }
+  
+  .footerSocial {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .footerAuthor {
+    font-size: 14px;
+  }
+}

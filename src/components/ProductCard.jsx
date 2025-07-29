@@ -8,7 +8,6 @@ const ProductCard = ({ product, onCardClick }) => {
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41" fill="none">
             <path fillRule="evenodd" clipRule="evenodd" d="M19.8353 9.01587C16.5308 5.15264 11.0204 4.11344 6.88008 7.651C2.73979 11.1886 2.15689 17.1032 5.40829 21.2871C8.1116 24.7657 16.2928 32.1023 18.9741 34.4769C19.2741 34.7426 19.4241 34.8754 19.5991 34.9276C19.7518 34.9732 19.9188 34.9732 20.0716 34.9276C20.2465 34.8754 20.3965 34.7426 20.6965 34.4769C23.3778 32.1023 31.559 24.7657 34.2623 21.2871C37.5137 17.1032 37.002 11.1513 32.7905 7.651C28.5791 4.15066 23.1398 5.15264 19.8353 9.01587Z" stroke="#171717" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          <span className="sr-only">Добавить в избранное</span>
         </button>
         <img src={product.image} alt={product.name} />
       </div>

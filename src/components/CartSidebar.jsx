@@ -1,52 +1,68 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import styles from './CartSidebar.module.css';
 import { CartContext } from '../context/CartContext';
 import { ProductsContext } from '../context/ProductsContext';
+import CheckoutModal from './CheckoutModal';
 
-const getSuffix = count => {
-  if (count == 1) {
+const getSuffix = (count) => {
+  if (count === 1) {
     return 'товар';
   }
-  if ([2,3,4].includes(count)) {
+  if ([2, 3, 4].includes(count)) {
     return 'товара';
   }
   return 'товаров';
-}
+};
 
 const CartSidebar = ({ isOpen, onClose }) => {
-  const {items: itemIds, addItems, removeItems} = useContext(CartContext);
+  const { items: itemIds, addItems, removeItems } = useContext(CartContext);
   const products = useContext(ProductsContext).data;
-  const items = useMemo(() => 
-    itemIds.map(item => {
-      const product = products.find(product => product.id === item?.id);
-      if (product) {
-        return {...product, quantity: item.count}
-      }
-      return undefined;
-    }).filter(i => !!i), 
-  [itemIds, products]);
+  const items = useMemo(() =>
+    itemIds
+      .map((item) => {
+        const product = products.find((product) => product.id === item?.id);
+        if (product) {
+          return { ...product, quantity: item.count };
+        }
+        return undefined;
+      })
+      .filter((i) => !!i),
+    [itemIds, products]
+  );
 
   const calculateTotal = () => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const totalCount = items.reduce((total, item) => total + item.quantity, 0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCheckoutClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className={`${styles.cart} ${isOpen ? styles.open : ''}`} onClick={onClose}>
-        <div className={styles.cart_dialog} onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          }}>
+      <div className={styles.cart_dialog} onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}>
         <div className={styles.header}>
-          <div/>
+          <div />
           <p>Корзина</p>
-          <button onClick={onClose}>
-            ×
-          </button>
+          <button onClick={onClose}>×</button>
         </div>
         <div className={styles.content}>
-          
+          <div className={styles.summary}>
+            <span>
+              {totalCount} {getSuffix(totalCount)} на {calculateTotal().toLocaleString('ru-RU')} ₽
+            </span>
+          </div>
+
           <div className={styles.items}>
             {items.length === 0 ? (
               <div className={styles.empty}>Корзина пуста</div>
@@ -57,12 +73,16 @@ const CartSidebar = ({ isOpen, onClose }) => {
                     {item.image && <img src={item.image} alt={item.name} className={styles.image} />}
                     <div className={styles.details}>
                       <p className={styles.item_name}>{item.name}</p>
-                      {/* <p className={styles.item_description} >{item.description || 'Краткое описание отсутствует'}</p> */}
                       <p className={styles.item_price}>{item.price.toLocaleString('ru-RU')} ₽</p>
                     </div>
                   </div>
                   <div className={styles.buttons}>
-                    <button className={styles.delete} onClick={() => removeItems(...Array.from({length: item.quantity}, () => item.id))}>
+                    <button
+                      className={styles.delete}
+                      onClick={() =>
+                        removeItems(...Array.from({ length: item.quantity }, () => item.id))
+                      }
+                    >
                       ×
                     </button>
                     <div className={styles.counter}>
@@ -75,6 +95,17 @@ const CartSidebar = ({ isOpen, onClose }) => {
               ))
             )}
           </div>
+
+          <div className={styles.recommend}>
+            <p className={styles.recommend_title}>Добавьте к заказу</p>
+            <div className={styles.recommend_scroll}>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className={styles.recommend_item}>
+                  <img src="/icons/recommend.png" alt="Рекомендация" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         <div className={styles.footer}>
           <div></div>
@@ -83,12 +114,13 @@ const CartSidebar = ({ isOpen, onClose }) => {
               <div className={styles.count}>{totalCount} {getSuffix(totalCount)}</div>
               <div className={styles.price}>{calculateTotal().toLocaleString('ru-RU')} ₽</div>
             </div>
-            <button className={styles.checkout} onClick={() => alert('Переход к оформлению')}>
+            <button className={styles.checkout} onClick={handleCheckoutClick}>
               Перейти к оформлению
             </button>
           </div>
         </div>
       </div>
+      {isModalOpen && <CheckoutModal onClose={handleCloseModal} />}
     </div>
   );
 };

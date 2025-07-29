@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Footer.module.css';
 
 const Footer = () => {
   // Компоненты иконок для переиспользования
@@ -23,38 +24,38 @@ const Footer = () => {
   );
 
   return (
-    <footer className="footer">
-      <div className="container">
-        <div className="footer__inner">
+    <footer className={styles.footer}>
+      <div className={styles.container}>
+        <div className={styles.footerInner}>
           <img 
             src="/images/logo-white.svg" 
             width="92" 
             height="61" 
             alt="Логотип Triton" 
-            className="footer__logo"
+            className={styles.footerLogo}
           />
           
-          <div className="footer__columns">
+          <div className={styles.footerColumns}>
             {/* Колонка контактов */}
-            <div className="footer__column">
-              <span className="footer__subtitle">Контакты</span>
-              <ul className="footer__links">
+            <div className={styles.footerColumn}>
+              <span className={styles.footerSubtitle}>Контакты</span>
+              <ul className={styles.footerLinks}>
                 <li>
-                  <a className="footer__link" href="tel:+79182222222">+7 (918) 222-22-22</a>
+                  <a className={styles.footerLink} href="tel:+79182222222">+7 (918) 222-22-22</a>
                 </li>
                 <li>
-                  <a className="footer__link" href="mailto:info@triton.ru">info@triton.ru</a>
+                  <a className={styles.footerLink} href="mailto:info@triton.ru">info@triton.ru</a>
                 </li>
               </ul>
             </div>
             
             {/* Колонка адресов */}
-            <div className="footer__column">
-              <span className="footer__subtitle">Адреса</span>
-              <ul className="footer__links">
+            <div className={styles.footerColumn}>
+              <span className={styles.footerSubtitle}>Адреса</span>
+              <ul className={styles.footerLinks}>
                 <li>
                   <a 
-                    className="footer__link" 
+                    className={styles.footerLink} 
                     href="https://brabus.ru/" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -64,7 +65,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a 
-                    className="footer__link" 
+                    className={styles.footerLink} 
                     href="https://brabus.ru/" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -76,28 +77,28 @@ const Footer = () => {
             </div>
             
             {/* Колонка разделов */}
-            <div className="footer__column">
-              <span className="footer__subtitle">Разделы</span>
-              <ul className="footer__links">
+            <div className={styles.footerColumn}>
+              <span className={styles.footerSubtitle}>Разделы</span>
+              <ul className={styles.footerLinks}>
                 <li>
-                  <a className="footer__link" href="/support">Поддержка</a>
+                  <a className={styles.footerLink} href="/support">Поддержка</a>
                 </li>
                 <li>
-                  <a className="footer__link" href="/delivery">Доставка</a>
+                  <a className={styles.footerLink} href="/delivery">Доставка</a>
                 </li>
                 <li>
-                  <a className="footer__link" href="/partners">Партнерам</a>
+                  <a className={styles.footerLink} href="/partners">Партнерам</a>
                 </li>
               </ul>
             </div>
             
             {/* Колонка соцсетей */}
-            <div className="footer__column">
-              <span className="footer__subtitle">Соц.сети</span>
-              <ul className="footer__socials">
+            <div className={styles.footerColumn}>
+              <span className={styles.footerSubtitle}>Соц.сети</span>
+              <ul className={styles.footerSocials}>
                 <li>
                   <a 
-                    className="footer__social" 
+                    className={styles.footerSocial} 
                     href="https://web.telegram.org/" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -109,7 +110,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a 
-                    className="footer__social" 
+                    className={styles.footerSocial} 
                     href="https://instagram.com/" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -121,7 +122,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a 
-                    className="footer__social" 
+                    className={styles.footerSocial} 
                     href="https://vk.com/" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -136,7 +137,7 @@ const Footer = () => {
           </div>
         </div>
         
-        <p className="footer__author">© Triton Corp 2024-2025</p>
+        <p className={styles.footerAuthor}>© Triton Corp 2024-2025</p>
       </div>
     </footer>
   );

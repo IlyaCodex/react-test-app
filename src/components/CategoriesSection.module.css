@@ -1,0 +1,267 @@
+.categories {
+  margin-top: 50px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0px;
+}
+
+.titleSection {
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #000;
+}
+
+.categoriesList {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 40px;
+  width: 1200px;
+}
+
+.categoriesItem {
+  background-color: #171717;
+  border-radius: 12px;
+  padding: 30px;
+  color: #ffffff;
+  width: 380px;
+  min-height: 280px;
+  transition: background-color 0.4s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.categoriesItem.active {
+  background-color: #000000;
+}
+
+.categoriesItem:focus {
+  background-color: #006ade;
+  outline: transparent;
+}
+
+.categoriesItem:focus .categoriesText {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.categoriesHead {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+  color: #ffffff;
+  font-size: 26px;
+  transition: color 0.4s;
+}
+
+.categoriesHead:hover {
+  color: #ffffff;
+}
+
+.categoriesBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  transition: background-color 0.4s, border 0.4s, transform 0.4s;
+}
+
+.categoriesBtn.rotated {
+  transform: rotate(90deg);
+  transition: transform 0.3s;
+}
+
+.categoriesText {
+  font-size: 20px;
+  max-width: 320px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 15px;
+}
+
+.subcategories {
+  margin-top: 20px;
+}
+
+.subcategoriesList {
+  list-style: none;
+  padding: 0;
+}
+
+.subcategoriesItem {
+  font-size: 16px;
+  color: #ffffff;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.subcategoriesItem:hover {
+  background-color: #00000011;
+  color: #f0f0f0;
+  border-radius: 15px;
+ padding-left: 15px ;
+}
+
+.discountBlock {
+  width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.discountTitle {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+.discountText {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.discountBtn {
+  padding: 12px 30px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.discountBtn:hover {
+  background-color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+    padding: 0 0px;
+  }
+
+  .categoriesList {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .categoriesItem {
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 20px;
+  }
+
+  .discountBlock {
+    width: 100%;
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+
+  .titleSection {
+    font-size: 28px;
+  }
+
+  .categoriesItem {
+    padding: 20px;
+    min-height: 240px;
+  }
+
+  .categoriesHead {
+    font-size: 22px;
+  }
+
+  .categoriesText {
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  .discountBlock {
+    padding: 30px 10px;
+  }
+
+  .discountTitle {
+    font-size: 24px;
+  }
+
+  .discountText {
+    font-size: 14px;
+  }
+
+  .discountBtn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .titleSection {
+    font-size: 22px;
+  }
+
+  .categoriesList {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .categoriesItem {
+    width: 100%;
+    padding: 15px;
+    min-height: 200px;
+  }
+
+  .categoriesHead {
+    font-size: 18px;
+  }
+
+  .categoriesText {
+    font-size: 14px;
+  }
+
+  .subcategoriesItem {
+    font-size: 14px;
+  }
+
+  .discountBlock {
+    padding: 20px 10px;
+  }
+
+  .discountTitle {
+    font-size: 20px;
+  }
+
+  .discountText {
+    font-size: 12px;
+  }
+
+  .discountBtn {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+}
