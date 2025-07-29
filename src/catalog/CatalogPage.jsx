@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard';
 import ModalWindow from './ModalWindow';
 import { ProductsContext } from '../context/ProductsContext';
 import styles from './CatalogPage.module.css';
+import { categorySubcategories, subcategories } from '../data/categories';
 
 const CatalogPage = () => {
   const cardData = useContext(ProductsContext).data;
@@ -13,12 +14,6 @@ const CatalogPage = () => {
   const initialSubcategory = searchParams.get('subcategory') || 'Все';
 
   const mainCategories = ["Врачам", "Зуботехникам", "Ученикам"];
-  const categorySubcategories = {
-    "Врачам": ["Перчатки", "Шприцы", "Маски", "Профессиональные инструменты", "Антисептики"],
-    "Ученикам": ["Учебные модели", "Фантомы", "Базовые инструменты", "Учебные пособия", "Наборы для практики"],
-    "Зуботехникам": ["Зубопротезные материалы", "Артикуляторы", "Воски и восковки", "Керамика", "Полировочные материалы"],
-  };
-  const subcategories = ["Все", "Анестезия", "Шовный материал", "Гигиена и профилактика", "Гигиена и профилактика", "Гигиена и профилактика", "Гигиена", "Гигиена и профилактика", "Гигиена и профилактика", "Гигиена"];
 
   const [filteredProducts, setFilteredProducts] = useState(cardData);
   const [activeMainCategory, setActiveMainCategory] = useState(urlMainCategory || "Врачам");
@@ -128,7 +123,7 @@ const CatalogPage = () => {
           ))}
         </ul>
 
-          <div className={styles.requestBlock}>
+        <div className={styles.requestBlock}>
           <div className={styles.requestText}>
             <h2 className={styles.requestTitle}>Не нашли необходимое или не можете определиться?</h2>
             <p className={styles.requestDescription}>Оставьте заявку, наши специалисты помогут с выбором и подберут решение</p>
@@ -140,8 +135,8 @@ const CatalogPage = () => {
             <input type="tel" className={styles.formInput} placeholder="+7 (___) ___-__-__" />
             <button className={styles.formButton}>Отправить заявку</button>
           </div>
-        </div> 
-
+        </div>
+        
       </div>
 
       {isModalOpen && (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './CategoriesSection.module.css';
+import { categorySubcategories } from '../data/categories';
 
 const CategoriesSection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -11,19 +12,19 @@ const CategoriesSection = () => {
       id: 1,
       title: "Врачам",
       description: "Перчатки, шприцы, маски, профессиональные инструменты и многое другое",
-      subcategories: ["Перчатки", "Шприцы", "Маски", "Профессиональные инструменты", "Антисептики"],
+      subcategories: categorySubcategories["Врачам"],
     },
     {
       id: 2,
       title: "Ученикам",
       description: "Модели, манекены, базовые инструменты и другое",
-      subcategories: ["Учебные модели", "Фантомы", "Базовые инструменты", "Учебные пособия", "Наборы для практики"],
+      subcategories: categorySubcategories["Ученикам"],
     },
     {
       id: 3,
       title: "Зуботехникам",
       description: "Модели, манекены, базовые инструменты и другое",
-      subcategories: ["Зубопротезные материалы", "Артикуляторы", "Воски и восковки", "Керамика", "Полировочные материалы"],
+      subcategories: categorySubcategories["Зуботехникам"],
     },
   ];
 
