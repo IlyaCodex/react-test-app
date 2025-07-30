@@ -35,7 +35,6 @@ function MainApp() {
             <ContactsSection />
           </>
         } />
-        <Route path="/catalog" element={<CatalogPage title="Каталог продукции" />} />
         <Route path="/catalog/:mainCategory?" element={<CatalogPage />} />
       </Routes>
       <Footer />
@@ -63,8 +62,8 @@ function App() {
           <CartContextProvider>
             <FavoriteProvider>
             <Routes>
-              <Route path={'/'} element={<MainApp />}/>
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="*" element={<MainApp />}/>
             </Routes>
             </FavoriteProvider>
           </CartContextProvider>
