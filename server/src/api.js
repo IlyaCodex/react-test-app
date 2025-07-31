@@ -8,7 +8,7 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS promos (id INTEGER PRIMARY KEY, name TEXT, position INTEGER)"
+    "CREATE TABLE IF NOT EXISTS promos (id INTEGER PRIMARY KEY, name TEXT, description TEXT, position INTEGER)"
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS partners (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)"
@@ -38,7 +38,6 @@ function authorize(login, password) {
 const checkAuth = (req, res, next) => {
   try {
     let auth = req.headers.authorization;
-    console.log(auth);
     if (!auth || !auth.startsWith("Basic")) {
       res.statusCode = 401;
       res.send(wrapResponse(undefined, "Not authorized"));
@@ -62,6 +61,17 @@ const checkAuth = (req, res, next) => {
     return;
   }
 };
+
+async function insertRow(sql, params) {
+  return new Promise((resolve, reject) =>
+    db.run(sql, params, function (err) {
+      if (err) {
+        reject(err);
+      }
+      resolve(this.lastID);
+    })
+  );
+}
 
 async function getAsync(sql, params) {
   return new Promise((resolve, reject) =>
@@ -301,42 +311,35 @@ function enrichServerWithApiRoutes(app) {
           }
         });
       } else {
-        db.run(
+        insertRow(
           "insert into categories (name, position, level) values (?, ?, ?)",
-          [category.name, category.position, category.level],
-          function (err) {
-            if (err) {
-              console.error(err);
-              return;
+          [category.name, category.position, category.level]
+        ).then((id) => {
+          if (category.level > 1) {
+            for (const parentId of category.parents) {
+              db.run(
+                "insert into cat_to_cat(parent_id, child_id) values (?, ?)",
+                [parentId, id]
+              );
             }
-            category.id = this.lastID;
           }
-        );
 
-        if (category.level > 1) {
-          for (const parentId of category.parents) {
-            db.run(
-              "insert into cat_to_cat(parent_id, child_id) values (?, ?)",
-              [parentId, category.id]
-            );
+          if (category.level < 3) {
+            for (const childId of category.children) {
+              db.run(
+                "insert into cat_to_cat(parent_id, child_id) values (?, ?)",
+                [id, childId]
+              );
+            }
           }
-        }
 
-        if (category.level < 3) {
-          for (const childId of category.children) {
-            db.run(
-              "insert into cat_to_cat(parent_id, child_id) values (?, ?)",
-              [category.id, childId]
-            );
+          for (const itemId of category.items) {
+            db.run("insert into cat_to_items(cat_id, item_id) values(?, ?)", [
+              id,
+              itemId,
+            ]);
           }
-        }
-
-        for (const itemId of category.items) {
-          db.run("insert into cat_to_items(cat_id, item_id) values(?, ?)", [
-            category.id,
-            itemId,
-          ]);
-        }
+        });
       }
 
       res.send(wrapResponse("Success"));
@@ -513,7 +516,7 @@ function enrichServerWithApiRoutes(app) {
           }
         });
       } else {
-        db.run(
+        insertRow(
           "insert into item (name, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?)",
           [
             item.name,
@@ -524,36 +527,29 @@ function enrichServerWithApiRoutes(app) {
             item.amount,
             item.in_stock,
             item.has_promo,
-          ],
-          function (err) {
-            if (err) {
-              console.error(err);
-              return;
-            }
-            item.id = this.lastID;
+          ]
+        ).then((id) => {
+          for (const image of item.images) {
+            db.run(
+              "insert into item_images(item_id, position, data) values (?, ?, ?)",
+              [id, image.position, image.data]
+            );
           }
-        );
 
-        for (const image of item.images) {
-          db.run(
-            "insert into item_images(item_id, position, data) values (?, ?, ?)",
-            [item.id, image.position, image.data]
-          );
-        }
+          for (const attr of item.attributes) {
+            db.run("insert into attr_of_item(item_id, name) values (?, ?)", [
+              id,
+              attr,
+            ]);
+          }
 
-        for (const attr of item.attributes) {
-          db.run("insert into attr_of_item(item_id, name) values (?, ?)", [
-            item.id,
-            attr,
-          ]);
-        }
-
-        for (const categoryId of item.categories) {
-          db.run("insert into cat_to_items(cat_id, item_id) values (?, ?)", [
-            categoryId,
-            item.id,
-          ]);
-        }
+          for (const categoryId of item.categories) {
+            db.run("insert into cat_to_items(cat_id, item_id) values (?, ?)", [
+              categoryId,
+              id,
+            ]);
+          }
+        });
       }
 
       res.send(wrapResponse("Success"));
@@ -568,15 +564,15 @@ function enrichServerWithApiRoutes(app) {
 
   app.get("/api/promos/", (req, res) => {
     getAllAsync("select * from promos")
-      .then((rows) =>
+      .then((rows) => {
         Promise.all([
           ...rows.map((row) =>
             loadPromoImages(row).then((arr) => (row.images = arr))
           ),
-        ]).then(() => res.send(wrapResponse(rows)))
-      )
+        ]).then(() => res.send(wrapResponse(rows)));
+      })
       .catch((err) => {
-        console.error(err);
+        console.error("Error while fetching promos: " + JSON.stringify(err));
         res.statusCode = 500;
         res.send(wrapResponse(undefined, err));
       });
@@ -618,9 +614,10 @@ function enrichServerWithApiRoutes(app) {
       const promo = req.body;
       if (promo.id) {
         db.run(
-          "update promos set name=?, position=? where id=?",
+          "update promos set name=?, position=?, description=? where id=?",
           promo.name,
           promo.position,
+          promo.description,
           promo.id
         );
 
@@ -661,24 +658,26 @@ function enrichServerWithApiRoutes(app) {
           }
         });
       } else {
-        db.run(
-          "insert into promos (name, position) values (?, ?)",
-          [promo.name, promo.position],
-          function (err) {
-            if (err) {
-              console.error(err);
-              return;
+        insertRow(
+          "insert into promos (name, position, description) values (?, ?, ?)",
+          [promo.name, promo.position, promo.description]
+        )
+          .then((id) => {
+            console.log(id);
+            for (const image of promo.images) {
+              db.run(
+                "insert into promo_images(promo_id, position, data) values(?, ?, ?)",
+                [id, image.position, image.data],
+                (err) => {
+                  if (err)
+                    console.error(
+                      "error on insert image: " + JSON.stringify(err)
+                    );
+                }
+              );
             }
-            promo.id = this.lastID;
-          }
-        );
-
-        for (const image of promo.images) {
-          db.run(
-            "insert into promo_images(promo_id, position, data) values(?, ?, ?)",
-            [promo.id, image.position, image.data]
-          );
-        }
+          })
+          .catch((error) => console.error("error on put promo"));
       }
 
       res.send(wrapResponse("Success"));
@@ -759,7 +758,6 @@ function enrichServerWithApiRoutes(app) {
               console.error(err);
               return;
             }
-            promo.id = this.lastID;
           }
         );
       }

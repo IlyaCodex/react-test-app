@@ -1,58 +1,124 @@
-import { useState, useRef } from 'react';
-import styles from './Promo.module.css';
+import { useState, useRef, useEffect } from "react";
+import styles from "./Card.module.css";
+import { api } from "../../api";
+import { useAuth } from "../../context/AuthContext";
+import { convertFiles } from "./Utils";
+import { isEmptyId } from "./Utils";
 
-const PromoModal = ({ data, onSave, onClose }) => {
-    const [title, setTitle] = useState(data?.title || '');
-    const [description, setDescription] = useState(data?.description || '');
-    const [images, setImages] = useState(data?.images || []);
-    const [position, setPosition] = useState(data?.position || 1);
+export const Promo = ({ data, onClose }) => {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [images, setImages] = useState([]);
+  const [position, setPosition] = useState(1);
 
-    const imageInput = useRef(null);
+  const { auth } = useAuth();
 
-    const onImageSelect = (e) => {
-        const files = e.target.files ?? [];
-        const newImages = [...images, ...files];
-        setImages(newImages);
-    };
+  const imageInput = useRef(null);
 
-    const handleSave = () => {
-        const newData = {
-            id: data?.id || `new-promo-${Date.now()}`, // Generate unique ID for new entries
-            title,
-            description,
-            images,
-            position,
-        };
-        onSave(newData);
-        onClose();
-    };
-
-    return (
-        <div className={styles.container}>
-                <h2>Добавить/Редактировать Акцию</h2>
-                <label className={styles.textInput}>
-                    Заголовок*: <input value={title} onChange={e => setTitle(e.target.value)} />
-                </label>
-                <label className={styles.textInput}>
-                    Описание: <textarea value={description} onChange={e => setDescription(e.target.value)} />
-                </label>
-                <div className={styles.images}>
-                    <input accept="image/*" type="file" multiple ref={imageInput} hidden onChange={onImageSelect} />
-                    {images.map((image, index) => (
-                        <img key={index} className={styles.image} src={URL.createObjectURL(image)} alt="your image" />
-                    ))}
-                    <div className={styles.imageButton} onClick={() => imageInput.current?.click()}><span>&#x2b;</span></div>
-                </div>
-                <label className={styles.position}>
-                    Позиция: <input type="number" value={position} min="1" step="1" onChange={e => setPosition(e.target.value)} />
-                </label>
-                <div className={styles.actions}>
-                    <button onClick={handleSave} className={styles.save}>Сохранить</button>
-                    {data?.id && <button onClick={onClose} className={styles.delete}>Удалить</button>}
-                    <button onClick={onClose} className={styles.cancel}>Отмена</button>
-                </div>
-            </div>
+  const onImageSelect = async (e) => {
+    const rawFiles = await convertFiles(e.target.files ?? []);
+    const biggestPosition = (images ?? []).reduce(
+      (biggest, image) => Math.max(biggest, image.position),
+      0
     );
-};
+    const files = rawFiles.map((file, index) => ({
+      data: file,
+      position: biggestPosition + 1 + index,
+    }));
+    const newImages = [...images, ...files];
+    setImages(newImages);
+  };
 
-export default PromoModal;
+  useEffect(() => {
+    if (!isEmptyId(data)) {
+      api.getPromoById(data).then((response) => {
+        const promo = response.data;
+        setName(promo.name);
+        setDescription(promo.description);
+        setImages(promo.images);
+        setPosition(promo.position);
+      });
+    }
+  }, [data]);
+
+  const handleSave = () => {
+    const newData = {
+      id: data ?? undefined,
+      name,
+      description,
+      images,
+      position,
+    };
+    api.savePromo(auth, newData).then(onClose);
+  };
+
+  const handleDelete = () => {
+    api.deletePromo(auth, data).then(onClose);
+  };
+
+  return (
+    <div className={styles.container}>
+      <h2>Добавить/Редактировать Акцию</h2>
+      <label className={styles.textInput}>
+        Заголовок*:
+        <input value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <label className={styles.textInput}>
+        Описание:
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </label>
+      <div className={styles.images}>
+        <input
+          accept="image/*"
+          type="file"
+          multiple
+          ref={imageInput}
+          hidden
+          onChange={onImageSelect}
+        />
+        {images
+          .sort((a, b) => a.position - b.position)
+          .map((image, index) => (
+            <img
+              key={index}
+              className={styles.image}
+              src={image.data}
+              alt="your image"
+            />
+          ))}
+        <div
+          className={styles.imageButton}
+          onClick={() => imageInput.current?.click()}
+        >
+          <span>&#x2b;</span>
+        </div>
+      </div>
+      <label className={styles.position}>
+        Позиция:
+        <input
+          type="number"
+          value={position}
+          min="1"
+          step="1"
+          onChange={(e) => setPosition(e.target.value)}
+        />
+      </label>
+      <div className={styles.actions}>
+        <button onClick={handleSave} className={styles.save}>
+          Сохранить
+        </button>
+        {!isEmptyId(data) && (
+          <button onClick={handleDelete} className={styles.delete}>
+            Удалить
+          </button>
+        )}
+        <button onClick={onClose} className={styles.cancel}>
+          Отмена
+        </button>
+      </div>
+    </div>
+  );
+};

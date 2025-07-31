@@ -4,6 +4,8 @@ import cardData from "../../data/cardData";
 import { CategoryCard } from "./CategoryCard";
 import { useEffect } from "react";
 import { api } from "../../api";
+import { Partner } from "./Partner";
+import { Promo } from "./Promo";
 
 function levelFromType(type) {
   switch (type) {
@@ -15,10 +17,6 @@ function levelFromType(type) {
       return 3;
   }
   return undefined;
-}
-
-function loadData(level) {
-  return [];
 }
 
 export const EditContent = () => {
@@ -55,38 +53,46 @@ export const EditContent = () => {
       case "thirdLevel":
         api.getCategoriesByLevel(3).then((cats) => setItems(cats.data));
         return;
+      case "items":
+        api.getItems().then((response) => setItems(response.data));
+        return;
+      case "partners":
+        api.getPartners().then((response) => setItems(response.data));
+        return;
+      case "promos":
+        api.getPromos().then((response) => setItems(response.data));
+        return;
     }
   }, [type, selected]);
 
   const categoryFilter = (category) => {
-    const lcFilter = filter.toLowerCase();
-    return !filter || category.name.toLowerCase().includes(lcFilter);
+    const lcFilter = filter?.toLowerCase();
+    return !lcFilter || category.name.toLowerCase().includes(lcFilter);
   };
 
-  const distinctFilter = (array, key) => {
-    if (!array?.length) {
-      return array;
-    }
-    const result = [];
+  const productFilter = (product) => {
     const lcFilter = filter?.toLowerCase();
-    for (let item of array) {
-      if (key) {
-        if (
-          !result.some((i) => i[key] === item[key]) &&
-          (!filter || item[key].toLowerCase().includes(lcFilter))
-        ) {
-          result.push(item);
-        }
-      } else {
-        if (
-          !result.includes(item) &&
-          (!filter || item.toLowerCase().includes(lcFilter))
-        ) {
-          result.push(item);
-        }
-      }
-    }
-    return result;
+    return (
+      !lcFilter ||
+      product.name.toLowerCase().includes(lcFilter) ||
+      product.article.toLowerCase().includes(lcFilter) ||
+      product.description.toLowerCase().includes(lcFilter)
+    );
+  };
+
+  const promosFilter = (promo) => {
+    const lcFilter = filter?.toLowerCase();
+    return !lcFilter || promo.name.toLowerCase().includes(lcFilter);
+  };
+
+  const partnersFilter = (partner) => {
+    const lcFilter = filter?.toLowerCase();
+    return (
+      !lcFilter ||
+      partner.name.toLowerCase().includes(lcFilter) ||
+      partner.country.toLowerCase().includes(lcFilter) ||
+      partner.description.toLowerCase().includes(lcFilter)
+    );
   };
 
   const renderItems = () => {
@@ -104,28 +110,45 @@ export const EditContent = () => {
       case "firstLevel":
       case "secondLevel":
       case "thirdLevel":
-        return items.map((item, index) => renderItem({ ...item, index }));
+        return items
+          .filter(categoryFilter)
+          .map((item, index) => renderItem({ ...item, index }));
       case "items":
-        return distinctFilter(cardData, "name").map((card, index) =>
-          renderItem({ ...card, index })
-        );
+        return items
+          .filter(productFilter)
+          .map((item, index) => renderItem({ ...item, index }));
+      case "promos":
+        return items
+          .filter(promosFilter)
+          .map((item, index) => renderItem({ ...item, index }));
+      case "partners":
+        return items
+          .filter(partnersFilter)
+          .map((item, index) => renderItem({ ...item, index }));
     }
   };
 
   const onClose = () => setSelected(undefined);
 
   const renderSelected = () => {
+    const id = selected === 'new' ? undefined : selected;
     switch (type) {
       case "firstLevel":
       case "secondLevel":
       case "thirdLevel":
         return (
           <CategoryCard
-            category={selected}
+            category={id}
             level={levelFromType(type)}
             onClose={onClose}
           />
         );
+      case "items":
+        return null;
+      case "partners":
+        return <Partner data={id} onClose={onClose} />;
+      case "promos":
+        return <Promo data={id} onClose={onClose} />;
     }
   };
 
@@ -153,7 +176,7 @@ export const EditContent = () => {
         <div className={styles.link} onClick={(e) => onLinkClick(e, "items")}>
           Продукты
         </div>
-        <div className={styles.link} onClick={(e) => onLinkClick(e, "promo")}>
+        <div className={styles.link} onClick={(e) => onLinkClick(e, "promos")}>
           Акции
         </div>
         <div

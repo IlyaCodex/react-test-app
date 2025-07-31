@@ -1,12 +1,13 @@
 import { useState, useRef, useMemo } from "react";
-import styles from "./CategoryCard.module.css";
+import styles from "./Card.module.css";
 import cardData from "../../data/cardData";
 import { api } from "../../api";
 import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { isEmptyId } from "./Utils";
 
 function loadCategory(category, level) {
-  if (category === "new") {
+  if (isEmptyId(categoryId)) {
     return Promise.resolve({
       level,
       name: "",
@@ -78,8 +79,6 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
     );
   }, [categoryId]);
 
-  const imageInput = useRef(null);
-
   //   const onImageSelect = (e) => {
   //     for (const file of e.target.files ?? []) {
   //       images.push(file);
@@ -131,7 +130,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
 
   const onSave = () => {
     api.saveCategory(auth, {
-      id: categoryId === "new" ? undefined : categoryId,
+      id: categoryId,
       name,
       level,
       position,
@@ -289,7 +288,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
         <div onClick={onSave} className={styles.save}>
           Сохранить
         </div>
-        {categoryId !== "new" && (
+        {!isEmptyId(categoryId) && (
           <div onClick={onDelete} className={styles.delete}>
             Удалить
           </div>
