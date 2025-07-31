@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { isEmptyId } from "./Utils";
 
 function loadCategory(category, level) {
-  if (isEmptyId(categoryId)) {
+  if (isEmptyId(category)) {
     return Promise.resolve({
       level,
       name: "",

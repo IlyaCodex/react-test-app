@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { api } from "../../api";
 import { Partner } from "./Partner";
 import { Promo } from "./Promo";
+import { Product } from "./Product";
 
 function levelFromType(type) {
   switch (type) {
@@ -131,7 +132,7 @@ export const EditContent = () => {
   const onClose = () => setSelected(undefined);
 
   const renderSelected = () => {
-    const id = selected === 'new' ? undefined : selected;
+    const id = selected === "new" ? undefined : selected;
     switch (type) {
       case "firstLevel":
       case "secondLevel":
@@ -144,7 +145,7 @@ export const EditContent = () => {
           />
         );
       case "items":
-        return null;
+        return <Product data={id} onClose={onClose} />;
       case "partners":
         return <Partner data={id} onClose={onClose} />;
       case "promos":

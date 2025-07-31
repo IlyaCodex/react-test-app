@@ -5,11 +5,16 @@ import { useAuth } from "../../context/AuthContext";
 import { convertFiles } from "./Utils";
 import { isEmptyId } from "./Utils";
 
-export const Partner = ({ data, onClose }) => {
+export const Product = ({ data, onClose }) => {
   const [name, setName] = useState("");
+  const [price, setPrice] = useState(0);
   const [position, setPosition] = useState(1);
-  const [country, setCountry] = useState("");
+  const [article, setArticle] = useState("");
   const [description, setDescription] = useState("");
+  const [manufacturer, setManufacturer] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [inStock, setInStock] = useState(false);
+  const [hasPromo, setHasPromo] = useState(false);
   const [images, setImages] = useState([]);
 
   const { auth } = useAuth();
@@ -32,15 +37,21 @@ export const Partner = ({ data, onClose }) => {
 
   useEffect(() => {
     if (!isEmptyId(data)) {
-      api.getPartnerById(data).then((response) => {
-        const parter = response.data;
-        setName(parter.name);
-        setDescription(parter.description);
-        setPosition(parter.position);
-        setCountry(parter.country);
+      api.getItemById(data).then((response) => {
+        const product = response.data;
+        setName(product.name);
+        setDescription(product.description);
+        setPosition(product.position);
+        setArticle(product.article);
+        setDescription(product.description);
+        setManufacturer(product.manufacturer);
+        setAmount(product.amount);
+        setInStock(product.inStock);
+        setHasPromo(product.hasPromo);
+
         Promise.all(
-          parter.images?.map((imageId) =>
-            api.getPartnerImage(imageId).then((res) => res.data)
+          product.images?.map((imageId) =>
+            api.getItemImage(imageId).then((res) => res.data)
           )
         ).then((images) => setImages(images));
       });
@@ -69,11 +80,47 @@ export const Partner = ({ data, onClose }) => {
 
   return (
     <div className={styles.container}>
-      <h2>Добавить/Редактировать Партнера</h2>
+      <h2>Добавить/Редактировать Продукт</h2>
       <label className={styles.textInput}>
         Название*:
         <input value={name} onChange={(e) => setName(e.target.value)} />
       </label>
+
+      <label className={styles.position}>
+        Цена:
+        <input
+          type="number"
+          value={price}
+          min="0"
+          step="1"
+          onChange={(e) => setPrice(e.target.value)}
+        />
+      </label>
+
+      <label className={styles.position}>
+        Позиция:
+        <input
+          type="number"
+          value={position}
+          min="1"
+          step="1"
+          onChange={(e) => setPosition(e.target.value)}
+        />
+      </label>
+
+      <label className={styles.textInput}>
+        Артикул:
+        <input value={article} onChange={(e) => setArticle(e.target.value)} />
+      </label>
+
+      <label className={styles.textInput}>
+        Производитель:
+        <input
+          value={manufacturer}
+          onChange={(e) => setManufacturer(e.target.value)}
+        />
+      </label>
+
       <label className={styles.textInput}>
         Описание:
         <textarea
@@ -81,10 +128,46 @@ export const Partner = ({ data, onClose }) => {
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
-      <label className={styles.textInput}>
-        Страна:
-        <input value={country} onChange={(e) => setCountry(e.target.value)} />
+      <label className={styles.position}>
+        Цена:
+        <input
+          type="number"
+          value={price}
+          min="0"
+          step="1"
+          onChange={(e) => setPrice(e.target.value)}
+        />
       </label>
+
+      <label className={styles.position}>
+        Количество:
+        <input
+          type="number"
+          value={amount}
+          min="0"
+          step="1"
+          onChange={(e) => setAmount(e.target.value)}
+        />
+      </label>
+
+      <label className={styles.position}>
+        В наличии:
+        <input
+          type="checkbox"
+          checked={inStock}
+          onChange={(e) => setInStock(e.target.checked)}
+        />
+      </label>
+
+      <label className={styles.position}>
+        По акции:
+        <input
+          type="checkbox"
+          checked={hasPromo}
+          onChange={(e) => setHasPromo(e.target.checked)}
+        />
+      </label>
+
       <div className={styles.images}>
         <input
           accept="image/*"
@@ -112,16 +195,7 @@ export const Partner = ({ data, onClose }) => {
           <span>&#x2b;</span>
         </div>
       </div>
-      <label className={styles.position}>
-        Позиция:
-        <input
-          type="number"
-          value={position}
-          min="1"
-          step="1"
-          onChange={(e) => setPosition(e.target.value)}
-        />
-      </label>
+
       <div className={styles.actions}>
         <button onClick={handleSave} className={styles.save}>
           Сохранить

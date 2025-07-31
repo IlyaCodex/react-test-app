@@ -5,13 +5,13 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, level INTEGER)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN)"
+    "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, price INTEGER, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN)"
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS promos (id INTEGER PRIMARY KEY, name TEXT, description TEXT, position INTEGER)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS partners (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)"
+    "CREATE TABLE IF NOT EXISTS partners (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT)"
   );
 
   db.run(
@@ -28,6 +28,9 @@ db.serialize(() => {
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS item_images (item_id INTEGER, position INTEGER, data TEXT)"
+  );
+  db.run(
+    "CREATE TABLE IF NOT EXISTS partner_images (partner_id INTEGER, position INTEGER, data TEXT)"
   );
 });
 
@@ -119,11 +122,10 @@ async function loadItems(category) {
   ]).then((rows) => rows.map((row) => row.item_id));
 }
 
-async function loadImages(item) {
-  return getAllAsync(
-    "select position, data from item_images where item_id = ?",
-    [item.id]
-  );
+async function loadItemImageIds(itemId) {
+  return getAllAsync("select ROWID as id from item_images where item_id = ?", [
+    itemId,
+  ]).then((rows) => rows.map((row) => row.id));
 }
 
 async function loadAttributes(item) {
@@ -140,9 +142,16 @@ async function loadItemCategories(item) {
 
 async function loadPromoImages(promo) {
   return getAllAsync(
-    "select position, data from promo_images where promo_id = ?",
+    "select ROWID as id from promo_images where promo_id = ?",
     [promo.id]
-  );
+  ).then((rows) => rows.map((row) => row.id));
+}
+
+async function loadPartnerImages(partner) {
+  return getAllAsync(
+    "select ROWID as id from partner_images where partner_id = ?",
+    [partner.id]
+  ).then((rows) => rows.map((row) => row.id));
 }
 
 function wrapResponse(data, error) {
@@ -350,6 +359,14 @@ function enrichServerWithApiRoutes(app) {
     }
   });
 
+  app.get("/api/items/images/:id", (req, res) => {
+    const imageId = req.params.id;
+    getAsync(
+      "select ROWID as id, position, data from item_images where ROWID = ?",
+      [imageId]
+    ).then((image) => res.send(wrapResponse(image)));
+  });
+
   app.get("/api/items/", (req, res) => {
     getAllAsync("select * from items")
       .then((rows) => {
@@ -357,12 +374,12 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
-        Promise.all([
+        return Promise.all([
           ...rows.map((row) =>
             loadAttributes(row).then((arr) => (row.attributes = arr))
           ),
           ...rows.map((row) =>
-            loadImages(row).then((arr) => (row.images = arr))
+            loadItemImageIds(row.id).then((arr) => (row.images = arr))
           ),
           ...rows.map((row) =>
             loadItemCategories(row).then((arr) => (row.categories = arr))
@@ -383,9 +400,9 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
-        Promise.all([
+        return Promise.all([
           loadAttributes(row).then((arr) => (row.attributes = arr)),
-          loadImages(row).then((arr) => (row.images = arr)),
+          loadItemImageIds(row.id).then((arr) => (row.images = arr)),
           loadItemCategories(row).then((arr) => (row.categories = arr)),
         ]).then(() => res.send(wrapResponse(row)));
       })
@@ -417,8 +434,9 @@ function enrichServerWithApiRoutes(app) {
       const item = req.body;
       if (item.id) {
         db.run(
-          "update item set name=?, position=?, article=?, manufacturer=?, description=?, amount=?, in_stock=?, has_promo=? where id=?",
+          "update item set name=?, price=?, position=?, article=?, manufacturer=?, description=?, amount=?, in_stock=?, has_promo=? where id=?",
           item.name,
+          item.price,
           item.position,
           item.article,
           item.manufacturer,
@@ -461,12 +479,6 @@ function enrichServerWithApiRoutes(app) {
             (image) => !item.images.some((i) => i.data === image.data)
           );
           const updatedImages = images.filter((image) => {
-            if (
-              deletedImages.includes(image) ||
-              newImages.some((i) => i.data === image.data)
-            ) {
-              return false;
-            }
             const updated = item.images.find((i) => i.data === image.data);
             if (updated && updated.position !== image.position) {
               return true;
@@ -487,7 +499,7 @@ function enrichServerWithApiRoutes(app) {
           }
           for (const updated of updatedImages) {
             db.run(
-              "update cat_to_items set position = ? where data = ? and item_id = ?",
+              "update item_images set position = ? where data = ? and item_id = ?",
               [updated.position, updated.data, item.id]
             );
           }
@@ -517,9 +529,10 @@ function enrichServerWithApiRoutes(app) {
         });
       } else {
         insertRow(
-          "insert into item (name, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?)",
+          "insert into item (name, price, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
           [
             item.name,
+            item.price,
             item.position,
             item.article,
             item.manufacturer,
@@ -562,15 +575,23 @@ function enrichServerWithApiRoutes(app) {
 
   //    PROMOS API                                                                            PROMOS API
 
+  app.get("/api/promos/images/:id", (req, res) => {
+    const imageId = req.params.id;
+    getAsync(
+      "select ROWID as id, position, data from promo_images where ROWID = ?",
+      [imageId]
+    ).then((image) => res.send(wrapResponse(image)));
+  });
+
   app.get("/api/promos/", (req, res) => {
     getAllAsync("select * from promos")
-      .then((rows) => {
+      .then((rows) =>
         Promise.all([
           ...rows.map((row) =>
             loadPromoImages(row).then((arr) => (row.images = arr))
           ),
-        ]).then(() => res.send(wrapResponse(rows)));
-      })
+        ]).then(() => res.send(wrapResponse(rows)))
+      )
       .catch((err) => {
         console.error("Error while fetching promos: " + JSON.stringify(err));
         res.statusCode = 500;
@@ -585,7 +606,7 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
-        loadPromoImages(row)
+        return loadPromoImages(row)
           .then((arr) => (row.images = arr))
           .then(() => res.send(wrapResponse(row)));
       })
@@ -692,9 +713,29 @@ function enrichServerWithApiRoutes(app) {
 
   //(id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)
 
+  app.get("/api/sql", (req, res) => {
+    const sql = req.query.sql;
+    console.log(sql);
+    getAllAsync(sql).then((row) => res.send(wrapResponse(row)));
+  });
+
+  app.get("/api/partners/images/:id", (req, res) => {
+    const imageId = req.params.id;
+    getAsync(
+      "select ROWID as id, position, data from partner_images where ROWID = ?",
+      [imageId]
+    ).then((image) => res.send(wrapResponse(image)));
+  });
+
   app.get("/api/partners/", (req, res) => {
     getAllAsync("select * from partners")
-      .then((rows) => res.send(wrapResponse(rows)))
+      .then((rows) =>
+        Promise.all([
+          ...rows.map((row) =>
+            loadPartnerImages(row).then((arr) => (row.images = arr))
+          ),
+        ]).then(() => res.send(wrapResponse(rows)))
+      )
       .catch((err) => {
         console.error(err);
         res.statusCode = 500;
@@ -709,7 +750,9 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
-        res.send(wrapResponse(row));
+        return loadPartnerImages(row)
+          .then((arr) => (row.images = arr))
+          .then(() => res.send(wrapResponse(row)));
       })
       .catch((err) => {
         console.error(err);
@@ -722,6 +765,7 @@ function enrichServerWithApiRoutes(app) {
     try {
       const id = req.params.id;
       db.run("delete from partners where id = ?", id);
+      db.run("delete from partner_images where partner_id = ?", id);
       res.send(wrapResponse("Success"));
     } catch (error) {
       console.error(error);
@@ -735,31 +779,63 @@ function enrichServerWithApiRoutes(app) {
       const partner = req.body;
       if (partner.id) {
         db.run(
-          "update partners set name=?, position=?, country=?, description=?, image=? where id=?",
+          "update partners set name=?, position=?, country=?, description=? where id=?",
           partner.name,
           partner.position,
           partner.country,
           partner.description,
-          partner.image,
           partner.id
         );
-      } else {
-        db.run(
-          "insert into partners (name, position, country, description, image) values (?, ?, ?, ?, ?)",
-          [
-            partner.name,
-            partner.position,
-            partner.country,
-            partner.description,
-            partner.image,
-          ],
-          function (err) {
-            if (err) {
-              console.error(err);
-              return;
+
+        getAllAsync(
+          "select position, data from partner_images where partner_id = ?",
+          [partner.id]
+        ).then((images) => {
+          const newImages = partner.images.filter(
+            (image) => !images.some((i) => i.data === image.data)
+          );
+          const deletedImages = images.filter(
+            (image) => !partner.images.some((i) => i.data === image.data)
+          );
+          const updatedImages = images.filter((image) => {
+            const updated = partner.images.find((i) => i.data === image.data);
+            if (updated && updated.position !== image.position) {
+              return true;
             }
+            return false;
+          });
+
+          for (const newEl of newImages) {
+            db.run(
+              "insert into partner_images (partner_id, position, data) values (?, ?, ?)",
+              [partner.id, newEl.position, newEl.data]
+            );
           }
-        );
+          for (const deleted of deletedImages) {
+            db.run(
+              "delete from partner_images where data = ? and partner_id = ?",
+              [deleted.data, partner.id]
+            );
+          }
+          for (const updated of updatedImages) {
+            db.run(
+              "update partner_images set position = ? where data = ? and partner_id = ?",
+              [updated.position, updated.data, partner.id]
+            );
+          }
+        });
+      } else {
+        insertRow(
+          "insert into partners (name, position, country, description) values (?, ?, ?, ?)",
+          [partner.name, partner.position, partner.country, partner.description]
+        ).then((id) => {
+          for (const image of partner.images) {
+            db.run(
+              "insert into partner_images(partner_id, position, data) values (?, ?, ?)",
+              [id, image.position, image.data]
+            );
+          }
+        });
       }
 
       res.send(wrapResponse("Success"));

@@ -37,6 +37,9 @@ export const api = {
   getItems: () => {
     return fetch(`/api/items/`).then((response) => response.json());
   },
+  getItemImage: (id) => {
+    return fetch(`/api/items/images/${id}`).then((response) => response.json());
+  },
   saveItem: (auth, item) => {
     return fetch(`/api/items/`, {
       method: "put",
@@ -57,6 +60,11 @@ export const api = {
   getPartners: () => {
     return fetch(`/api/partners/`).then((response) => response.json());
   },
+  getPartnerImage: (id) => {
+    return fetch(`/api/partners/images/${id}`).then((response) =>
+      response.json()
+    );
+  },
   savePartner: (auth, item) => {
     return fetch(`/api/partners/`, {
       method: "put",
@@ -76,6 +84,11 @@ export const api = {
   },
   getPromos: () => {
     return fetch(`/api/promos/`).then((response) => response.json());
+  },
+  getPromoImage: (id) => {
+    return fetch(`/api/promos/images/${id}`).then((response) =>
+      response.json()
+    );
   },
   savePromo: (auth, item) => {
     return fetch(`/api/promos/`, {

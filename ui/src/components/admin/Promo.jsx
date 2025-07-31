@@ -35,8 +35,12 @@ export const Promo = ({ data, onClose }) => {
         const promo = response.data;
         setName(promo.name);
         setDescription(promo.description);
-        setImages(promo.images);
         setPosition(promo.position);
+        Promise.all(
+          promo.images?.map((imageId) =>
+            api.getPromoImage(imageId).then((res) => res.data)
+          )
+        ).then((images) => setImages(images));
       });
     }
   }, [data]);
@@ -54,6 +58,10 @@ export const Promo = ({ data, onClose }) => {
 
   const handleDelete = () => {
     api.deletePromo(auth, data).then(onClose);
+  };
+
+  const removeImage = (image) => {
+    setImages([...images.filter((img) => img !== image)]);
   };
 
   return (
@@ -83,6 +91,7 @@ export const Promo = ({ data, onClose }) => {
           .sort((a, b) => a.position - b.position)
           .map((image, index) => (
             <img
+              onClick={() => removeImage(image)}
               key={index}
               className={styles.image}
               src={image.data}
