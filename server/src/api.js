@@ -11,7 +11,7 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS promos (id INTEGER PRIMARY KEY, name TEXT, position INTEGER)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS partners (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image BLOB)"
+    "CREATE TABLE IF NOT EXISTS partners (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)"
   );
 
   db.run(
@@ -24,10 +24,10 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS attr_of_item (item_id INTEGER, name TEXT)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS promo_images (promo_id INTEGER, data BLOB)"
+    "CREATE TABLE IF NOT EXISTS promo_images (promo_id INTEGER, position INTEGER, data TEXT)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS item_images (item_id INTEGER, position INTEGER, data BLOB)"
+    "CREATE TABLE IF NOT EXISTS item_images (item_id INTEGER, position INTEGER, data TEXT)"
   );
 });
 
@@ -126,6 +126,13 @@ async function loadItemCategories(item) {
   return getAllAsync("select cat_id from cat_to_item where item_id = ?", [
     item.id,
   ]).then((rows) => rows.map((row) => row.cat_id));
+}
+
+async function loadPromoImages(promo) {
+  return getAllAsync(
+    "select position, data from promo_images where promo_id = ?",
+    [promo.id]
+  );
 }
 
 function wrapResponse(data, error) {
@@ -469,7 +476,7 @@ function enrichServerWithApiRoutes(app) {
               [item.id, newEl.position, newEl.data]
             );
           }
-          for (const deleted of deletedCats) {
+          for (const deleted of deletedImages) {
             db.run("delete from item_images where data = ? and item_id = ?", [
               deleted.data,
               item.id,
@@ -547,6 +554,214 @@ function enrichServerWithApiRoutes(app) {
             item.id,
           ]);
         }
+      }
+
+      res.send(wrapResponse("Success"));
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.send(wrapResponse(undefined, error));
+    }
+  });
+
+  //    PROMOS API                                                                            PROMOS API
+
+  app.get("/api/promos/", (req, res) => {
+    getAllAsync("select * from promos")
+      .then((rows) =>
+        Promise.all([
+          ...rows.map((row) =>
+            loadPromoImages(row).then((arr) => (row.images = arr))
+          ),
+        ]).then(() => res.send(wrapResponse(rows)))
+      )
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
+  app.get("/api/promos/:id", (req, res) => {
+    getAsync("select * from promos where id = ?", [req.params.id])
+      .then((row) => {
+        if (!row) {
+          res.send(wrapResponse(undefined));
+          return;
+        }
+        loadPromoImages(row)
+          .then((arr) => (row.images = arr))
+          .then(() => res.send(wrapResponse(row)));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
+  app.delete("/api/promos/:id", (req, res) => {
+    try {
+      const id = req.params.id;
+      db.run("delete from promos where id = ?", id);
+      db.run("delete from promo_images where promo_id = ?", id);
+      res.send(wrapResponse("Success"));
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.send(wrapResponse(undefined, error));
+    }
+  });
+
+  app.put("/api/promos/", (req, res) => {
+    try {
+      const promo = req.body;
+      if (promo.id) {
+        db.run(
+          "update promos set name=?, position=? where id=?",
+          promo.name,
+          promo.position,
+          promo.id
+        );
+
+        getAllAsync(
+          "select position, data from promo_images where promo_id = ?",
+          [promo.id]
+        ).then((images) => {
+          const newImages = promo.images.filter(
+            (image) => !images.some((i) => i.data === image.data)
+          );
+          const deletedImages = images.filter(
+            (image) => !promo.images.some((i) => i.data === image.data)
+          );
+          const updatedImages = images.filter((image) => {
+            const updated = promo.images.find((i) => i.data === image.data);
+            if (updated && updated.position !== image.position) {
+              return true;
+            }
+            return false;
+          });
+          for (const newEl of newImages) {
+            db.run(
+              "insert into promo_images (promo_id, position, data) values (?, ?, ?)",
+              [promo.id, newEl.position, newEl.data]
+            );
+          }
+          for (const deleted of deletedImages) {
+            db.run("delete from promo_images where promo_id = ? and data = ?", [
+              promo.id,
+              deleted.data,
+            ]);
+          }
+          for (const updated of updatedImages) {
+            db.run(
+              "update promo_images set position = ? where data = ? and promo_id = ?",
+              [updated.position, updated.data, promo.id]
+            );
+          }
+        });
+      } else {
+        db.run(
+          "insert into promos (name, position) values (?, ?)",
+          [promo.name, promo.position],
+          function (err) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            promo.id = this.lastID;
+          }
+        );
+
+        for (const image of promo.images) {
+          db.run(
+            "insert into promo_images(promo_id, position, data) values(?, ?, ?)",
+            [promo.id, image.position, image.data]
+          );
+        }
+      }
+
+      res.send(wrapResponse("Success"));
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.send(wrapResponse(undefined, error));
+    }
+  });
+
+  //    PARTNERS API                                                                            PARTNERS API
+
+  //(id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)
+
+  app.get("/api/partners/", (req, res) => {
+    getAllAsync("select * from partners")
+      .then((rows) => res.send(wrapResponse(rows)))
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
+  app.get("/api/partners/:id", (req, res) => {
+    getAsync("select * from partners where id = ?", [req.params.id])
+      .then((row) => {
+        if (!row) {
+          res.send(wrapResponse(undefined));
+          return;
+        }
+        res.send(wrapResponse(row));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
+  app.delete("/api/partners/:id", (req, res) => {
+    try {
+      const id = req.params.id;
+      db.run("delete from partners where id = ?", id);
+      res.send(wrapResponse("Success"));
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.send(wrapResponse(undefined, error));
+    }
+  });
+
+  app.put("/api/partners/", (req, res) => {
+    try {
+      const partner = req.body;
+      if (partner.id) {
+        db.run(
+          "update partners set name=?, position=?, country=?, description=?, image=? where id=?",
+          partner.name,
+          partner.position,
+          partner.country,
+          partner.description,
+          partner.image,
+          partner.id
+        );
+      } else {
+        db.run(
+          "insert into partners (name, position, country, description, image) values (?, ?, ?, ?, ?)",
+          [
+            partner.name,
+            partner.position,
+            partner.country,
+            partner.description,
+            partner.image,
+          ],
+          function (err) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            promo.id = this.lastID;
+          }
+        );
       }
 
       res.send(wrapResponse("Success"));
