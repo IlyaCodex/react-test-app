@@ -10,22 +10,22 @@ function getHeaders(auth) {
 
 export const api = {
   getCategoryById: (id) => {
-    return fetch(`/api/category/${id}`).then((response) => response.json());
+    return fetch(`/api/categories/${id}`).then((response) => response.json());
   },
   getCategoriesByLevel: (level, full) => {
-    return fetch(`/api/category/?level=${level}&full=${!!full}`).then(
+    return fetch(`/api/categories/?level=${level}&full=${!!full}`).then(
       (response) => response.json()
     );
   },
   saveCategory: (auth, category) => {
-    return fetch(`/api/category/`, {
+    return fetch(`/api/categories/`, {
       method: "put",
       headers: getHeaders(auth),
       body: JSON.stringify(category),
     });
   },
   deleteCategory: (auth, id) => {
-    return fetch(`/api/category/${id}`, {
+    return fetch(`/api/categories/${id}`, {
       method: "delete",
       headers: getHeaders(auth),
     }).then((response) => response.json());

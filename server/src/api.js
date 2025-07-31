@@ -74,8 +74,6 @@ async function getAsync(sql, params) {
   );
 }
 
-//                                                                                                          TODO: remove children/parents
-
 async function getAllAsync(sql, params) {
   return new Promise((resolve, reject) =>
     db.all(sql, params, (err, rows) => {
@@ -106,10 +104,28 @@ async function loadChildCategories(category) {
 }
 
 async function loadItems(category) {
+  return getAllAsync("select item_id from cat_to_items where cat_id = ?", [
+    category.id,
+  ]).then((rows) => rows.map((row) => row.item_id));
+}
+
+async function loadImages(item) {
   return getAllAsync(
-    "select item_id from cat_to_items where cat_id = ?",
-    category.id
+    "select position, data from item_images where item_id = ?",
+    [item.id]
   );
+}
+
+async function loadAttributes(item) {
+  return getAllAsync("select name from attr_of_item where item_id = ?", [
+    item.id,
+  ]).then((rows) => rows.map((row) => row.name));
+}
+
+async function loadItemCategories(item) {
+  return getAllAsync("select cat_id from cat_to_item where item_id = ?", [
+    item.id,
+  ]).then((rows) => rows.map((row) => row.cat_id));
 }
 
 function wrapResponse(data, error) {
@@ -127,7 +143,7 @@ function enrichServerWithApiRoutes(app) {
     checkAuth(req, res, () => res.send(wrapResponse("Success")));
   });
 
-  app.get("/api/category/", (req, res) => {
+  app.get("/api/categories/", (req, res) => {
     const level = req.query.level;
     const full = req.query.full;
     getAllAsync("select * from categories where level = ?", [level])
@@ -154,7 +170,7 @@ function enrichServerWithApiRoutes(app) {
       });
   });
 
-  app.get("/api/category/:id", (req, res) => {
+  app.get("/api/categories/:id", (req, res) => {
     getAsync("select * from categories where id = ?", [req.params.id])
       .then((row) => {
         if (!row) {
@@ -174,7 +190,7 @@ function enrichServerWithApiRoutes(app) {
       });
   });
 
-  app.delete("/api/category/:id", (req, res) => {
+  app.delete("/api/categories/:id", (req, res) => {
     try {
       const id = req.params.id;
       db.run("delete from categories where id = ?", id);
@@ -192,7 +208,7 @@ function enrichServerWithApiRoutes(app) {
     }
   });
 
-  app.put("/api/category/", (req, res) => {
+  app.put("/api/categories/", (req, res) => {
     try {
       const category = req.body;
       if (category.id) {
@@ -202,6 +218,81 @@ function enrichServerWithApiRoutes(app) {
           category.position,
           category.id
         );
+
+        getAllAsync("select parent_id from cat_to_cat where child_id = ?", [
+          category.id,
+        ]).then((parents) => {
+          parents = parents.map((row) => row.parent_id);
+
+          const newParents = category.parents.filter(
+            (parent) => !parents.includes(parent)
+          );
+          const deletedParents = parents.filter(
+            (parent) => !category.parents.includes(parent)
+          );
+          for (const newParent of newParents) {
+            db.run(
+              "insert into cat_to_cat (parent_id, child_id) values (?, ?)",
+              [newParent, category.id]
+            );
+          }
+          for (const deleted of deletedParents) {
+            db.run(
+              "delete from cat_to_cat where parent_id = ? and child_id = ?",
+              [deleted, category.id]
+            );
+          }
+        });
+
+        getAllAsync("select child_id from cat_to_cat where parent_id = ?", [
+          category.id,
+        ]).then((children) => {
+          children = children.map((row) => row.child_id);
+
+          const newChildren = category.children.filter(
+            (child) => !children.includes(child)
+          );
+          const deletedChildren = children.filter(
+            (child) => !category.children.includes(child)
+          );
+          for (const newChild of newChildren) {
+            db.run(
+              "insert into cat_to_cat (parent_id, child_id) values (?, ?)",
+              [category.id, newChild]
+            );
+          }
+          for (const deleted of deletedChildren) {
+            db.run(
+              "delete from cat_to_cat where parent_id = ? and child_id = ?",
+              [category.id, deleted]
+            );
+          }
+        });
+
+        getAllAsync("select item_id from cat_to_items where cat_id = ?", [
+          category.id,
+        ]).then((items) => {
+          items = items.map((row) => row.item_id);
+
+          const newitems = category.items.filter(
+            (item) => !items.includes(item)
+          );
+          const deleteditems = items.filter(
+            (item) => !category.items.includes(item)
+          );
+          for (const newItem of newitems) {
+            db.run("insert into cat_to_items (cat_id, item_id) values (?, ?)", [
+              category.id,
+              newItem,
+            ]);
+          }
+          for (const deleted of deleteditems) {
+            db.run(
+              "delete from cat_to_items where cat_id = ? and item_id = ?",
+              [category.id, deleted]
+            );
+          }
+        });
       } else {
         db.run(
           "insert into categories (name, position, level) values (?, ?, ?)",
@@ -214,31 +305,31 @@ function enrichServerWithApiRoutes(app) {
             category.id = this.lastID;
           }
         );
-      }
 
-      if (category.level > 1) {
-        for (const parentId of category.parents) {
-          db.run(
-            "insert or ignore into cat_to_cat(parent_id, child_id) select ?, ? where not exists (select 1 from cat_to_cat where parent_id = ? and child_id = ?)",
-            [parentId, category.id, parentId, category.id]
-          );
+        if (category.level > 1) {
+          for (const parentId of category.parents) {
+            db.run(
+              "insert into cat_to_cat(parent_id, child_id) values (?, ?)",
+              [parentId, category.id]
+            );
+          }
         }
-      }
 
-      if (category.level < 3) {
-        for (const childId of category.children) {
-          db.run(
-            "insert or ignore into cat_to_cat(parent_id, child_id) select ?, ? where not exists (select 1 from cat_to_cat where parent_id = ? and child_id = ?)",
-            [category.id, childId, category.id, childId]
-          );
+        if (category.level < 3) {
+          for (const childId of category.children) {
+            db.run(
+              "insert into cat_to_cat(parent_id, child_id) values (?, ?)",
+              [category.id, childId]
+            );
+          }
         }
-      }
 
-      for (const itemId of category.items) {
-        db.run(
-          "insert or ignore into cat_to_items(cat_id, item_id) select ?, ? where not exists (select 1 from cat_to_items where cat_id = ? and item_id = ?)",
-          [category.id, itemId, category.id, itemId]
-        );
+        for (const itemId of category.items) {
+          db.run("insert into cat_to_items(cat_id, item_id) values(?, ?)", [
+            category.id,
+            itemId,
+          ]);
+        }
       }
 
       res.send(wrapResponse("Success"));
@@ -248,7 +339,54 @@ function enrichServerWithApiRoutes(app) {
       res.send(wrapResponse(undefined, error));
     }
   });
-  app.delete("/api/item/:id", (req, res) => {
+
+  app.get("/api/items/", (req, res) => {
+    getAllAsync("select * from items")
+      .then((rows) => {
+        if (!rows) {
+          res.send(wrapResponse(undefined));
+          return;
+        }
+        Promise.all([
+          ...rows.map((row) =>
+            loadAttributes(row).then((arr) => (row.attributes = arr))
+          ),
+          ...rows.map((row) =>
+            loadImages(row).then((arr) => (row.images = arr))
+          ),
+          ...rows.map((row) =>
+            loadItemCategories(row).then((arr) => (row.categories = arr))
+          ),
+        ]).then(() => res.send(wrapResponse(rows)));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
+  app.get("/api/items/:id", (req, res) => {
+    getAsync("select * from items where id = ?", [req.params.id])
+      .then((row) => {
+        if (!row) {
+          res.send(wrapResponse(undefined));
+          return;
+        }
+        Promise.all([
+          loadAttributes(row).then((arr) => (row.attributes = arr)),
+          loadImages(row).then((arr) => (row.images = arr)),
+          loadItemCategories(row).then((arr) => (row.categories = arr)),
+        ]).then(() => res.send(wrapResponse(row)));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
+  app.delete("/api/items/:id", (req, res) => {
     try {
       const id = req.params.id;
       db.run("delete from items where id = ?", id);
@@ -264,7 +402,7 @@ function enrichServerWithApiRoutes(app) {
   });
   //id INTEGER PRIMARY KEY, name TEXT, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN
 
-  app.put("/api/item/", (req, res) => {
+  app.put("/api/items/", (req, res) => {
     try {
       const item = req.body;
       if (item.id) {
@@ -279,6 +417,94 @@ function enrichServerWithApiRoutes(app) {
           item.in_stock,
           item.has_promo
         );
+        getAllAsync("select cat_id from cat_to_items where item_id = ?", [
+          item.id,
+        ]).then((categories) => {
+          categories = categories.map((row) => row.cat_id);
+          const newCats = item.categories.filter(
+            (cat) => !categories.includes(cat)
+          );
+          const deletedCats = categories.filter(
+            (cat) => !item.categories.includes(cat)
+          );
+          for (const newEl of newCats) {
+            db.run("insert into cat_to_items (cat_id, item_id) values (?, ?)", [
+              newEl,
+              item.id,
+            ]);
+          }
+          for (const deleted of deletedCats) {
+            db.run(
+              "delete from cat_to_items where cat_id = ? and item_id = ?",
+              [deleted, item.id]
+            );
+          }
+        });
+        getAllAsync(
+          "select position, data from item_images where item_id = ?",
+          [item.id]
+        ).then((images) => {
+          const newImages = item.images.filter(
+            (image) => !images.some((i) => i.data === image.data)
+          );
+          const deletedImages = images.filter(
+            (image) => !item.images.some((i) => i.data === image.data)
+          );
+          const updatedImages = images.filter((image) => {
+            if (
+              deletedImages.includes(image) ||
+              newImages.some((i) => i.data === image.data)
+            ) {
+              return false;
+            }
+            const updated = item.images.find((i) => i.data === image.data);
+            if (updated && updated.position !== image.position) {
+              return true;
+            }
+            return false;
+          });
+          for (const newEl of newImages) {
+            db.run(
+              "insert into item_images (item_id, position, data) values (?, ?, ?)",
+              [item.id, newEl.position, newEl.data]
+            );
+          }
+          for (const deleted of deletedCats) {
+            db.run("delete from item_images where data = ? and item_id = ?", [
+              deleted.data,
+              item.id,
+            ]);
+          }
+          for (const updated of updatedImages) {
+            db.run(
+              "update cat_to_items set position = ? where data = ? and item_id = ?",
+              [updated.position, updated.data, item.id]
+            );
+          }
+        });
+        getAllAsync("select name from attr_of_item where item_id = ?", [
+          item.id,
+        ]).then((attributes) => {
+          attributes = attributes.map((row) => row.name);
+          const newElements = item.attributes.filter(
+            (att) => !attributes.includes(att)
+          );
+          const deletedElements = attributes.filter(
+            (att) => !item.attributes.includes(att)
+          );
+          for (const newEl of newElements) {
+            db.run("insert into attr_of_item (item_id, name) values (?, ?)", [
+              item.id,
+              newEl,
+            ]);
+          }
+          for (const deleted of deletedElements) {
+            db.run("delete from attr_of_item where item_id = ? and name = ?", [
+              item.id,
+              deleted,
+            ]);
+          }
+        });
       } else {
         db.run(
           "insert into item (name, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -300,27 +526,27 @@ function enrichServerWithApiRoutes(app) {
             item.id = this.lastID;
           }
         );
-      }
 
-      for (const image of item.images) {
-        db.run(
-          "insert or ignore into item_images(item_id, position, data) select ?, ?, ? where not exists (select 1 from item_images where item_id = ? and data = ?)",
-          [item.id, image.position, image.data, item.id, image.data]
-        );
-      }
+        for (const image of item.images) {
+          db.run(
+            "insert into item_images(item_id, position, data) values (?, ?, ?)",
+            [item.id, image.position, image.data]
+          );
+        }
 
-      for (const attr of item.attributes) {
-        db.run(
-          "insert or ignore into attr_of_item(item_id, name) select ?, ? where not exists (select 1 from attr_of_item where item_id = ? and name = ?)",
-          [item.id, attr]
-        );
-      }
+        for (const attr of item.attributes) {
+          db.run("insert into attr_of_item(item_id, name) values (?, ?)", [
+            item.id,
+            attr,
+          ]);
+        }
 
-      for (const categoryId of item.categories) {
-        db.run(
-          "insert or ignore into cat_to_items(cat_id, item_id) select ?, ? where not exists (select 1 from cat_to_items where cat_id = ? and item_id = ?)",
-          [categoryId, item.id, categoryId, item.id]
-        );
+        for (const categoryId of item.categories) {
+          db.run("insert into cat_to_items(cat_id, item_id) values (?, ?)", [
+            categoryId,
+            item.id,
+          ]);
+        }
       }
 
       res.send(wrapResponse("Success"));
