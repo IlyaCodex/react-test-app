@@ -10,6 +10,7 @@ const modalWindowData = [
     WarrantyPeriod: "1 год",
     country: "Китай",
     description: "Профессиональные щипцы Dentsply Sirona обеспечивают надежный захват и точное удаление зубов. Изготовлены из прочной стали для длительной службы и комфорта в работе.",
+    arrayImages: ["./images/1.jpg", "./images/2.jpg", "./images/3.jpg"]
   },
 ];
 
