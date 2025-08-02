@@ -3,7 +3,7 @@ import styles from "./Card.module.css";
 import { api } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { convertFiles } from "./Utils";
-import { isEmptyId } from "./Utils";
+import { isNull } from "./Utils";
 
 export const Product = ({ data, onClose }) => {
   const [name, setName] = useState("");
@@ -16,8 +16,13 @@ export const Product = ({ data, onClose }) => {
   const [inStock, setInStock] = useState(false);
   const [hasPromo, setHasPromo] = useState(false);
   const [images, setImages] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [attributes, setAttributes] = useState([]);
+  const [attribute, setAttribute] = useState("");
 
   const { auth } = useAuth();
+
+  const [availableCategories, setAvailableCategories] = useState([]);
 
   const imageInput = useRef(null);
 
@@ -36,19 +41,21 @@ export const Product = ({ data, onClose }) => {
   };
 
   useEffect(() => {
-    if (!isEmptyId(data)) {
+    if (!isNull(data)) {
       api.getItemById(data).then((response) => {
         const product = response.data;
         setName(product.name);
+        setPrice(product.price);
         setDescription(product.description);
         setPosition(product.position);
         setArticle(product.article);
         setDescription(product.description);
         setManufacturer(product.manufacturer);
         setAmount(product.amount);
-        setInStock(product.inStock);
-        setHasPromo(product.hasPromo);
-
+        setInStock(product.in_stock);
+        setHasPromo(product.has_promo);
+        setCategories(product.categories);
+        setAttributes(product.attributes);
         Promise.all(
           product.images?.map((imageId) =>
             api.getItemImage(imageId).then((res) => res.data)
@@ -56,18 +63,32 @@ export const Product = ({ data, onClose }) => {
         ).then((images) => setImages(images));
       });
     }
+    Promise.all([
+      api.getCategoriesByLevel(1),
+      api.getCategoriesByLevel(2),
+      api.getCategoriesByLevel(3),
+    ]).then((categories) =>
+      setAvailableCategories(categories.flatMap((cat) => cat.data))
+    );
   }, [data]);
 
   const handleSave = () => {
     const newData = {
       id: data || undefined,
+      price,
       name,
       description,
       images,
       position,
-      country,
+      manufacturer,
+      inStock,
+      hasPromo,
+      categories,
+      amount,
+      article,
+      attributes,
     };
-    api.savePartner(auth, newData).then(onClose);
+    api.saveItem(auth, newData).then(onClose);
   };
 
   const handleDelete = () => {
@@ -76,6 +97,29 @@ export const Product = ({ data, onClose }) => {
 
   const removeImage = (image) => {
     setImages([...images.filter((img) => img !== image)]);
+  };
+
+  const onChangeCategory = (e) => {
+    e.preventDefault();
+    const id = e.target.value;
+    if (id) {
+      setCategories([...categories, +id]);
+    }
+    e.target.value = "disabled";
+  };
+
+  const removeCategory = (category) => {
+    setCategories([...categories.filter((c) => c !== category)]);
+  };
+
+  const addAttribute = () => {
+    if (!attributes.includes(attribute)) {
+      setAttributes([...attributes, attribute]);
+    }
+  };
+
+  const removeAttribute = (att) => {
+    setAttributes(attributes.filter((a) => a !== att));
   };
 
   return (
@@ -126,16 +170,6 @@ export const Product = ({ data, onClose }) => {
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-        />
-      </label>
-      <label className={styles.position}>
-        Цена:
-        <input
-          type="number"
-          value={price}
-          min="0"
-          step="1"
-          onChange={(e) => setPrice(e.target.value)}
         />
       </label>
 
@@ -196,11 +230,64 @@ export const Product = ({ data, onClose }) => {
         </div>
       </div>
 
+      <label>
+        Категории:
+        <div className={styles.categories}>
+          {categories
+            .map((category) =>
+              availableCategories.find((available) => available.id === category)
+            )
+            .filter((category) => !!category)
+            .map((category) => (
+              <div
+                onClick={() => removeCategory(category.id)}
+                className={styles.category}
+              >
+                {category.name}
+              </div>
+            ))}
+          <select value={"disabled"} onChange={onChangeCategory}>
+            <option value={"disabled"} selected disabled>
+              Добавить
+            </option>
+            {availableCategories
+              .filter(
+                (category) =>
+                  !categories.some((categoryId) => category.id === categoryId)
+              )
+              .map((category) => (
+                <option value={category.id}>{category.name}</option>
+              ))}
+          </select>
+        </div>
+      </label>
+
+      <label>
+        Аттрибуты:
+        <div className={styles.attrInput}>
+          <input
+            value={attribute}
+            onChange={(e) => setAttribute(e.target.value)}
+          />
+          <button onClick={addAttribute}>Добавить</button>
+        </div>
+        <div className={styles.categories}>
+          {attributes.map((att) => (
+            <div
+              onClick={() => removeAttribute(att)}
+              className={styles.category}
+            >
+              {att}
+            </div>
+          ))}
+        </div>
+      </label>
+
       <div className={styles.actions}>
         <button onClick={handleSave} className={styles.save}>
           Сохранить
         </button>
-        {!isEmptyId(data) && (
+        {!isNull(data) && (
           <button onClick={handleDelete} className={styles.delete}>
             Удалить
           </button>

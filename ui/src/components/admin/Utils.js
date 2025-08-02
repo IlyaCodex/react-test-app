@@ -18,6 +18,8 @@ export const convertFiles = async (files) => {
 };
 
 
-export const isEmptyId = (id) => {
-  return id === null || id === undefined;
+export const isNull = (obj) => {
+  return obj === null || obj === undefined;
 }
+
+export const nonNull = obj => !isNull(obj);

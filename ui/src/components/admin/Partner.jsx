@@ -3,7 +3,7 @@ import styles from "./Card.module.css";
 import { api } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { convertFiles } from "./Utils";
-import { isEmptyId } from "./Utils";
+import { isNull } from "./Utils";
 
 export const Partner = ({ data, onClose }) => {
   const [name, setName] = useState("");
@@ -31,7 +31,7 @@ export const Partner = ({ data, onClose }) => {
   };
 
   useEffect(() => {
-    if (!isEmptyId(data)) {
+    if (!isNull(data)) {
       api.getPartnerById(data).then((response) => {
         const parter = response.data;
         setName(parter.name);
@@ -126,7 +126,7 @@ export const Partner = ({ data, onClose }) => {
         <button onClick={handleSave} className={styles.save}>
           Сохранить
         </button>
-        {!isEmptyId(data) && (
+        {!isNull(data) && (
           <button onClick={handleDelete} className={styles.delete}>
             Удалить
           </button>

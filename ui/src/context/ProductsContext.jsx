@@ -1,12 +1,10 @@
-import { createContext } from "react";
-import cardData from "../data/cardData";
+import { createContext, useEffect, useState } from "react";
+import { api } from "../api";
 
-const value = {data: cardData};
+export const ProductsContext = createContext({ data: [] });
 
-export const ProductsContext = createContext(value);
-
-export const ProductsContextProvider = ({children}) => (
-    <ProductsContext value={value}>
-        {children}
-    </ProductsContext>
-);
+export const ProductsContextProvider = ({ children }) => {
+  const [data, setData] = useState([]);
+//   useEffect(() => api.getItems().then((res) => setData(res.data)), []);
+  return <ProductsContext value={data}>{children}</ProductsContext>;
+};

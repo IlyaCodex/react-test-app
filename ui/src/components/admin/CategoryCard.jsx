@@ -4,10 +4,10 @@ import cardData from "../../data/cardData";
 import { api } from "../../api";
 import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { isEmptyId } from "./Utils";
+import { isNull, nonNull } from "./Utils";
 
 function loadCategory(category, level) {
-  if (isEmptyId(category)) {
+  if (isNull(category)) {
     return Promise.resolve({
       level,
       name: "",
@@ -21,19 +21,19 @@ function loadCategory(category, level) {
   return api.getCategoryById(category).then((json) => json.data);
 }
 
-function loadAvailableCategories(category) {
+function loadAvailableCategories(level) {
   const promises = [];
-  if (category.level > 1) {
+  if (level > 1) {
     promises.push(
-      api.getCategoriesByLevel(category.level - 1).then((json) => json.data)
+      api.getCategoriesByLevel(level - 1).then((json) => json.data)
     );
   } else {
     promises.push(Promise.resolve([]));
   }
 
-  if (category.level < 3) {
+  if (level < 3) {
     promises.push(
-      api.getCategoriesByLevel(category.level + 1).then((json) => json.data)
+      api.getCategoriesByLevel(level + 1).then((json) => json.data)
     );
   } else {
     promises.push(Promise.resolve([]));
@@ -43,7 +43,7 @@ function loadAvailableCategories(category) {
 }
 
 function loadItems() {
-  return cardData;
+  return api.getItems();
 }
 
 export const CategoryCard = ({ category: categoryId, level, onClose }) => {
@@ -59,8 +59,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
     []
   );
   const [availableChildCategories, setAvailableChildCategories] = useState([]);
-
-  const availableItems = useMemo(() => loadItems(), [categoryId]);
+  const [availableItems, setAvailableItems] = useState([]);
 
   useEffect(() => {
     loadCategory(categoryId, level).then((cat) => {
@@ -71,12 +70,11 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       setChildCategories(cat.children);
       setItems(cat.items);
     });
-    loadAvailableCategories({ id: categoryId, level }).then(
-      ([parent, child]) => {
-        setAvailableChildCategories(child);
-        setAvailableParentCategories(parent);
-      }
-    );
+    loadAvailableCategories(level).then(([parent, child]) => {
+      setAvailableChildCategories(child);
+      setAvailableParentCategories(parent);
+    });
+    loadItems().then((res) => setAvailableItems(res.data ?? []));
   }, [categoryId]);
 
   //   const onImageSelect = (e) => {
@@ -135,12 +133,8 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       level,
       position,
       //   images,
-      parents: parentCategories
-        .map((parent) => parent?.id)
-        .filter((id) => id !== undefined && id !== null),
-      children: childCategories
-        .map((child) => child?.id)
-        .filter((id) => id !== undefined && id !== null),
+      parents: parentCategories.filter(nonNull),
+      children: childCategories.filter(nonNull),
       items,
     });
     onClose();
@@ -263,15 +257,21 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       <label>
         Продукты:{" "}
         <div className={styles.categories}>
-          {items.map((item) => (
-            <div
-              onClick={() => removeItem(item)}
-              className={styles.item}
-              key={item.id}
-            >
-              {item.name}
-            </div>
-          ))}
+          {items.map((itemId) => {
+            const item = availableItems.find((i) => i.id === itemId);
+            if (!item) {
+              return null;
+            }
+            return (
+              <div
+                onClick={() => removeItem(item)}
+                className={styles.item}
+                key={item.id}
+              >
+                {item.name}
+              </div>
+            );
+          })}
           <select value={"disabled"} onChange={onChangeItems}>
             <option value={"disabled"} selected disabled>
               Добавить
@@ -288,7 +288,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
         <div onClick={onSave} className={styles.save}>
           Сохранить
         </div>
-        {!isEmptyId(categoryId) && (
+        {!isNull(categoryId) && (
           <div onClick={onDelete} className={styles.delete}>
             Удалить
           </div>

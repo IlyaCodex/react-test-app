@@ -16,7 +16,6 @@ export const AdminPage = () => {
         if (json.error) {
           alert(JSON.stringify(error));
         } else {
-          console.log(json);
           setAuth(newAuth);
         }
       });

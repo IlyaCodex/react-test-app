@@ -3,7 +3,7 @@ import styles from "./Card.module.css";
 import { api } from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { convertFiles } from "./Utils";
-import { isEmptyId } from "./Utils";
+import { isNull } from "./Utils";
 
 export const Promo = ({ data, onClose }) => {
   const [name, setName] = useState("");
@@ -30,7 +30,7 @@ export const Promo = ({ data, onClose }) => {
   };
 
   useEffect(() => {
-    if (!isEmptyId(data)) {
+    if (!isNull(data)) {
       api.getPromoById(data).then((response) => {
         const promo = response.data;
         setName(promo.name);
@@ -119,7 +119,7 @@ export const Promo = ({ data, onClose }) => {
         <button onClick={handleSave} className={styles.save}>
           Сохранить
         </button>
-        {!isEmptyId(data) && (
+        {!isNull(data) && (
           <button onClick={handleDelete} className={styles.delete}>
             Удалить
           </button>

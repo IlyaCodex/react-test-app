@@ -135,7 +135,7 @@ async function loadAttributes(item) {
 }
 
 async function loadItemCategories(item) {
-  return getAllAsync("select cat_id from cat_to_item where item_id = ?", [
+  return getAllAsync("select cat_id from cat_to_items where item_id = ?", [
     item.id,
   ]).then((rows) => rows.map((row) => row.cat_id));
 }
@@ -156,6 +156,16 @@ async function loadPartnerImages(partner) {
 
 function wrapResponse(data, error) {
   return JSON.stringify({ data, error });
+}
+
+function translateBoolean(row, keys) {
+  for (const key of keys) {
+    if (row[key] === 1) {
+      row[key] = true;
+    } else if (row[key] === 0) {
+      row[key] = false;
+    }
+  }
 }
 
 function enrichServerWithApiRoutes(app) {
@@ -374,6 +384,9 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
+        rows.forEach(row => 
+          translateBoolean(row, ['hasPromo', 'inStock'])
+        )
         return Promise.all([
           ...rows.map((row) =>
             loadAttributes(row).then((arr) => (row.attributes = arr))
@@ -400,6 +413,7 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
+        translateBoolean(row, ['has_promo', 'in_stock']);
         return Promise.all([
           loadAttributes(row).then((arr) => (row.attributes = arr)),
           loadItemImageIds(row.id).then((arr) => (row.images = arr)),
@@ -434,7 +448,7 @@ function enrichServerWithApiRoutes(app) {
       const item = req.body;
       if (item.id) {
         db.run(
-          "update item set name=?, price=?, position=?, article=?, manufacturer=?, description=?, amount=?, in_stock=?, has_promo=? where id=?",
+          "update items set name=?, price=?, position=?, article=?, manufacturer=?, description=?, amount=?, in_stock=?, has_promo=? where id=?",
           item.name,
           item.price,
           item.position,
@@ -442,8 +456,9 @@ function enrichServerWithApiRoutes(app) {
           item.manufacturer,
           item.description,
           item.amount,
-          item.in_stock,
-          item.has_promo
+          item.inStock,
+          item.hasPromo,
+          item.id
         );
         getAllAsync("select cat_id from cat_to_items where item_id = ?", [
           item.id,
@@ -529,7 +544,7 @@ function enrichServerWithApiRoutes(app) {
         });
       } else {
         insertRow(
-          "insert into item (name, price, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          "insert into items (name, price, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
           [
             item.name,
             item.price,
@@ -538,8 +553,8 @@ function enrichServerWithApiRoutes(app) {
             item.manufacturer,
             item.description,
             item.amount,
-            item.in_stock,
-            item.has_promo,
+            item.inStock,
+            item.hasPromo,
           ]
         ).then((id) => {
           for (const image of item.images) {
@@ -684,7 +699,6 @@ function enrichServerWithApiRoutes(app) {
           [promo.name, promo.position, promo.description]
         )
           .then((id) => {
-            console.log(id);
             for (const image of promo.images) {
               db.run(
                 "insert into promo_images(promo_id, position, data) values(?, ?, ?)",
@@ -713,11 +727,11 @@ function enrichServerWithApiRoutes(app) {
 
   //(id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)
 
-  app.get("/api/sql", (req, res) => {
-    const sql = req.query.sql;
-    console.log(sql);
-    getAllAsync(sql).then((row) => res.send(wrapResponse(row)));
-  });
+  // app.get("/api/sql", (req, res) => {
+  //   const sql = req.query.sql;
+  //   console.log(sql);
+  //   getAllAsync(sql).then((row) => res.send(wrapResponse(row)));
+  // });
 
   app.get("/api/partners/images/:id", (req, res) => {
     const imageId = req.params.id;
