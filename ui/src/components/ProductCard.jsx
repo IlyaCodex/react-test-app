@@ -1,8 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
+import { useFavorites } from "../context/FavoriteContext";
 
 const ProductCard = ({ product, onCardClick }) => {
   const [images, setImages] = useState([]);
+
+  const { isFavorite, toggleFavorite } = useFavorites();
+
+  const isFav = useMemo(() => isFavorite(product.id), [isFavorite]);
+
+  const _toggleFavorite = (e) => {
+    console.log("toggle fav");
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(product);
+  };
+
   useEffect(() => {
     Promise.all(
       product.images.map((imageId) =>
@@ -13,7 +26,11 @@ const ProductCard = ({ product, onCardClick }) => {
   return (
     <li className="card" onClick={() => onCardClick(product)}>
       <div className="card__head">
-        <button className="card__favorite" type="button">
+        <button
+          className={`card__favorite ${isFav ? "active" : undefined}`}
+          type="button"
+          onClick={_toggleFavorite}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="40"

@@ -275,6 +275,11 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
   background-color: #D9D9D9;
   margin-bottom: 28px;
   border-radius: 14px;
+  > img {
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+  }
 }
 
 .card__head.short {
@@ -299,11 +304,23 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
   border: 1px solid transparent;
 }
 
-.card__favorite:hover svg path {
-  stroke: #ff3232;
-  fill: #ff3232;
+.card__favorite  {
+  &.active  {
+    path {
+      stroke: #ff3232;
+      fill: #ff3232;
+    }
+    &:hover path {
+      stroke: black;
+      fill: white;
+    }
+  }
+  &:hover:not(.active) svg path {
+    stroke: #ff3232;
+    fill: #ff3232;
+  }
+  
 }
-
 .card__favorite.short {
   width: 27px;
   height: 27px;

@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 export const CartContext = createContext({
@@ -13,51 +7,48 @@ export const CartContext = createContext({
   removeItems: (...items) => {},
 });
 
-const cookieName = "cart";
+const storageKey = "cart";
+
+const loadCart = () => JSON.parse(localStorage.getItem(storageKey) ?? "[]");
 
 export const CartContextProvider = ({ children }) => {
-  const [cookies, setCookie] = useCookies([cookieName]);
-
-  const items = useMemo(
-    () => cookies[cookieName]?.filter((item) => !!item) ?? [],
-    [cookies[cookieName]]
-  );
+  const [items, setItems] = useState(loadCart());
 
   useEffect(() => {
-    if (!cookies[cookieName]) {
-      setCookie(cookieName, items);
-    }
-  }, [cookies[cookieName]]);
+    localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items]);
 
   const addItems = useCallback(
     (...newItems) => {
+      const result = [...items];
       for (const newItem of newItems) {
-        let item = items.find((item) => item.id === newItem.id);
+        let item = result.find((item) => item.id === newItem.id);
         if (!item) {
           item = { ...newItem, count: 0 };
-          items.push(item);
+          result.push(item);
         }
 
         item.count++;
       }
-      setCookie(cookieName, [...items]);
+      setItems(result);
     },
     [items]
   );
 
   const removeItems = useCallback(
     (...newItems) => {
+      const result = [...items];
       for (const newItem of newItems) {
-        let item = items.find((item) => item.id === newItem.id);
+        let item = result.find((item) => item.id === newItem.id);
         if (item) {
           item.count--;
           if (item.count <= 0) {
-            const index = items.indexOf(item);
-            items.splice(index, 1);
+            const index = result.indexOf(item);
+            result.splice(index, 1);
           }
         }
       }
-      setCookie(cookieName, [...items]);
+      setItems(result);
     },
     [items]
   );

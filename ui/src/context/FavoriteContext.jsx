@@ -1,24 +1,31 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
+import { useCookies } from "react-cookie";
 
 const FavoriteContext = createContext();
 
 export const useFavorites = () => useContext(FavoriteContext);
 
+const cookieName = "favorites";
+
 export const FavoriteProvider = ({ children }) => {
-  const [favorites, setFavorites] = useState([]);
+  const [{ favorites }, setFavorites] = useCookies([cookieName]);
 
-  const toggleFavorite = (product) => {
-    setFavorites((prev) => {
-      const isFav = prev.some((item) => item.id === product.id);
+  const isFavorite = (id) => (favorites ?? []).some((item) => item.id === id);
+
+  const toggleFavorite = useCallback(
+    (product) => {
+      const isFav = isFavorite(product.id);
       if (isFav) {
-        return prev.filter((item) => item.id !== product.id);
+        setFavorites(
+          cookieName,
+          (favorites ?? []).filter((item) => item.id !== product.id)
+        );
       } else {
-        return [...prev, product];
+        setFavorites(cookieName, [...(favorites ?? []), product]);
       }
-    });
-  };
-
-  const isFavorite = (id) => favorites.some((item) => item.id === id);
+    },
+    [favorites, setFavorites]
+  );
 
   return (
     <FavoriteContext.Provider value={{ favorites, toggleFavorite, isFavorite }}>

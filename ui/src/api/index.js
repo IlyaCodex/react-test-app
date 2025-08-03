@@ -8,6 +8,8 @@ function getHeaders(auth) {
   return headers;
 }
 
+const imageCache = {};
+
 export const api = {
   getCategoryById: (id) => {
     return fetch(`/api/categories/${id}`).then((response) => response.json());
@@ -38,7 +40,17 @@ export const api = {
     return fetch(`/api/items/`).then((response) => response.json());
   },
   getItemImage: (id) => {
-    return fetch(`/api/items/images/${id}`).then((response) => response.json());
+    const cacheHit = imageCache[id];
+    if (cacheHit) {
+      console.log('image cache hit for ' + id);
+      return Promise.resolve(cacheHit);
+    }
+    return fetch(`/api/items/images/${id}`).then((response) => response.json()).then(json => {
+      if (json.data) {
+        imageCache[id] = json;
+      }
+      return json;
+    });
   },
   saveItem: (auth, item) => {
     return fetch(`/api/items/`, {

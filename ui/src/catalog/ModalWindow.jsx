@@ -8,7 +8,7 @@ import { api } from "../api";
 const ModalWindow = ({ product, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const imagesPerPage = 3;
+  const imagesPerPage = 4;
   const { addItems: addToCart } = useContext(CartContext);
 
   const [sliderImages, setSliderImages] = useState([]);
@@ -50,7 +50,7 @@ const ModalWindow = ({ product, onClose }) => {
   };
 
   const handleAddToCart = () => {
-    addToCart({ ...product, image: sliderImages?.[0] });
+    addToCart({ ...product });
   };
 
   if (!product) {
@@ -80,7 +80,7 @@ const ModalWindow = ({ product, onClose }) => {
               <div
                 className={styles.sliderTrack}
                 style={{
-                  transform: `translateX(-${currentIndex * (80 + 10)}px)`,
+                  transform: `translateX(-${currentPage * 360}px)`,
                   transition: "transform 0.5s ease",
                 }}
               >
@@ -89,7 +89,9 @@ const ModalWindow = ({ product, onClose }) => {
                     key={item.id}
                     src={item.data}
                     alt={item.id}
-                    className={styles.sliderImage}
+                    className={`${styles.sliderImage} ${
+                      index === currentIndex ? styles.active : ""
+                    }`}
                     onClick={() => setCurrentIndex(index)}
                   />
                 ))}
@@ -101,7 +103,6 @@ const ModalWindow = ({ product, onClose }) => {
           </div>
         </div>
         <div className={styles.modalDetailsColumn}>
-          <h3 className={styles.brandName}>{product.brand}</h3>
           <h4 className={styles.productName}>{product.name}</h4>
           <p>
             <span className={styles.detailValue}>{product.description}</span>
@@ -112,32 +113,25 @@ const ModalWindow = ({ product, onClose }) => {
               <span className={styles.detailValue}>{product.article}</span>
             </p>
             <p>
-              <span className={styles.detailLabel}>Цвет:</span>
-              <span className={styles.detailValue}>{product.color}</span>
-            </p>
-            <p>
-              <span className={styles.detailLabel}>Материал:</span>
-              <span className={styles.detailValue}>{product.material}</span>
+              <span className={styles.detailLabel}>Производитель:</span>
+              <span className={styles.detailValue}>{product.manufacturer}</span>
             </p>
             <p>
               <span className={styles.detailLabel}>Количество:</span>
-              <span className={styles.detailValue}>{product.quantity} шт.</span>
+              <span className={styles.detailValue}>{product.amount} шт.</span>
             </p>
             <p>
-              <span className={styles.detailLabel}>Комплектация:</span>
+              <span className={styles.detailLabel}>В наличии:</span>
               <span className={styles.detailValue}>
-                {product.complectation}
+                {product.in_stock ? "Да" : "Нет"}
               </span>
             </p>
             <p>
-              <span className={styles.detailLabel}>Гарантийный срок:</span>
+              <span className={styles.detailLabel}>По акции:</span>
               <span className={styles.detailValue}>
-                {product.WarrantyPeriod}
+                {product.has_promo ? "Да" : "Нет"}
+                {}
               </span>
-            </p>
-            <p>
-              <span className={styles.detailLabel}>Страна производитель:</span>
-              <span className={styles.detailValue}>{product.country}</span>
             </p>
           </div>
           <p className={styles.productPrice}>

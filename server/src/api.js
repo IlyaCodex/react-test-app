@@ -123,7 +123,7 @@ async function loadItems(category) {
 }
 
 async function loadItemImageIds(itemId) {
-  return getAllAsync("select ROWID as id from item_images where item_id = ?", [
+  return getAllAsync("select ROWID as id from item_images where item_id = ? order by position ASC", [
     itemId,
   ]).then((rows) => rows.map((row) => row.id));
 }
@@ -142,14 +142,14 @@ async function loadItemCategories(item) {
 
 async function loadPromoImages(promo) {
   return getAllAsync(
-    "select ROWID as id from promo_images where promo_id = ?",
+    "select ROWID as id from promo_images where promo_id = ? order by position ASC",
     [promo.id]
   ).then((rows) => rows.map((row) => row.id));
 }
 
 async function loadPartnerImages(partner) {
   return getAllAsync(
-    "select ROWID as id from partner_images where partner_id = ?",
+    "select ROWID as id from partner_images where partner_id = ? order by position ASC",
     [partner.id]
   ).then((rows) => rows.map((row) => row.id));
 }

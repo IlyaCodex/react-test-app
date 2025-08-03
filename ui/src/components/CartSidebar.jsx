@@ -1,8 +1,9 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import styles from "./CartSidebar.module.css";
 import { CartContext } from "../context/CartContext";
-import { ProductsContext } from "../context/ProductsContext";
 import CheckoutModal from "./CheckoutModal";
+import { nonNull } from "./admin/Utils";
+import { api } from "../api";
 
 const getSuffix = (count) => {
   if (count === 1) {
@@ -14,8 +15,20 @@ const getSuffix = (count) => {
   return "товаров";
 };
 
+const chooseImage = (item) => item.images?.[0];
+
 const CartSidebar = ({ isOpen, onClose }) => {
   const { items, addItems, removeItems } = useContext(CartContext);
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    Promise.all(
+      items
+        .map(chooseImage)
+        .filter(nonNull)
+        .map((imageId) => api.getItemImage(imageId).then((res) => res.data))
+    ).then((arr) => setImages(arr));
+  }, [items]);
 
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.price * item.count, 0);
@@ -64,17 +77,19 @@ const CartSidebar = ({ isOpen, onClose }) => {
               items.map((item, index) => (
                 <div key={item.id} className={styles.item}>
                   <div className={styles.description}>
-                    {item.image && (
-                      <img
-                        src={item.image.data}
-                        alt={item.name}
-                        className={styles.image}
-                      />
-                    )}
+                    <img
+                      src={
+                        images.find((image) => image.id === chooseImage(item))
+                          ?.data
+                      }
+                      alt={item.name}
+                      className={styles.image}
+                    />
+
                     <div className={styles.details}>
                       <p className={styles.item_name}>{item.name}</p>
                       <p className={styles.item_price}>
-                        {item.price.toLocaleString("ru-RU")} ₽
+                        {item.price?.toLocaleString("ru-RU")} ₽
                       </p>
                     </div>
                   </div>
@@ -83,16 +98,16 @@ const CartSidebar = ({ isOpen, onClose }) => {
                       className={styles.delete}
                       onClick={() =>
                         removeItems(
-                          ...Array.from({ length: item.count }, () => item.id)
+                          ...Array.from({ length: item.count }, () => item)
                         )
                       }
                     >
                       ×
                     </button>
                     <div className={styles.counter}>
-                      <button onClick={() => removeItems(item.id)}>-</button>
+                      <button onClick={() => removeItems(item)}>-</button>
                       <div>{item.count}</div>
-                      <button onClick={() => addItems(item.id)}>+</button>
+                      <button onClick={() => addItems(item)}>+</button>
                     </div>
                   </div>
                 </div>
