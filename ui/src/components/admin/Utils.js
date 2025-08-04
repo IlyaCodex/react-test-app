@@ -23,3 +23,5 @@ export const isNull = (obj) => {
 }
 
 export const nonNull = obj => !isNull(obj);
+
+export const chooseImage = (item) => item.images?.[0];

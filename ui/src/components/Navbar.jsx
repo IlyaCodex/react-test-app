@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import {
   Search,
   Heart,
@@ -11,12 +11,22 @@ import { Link } from "react-router-dom";
 import CartSidebar from "./CartSidebar";
 import styles from "./Navbar.module.css";
 import { FavoritesSidebar } from "./FavoritesSidebar";
+import { useDebounce } from "../hooks/debounce";
+import { api } from "../api";
+import { isNull, chooseImage } from "./admin/Utils";
+import { CartContext } from "../context/CartContext";
 
 const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const [foundItems, setFoundItems] = useState(undefined);
+  const [foundImages, setFoundImages] = useState([]);
+  const { addItems } = useContext(CartContext);
+
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -49,9 +59,35 @@ const Header = () => {
     }
   };
 
-  const handleSearchSubmit = (e) => {
+  const onSearchChange = (e) => {
     e.preventDefault();
+    setSearchQuery(e.target.value);
   };
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      api.searchItems(debouncedSearchQuery).then((res) => {
+        const items = res.data;
+        setFoundItems(items);
+        Promise.all(
+          items.map((item) => {
+            item.count = 1;
+            const imageId = chooseImage(item);
+            if (isNull(imageId)) {
+              return Promise.resolve(undefined);
+            }
+            return api.getItemImage(imageId).then((res) => res.data);
+          })
+        ).then((arr) => {
+          console.log(arr);
+          setFoundImages(arr.filter((image) => !!image));
+        });
+      });
+    } else {
+      setFoundItems(undefined);
+      setFoundImages([]);
+    }
+  }, [debouncedSearchQuery]);
 
   const handleCartClick = (e) => {
     e.preventDefault();
@@ -80,6 +116,23 @@ const Header = () => {
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const onIncrement = (item) => {
+    item.count = item.count + 1;
+    setFoundItems([...foundItems]);
+  };
+
+  const onDecrement = (item) => {
+    if (item.count <= 0) {
+      return;
+    }
+    item.count = item.count - 1;
+    setFoundItems([...foundItems]);
+  };
+
+  const toCart = (item) => {
+    addItems(...Array.from({ length: item.count }).map(() => item));
   };
 
   return (
@@ -161,16 +214,55 @@ const Header = () => {
               }`}
             >
               {isSearchOpen && (
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className={styles.searchForm}
-                >
+                <div className={styles.searchForm}>
                   <input
                     type="text"
                     className={styles.searchInput}
+                    onChange={onSearchChange}
+                    value={searchQuery}
                     placeholder="Поиск..."
                   />
-                </form>
+                  {isNull(foundItems) ? null : (
+                    <div className={styles.itemContainer}>
+                      {foundItems.length === 0 ? (
+                        <div className={styles.notFound}>Ничего не найдено</div>
+                      ) : (
+                        foundItems.map((item) => (
+                          <div className={styles.searchItem}>
+                            <div className={styles.itemInfo}>
+                              <img
+                                alt="Картинка"
+                                src={
+                                  foundImages.find(
+                                    (image) => image.id === chooseImage(item)
+                                  )?.data
+                                }
+                              />
+                              <div className={styles.name}>{item.name}</div>
+                            </div>
+                            <div className={styles.itemButtons}>
+                              <div className={styles.counter}>
+                                <button onClick={() => onDecrement(item)}>
+                                  -
+                                </button>
+                                <div>{item.count}</div>
+                                <button onClick={() => onIncrement(item)}>
+                                  +
+                                </button>
+                              </div>
+                              <button
+                                className={styles.toCart}
+                                onClick={() => toCart(item)}
+                              >
+                                В корзину
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
               <button
                 className={styles.headerSearchBtn}

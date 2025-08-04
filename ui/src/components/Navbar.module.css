@@ -71,11 +71,18 @@
 .searchForm {
   position: absolute;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  /* transform: translateY(-50%); */
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
+
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .searchInput {
@@ -84,7 +91,6 @@
   border: none;
   outline: none;
   font-size: 16px;
-  border-radius: 15px;
   transition: all 0.3s ease;
 }
 
@@ -97,7 +103,72 @@
   width: 850px;
   padding: 10px 15px;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.itemContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.notFound {
+  padding: 15px;
+}
+
+.searchItem {
+  display: flex;
+  width: 100%;
+  height: 10vh;
+  align-items: end;
+}
+
+.itemInfo {
+  height: 100%;
+  display: flex;
+  flex-grow: 1;
+    img {
+        height: 100%;
+      }
+}
+
+.itemButtons {
+  display: flex;
+  height: 25px;
+  align-items: end;
+  justify-content: center;
+  gap: 5px;
+}
+
+.counter {
+  display: flex;
+  background-color: #cecece;
+  border-radius: 5px;
+  width: 80px;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  * {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  button:hover {
+    background-color: #dbdbdb;
+  }
+}
+
+.toCart {
+  background-color: black;
+  color: white;
+  border-radius: 5px;
+  font-weight: 300;
+  padding: 0 10px;
+  height: 100%;
 }
 
 .headerSearchBtn,

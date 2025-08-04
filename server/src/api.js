@@ -123,9 +123,10 @@ async function loadItems(category) {
 }
 
 async function loadItemImageIds(itemId) {
-  return getAllAsync("select ROWID as id from item_images where item_id = ? order by position ASC", [
-    itemId,
-  ]).then((rows) => rows.map((row) => row.id));
+  return getAllAsync(
+    "select ROWID as id from item_images where item_id = ? order by position ASC",
+    [itemId]
+  ).then((rows) => rows.map((row) => row.id));
 }
 
 async function loadAttributes(item) {
@@ -369,6 +370,31 @@ function enrichServerWithApiRoutes(app) {
     }
   });
 
+  app.get("/api/items/search/", (req, res) => {
+    const query = req.query.query;
+    if (!query) {
+      res.send(wrapResponse([]));
+      return;
+    }
+    const queryWithWildcards = `%${query}%`;
+    getAllAsync(
+      "select * from items where (name like ? or article like ?) limit 5",
+      [queryWithWildcards, queryWithWildcards]
+    )
+      .then((rows) => {
+        return Promise.all(
+          rows.map((row) =>
+            loadItemImageIds(row.id).then((imageIds) => (row.images = imageIds))
+          )
+        ).then(() => res.send(wrapResponse(rows)));
+      })
+      .catch((error) => {
+        console.error(error);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, error));
+      });
+  });
+
   app.get("/api/items/images/:id", (req, res) => {
     const imageId = req.params.id;
     getAsync(
@@ -384,9 +410,7 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
-        rows.forEach(row => 
-          translateBoolean(row, ['hasPromo', 'inStock'])
-        )
+        rows.forEach((row) => translateBoolean(row, ["hasPromo", "inStock"]));
         return Promise.all([
           ...rows.map((row) =>
             loadAttributes(row).then((arr) => (row.attributes = arr))
@@ -413,7 +437,7 @@ function enrichServerWithApiRoutes(app) {
           res.send(wrapResponse(undefined));
           return;
         }
-        translateBoolean(row, ['has_promo', 'in_stock']);
+        translateBoolean(row, ["has_promo", "in_stock"]);
         return Promise.all([
           loadAttributes(row).then((arr) => (row.attributes = arr)),
           loadItemImageIds(row.id).then((arr) => (row.images = arr)),

@@ -32,7 +32,10 @@ export const api = {
       headers: getHeaders(auth),
     }).then((response) => response.json());
   },
-
+  searchItems: (query) => {
+    const queryString = new URLSearchParams({query}).toString();
+    return fetch(`/api/items/search?${queryString}`).then(response => response.json());
+  },
   getItemById: (id) => {
     return fetch(`/api/items/${id}`).then((response) => response.json());
   },
