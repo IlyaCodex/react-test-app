@@ -8,11 +8,11 @@
 }
 
 .titleSection {
-  font-size: 36px;
-  font-weight: bold;
+  font-size: 48px;
+  font-weight: 500;
   text-align: center;
   margin-bottom: 20px;
-  color: #000;
+  color: #2f2f2f;
 }
 
 .orderInner {
@@ -30,18 +30,19 @@
 }
 
 .orderStep {
-  background-color: #e9ecef;
+  background-color: #ffffff;
   padding: 15px 25px;
   width: 580px;
   height: 105px;
-  border-radius: 5px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .orderSubtitle {
-  font-size: 18px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 5px;
-  color: #000;
+  color: #171717;
   position: relative; 
 }
 
@@ -58,14 +59,16 @@
 
 .orderText {
   font-size: 14px;
-  color: #666;
+  color: #171717;
+  font-weight: 400;
   line-height: 1.5;
   max-width: 410px;
 }
 
 .orderForm {
   flex: 0 0 580px;
-  background-color: #e9ecef;
+  background-color: #ffffff;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 10px;
   display: flex;
@@ -85,22 +88,24 @@
 }
 
 .orderFormTitle {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 26px;
+  font-weight: 600;
   margin-bottom: 5px;
-  color: #000;
+  color: #171717;
 }
 
 .orderFormText {
   font-size: 14px;
-  color: #6B6B6B;
+  color: #171717;
+  font-weight: 400;
   width: 285px;
 }
 
 .orderFormType {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   margin-top: 25px;
+  margin-right: 40px;
 }
 
 .typeOption {
@@ -123,7 +128,7 @@
 }
 
 .typeOption.selected {
-  background-color: #000;
+  background-color: #31c70c;
 }
 
 .orderFormItems {
@@ -140,18 +145,20 @@
 }
 
 .input {
-  width: 500px;
-  height: 49px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
+     width: 500px;
+    height: 49px;
+    padding: 10px;
+    /* border: 1px solid #ccc; */
+    background-color: #e7e7e7;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #939393;
 }
 
 .orderBtn {
   width: 500px;
   height: 52px;
-  background-color: #000;
+  background-color: #4a4a4a;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -170,8 +177,7 @@
   -moz-appearance: none;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 920px) {
   .container {
     max-width: 100%;
     padding: 0 10px;
@@ -208,6 +214,55 @@
 
   .orderFormType {
     flex-direction: column;
+    margin-right: 0px;
+  }
+
+  .typeOption {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .orderInner {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .orderStep {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .orderForm {
+    width: 100%;
+    padding: 15px;
+    flex: 0 0 442px;
+  }
+
+  .input {
+    width: 100%;
+  }
+
+  .orderBtn {
+    width: 100%;
+  }
+
+  .formHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orderFormType {
+    flex-direction: column;
+    margin-right: 0px;
   }
 
   .typeOption {
@@ -218,7 +273,7 @@
 
 @media (max-width: 480px) {
   .titleSection {
-    font-size: 24px;
+    font-size: 36px;
   }
 
   .orderSubtitle {

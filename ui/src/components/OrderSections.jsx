@@ -73,7 +73,7 @@ const OrderSection = () => {
             </div>
             <div className={styles.orderFormItems}>
               <div>
-                <label className={styles.label} htmlFor="fio">Ваше имя</label>
+                {/* <label className={styles.label} htmlFor="fio">Ваше имя</label> */}
                 <input
                   className={styles.input}
                   id="fio"
@@ -81,13 +81,13 @@ const OrderSection = () => {
                   type="text"
                   required
                   maxLength="255"
-                  placeholder={formData.type === 'individual' ? "Иванов Иван Иванович" : "Название организации"}
+                  placeholder={formData.type === 'individual' ? "Ваше имя" : "Название организации"}
                   value={formData.fio}
                   onChange={handleInputChange}
                 />
               </div>
               <div>
-                <label className={styles.label} htmlFor="phone">Номер телефона</label>
+                {/* <label className={styles.label} htmlFor="phone">Номер телефона</label> */}
                 <input
                   className={styles.input}
                   id="phone"
@@ -102,7 +102,7 @@ const OrderSection = () => {
               </div>
               {formData.type === 'legal' && (
                 <div>
-                  <label className={styles.label} htmlFor="organization">Название организации</label>
+                  {/* <label className={styles.label} htmlFor="organization">Название организации</label> */}
                   <input
                     className={styles.input}
                     id="organization"
@@ -110,7 +110,7 @@ const OrderSection = () => {
                     type="text"
                     required
                     maxLength="255"
-                    placeholder="ООО 'Ромашка'"
+                    placeholder="Название клиники'"
                     value={formData.organization}
                     onChange={handleInputChange}
                   />
@@ -118,7 +118,7 @@ const OrderSection = () => {
               )}
               {formData.type === 'individual' && (
                 <div>
-                  <label className={styles.label} htmlFor="contact">Способ связи</label>
+                  {/* <label className={styles.label} htmlFor="contact">Способ связи</label> */}
                   <select
                     className={styles.input}
                     id="contact"
@@ -126,9 +126,10 @@ const OrderSection = () => {
                     value={formData.contact || ''}
                     onChange={handleInputChange}
                   >
-                    <option value="">Выберите способ</option>
+                    <option value="">Способ связи</option>
                     <option value="whatsapp">WhatsApp</option>
                     <option value="telegram">Telegram</option>
+                    <option value="tel">Звонок</option>
                   </select>
                 </div>
               )}
