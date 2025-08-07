@@ -269,7 +269,7 @@ const Header = () => {
                 onClick={handleSearchToggle}
                 aria-label={isSearchOpen ? "Закрыть поиск" : "Открыть поиск"}
               >
-                <Search size={20} color="#000000" />
+                <Search size={20} color="#fff" />
               </button>
             </div>
             <button
@@ -277,7 +277,7 @@ const Header = () => {
               aria-label="Избранное"
               onClick={handleFavoritesClick}
             >
-              <Heart size={20} color="#000000" />
+              <Heart size={20} color="#fff" />
             </button>
             <button className={styles.requestBtn} type="button">
               Оставить заявку
@@ -500,3 +500,4 @@ export default Header;
 // };
 
 // export default Header;
+

@@ -9,6 +9,43 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
 	font-family: "Manrope", sans-serif;
 }
 
+
+.swiper-button-prev:after, .swiper-button-next:after {
+    font-size: 30px;
+    font-weight: 800;
+    background-color: #fcfcfcdd;
+    border-radius: 50%;
+    padding: 5px 15px;
+    color: #000000;
+}
+
+.swiper-button-next:after {
+  margin-right: 22px;
+}
+
+@media (max-width: 768px) {
+  .swiper-button-prev:after, .swiper-button-next:after {
+    font-size: 30px;
+    background-color: #fcfcfcdd;
+    border-radius: 50%;
+    padding: 5px 15px;
+    color: #000000;
+}
+
+.swiper-button-prev:after {
+  display: none;
+}
+
+.swiper-button-next:after {
+  margin-left: 50px;
+}
+  }
+
+.swiper-horizontal > .swiper-pagination-bullets.swiper-pagination-bullets-dynamic, .swiper-pagination-horizontal.swiper-pagination-bullets.swiper-pagination-bullets-dynamic {
+  display: none;
+}
+
+
 /* Стили для подкатегорий внутри карточки */
 .subcategories {
     margin-top: 20px;

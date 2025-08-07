@@ -1,9 +1,8 @@
 .header {
   /* margin: 30px 0 120px; */
   font-family: "Manrope", sans-serif;
-   margin-bottom: 57px;
     height: 74px;
-    background-color: #e4e4e4;
+    background-color: #ffffff;
 }
 
 .container {
@@ -46,7 +45,7 @@
 }
 
 .headerLink:hover {
-  color: #34495e;
+  color: #009113;
 }
 
 .headerLink:focus {
@@ -179,7 +178,7 @@
   align-items: center;
   width: 39px;
   height: 39px;
-  background-color: #fff;
+  background-color: #4a4a4a;
   border: 2px solid transparent;
   border-radius: 5px;
   cursor: pointer;
@@ -189,13 +188,13 @@
 .headerSearchBtn:hover,
 .favoritesBtn:hover,
 .requestBtn:hover {
-  background-color: #ecf0f1;
+  background-color: #38af01;
 }
 
 .requestBtn {
   width: 150px;
-  color: #000000;
-  background-color: #ffffff;
+  color: #ffffff;
+  background-color: #4a4a4a;
   font-size: 14px;
   padding: 0;
 }

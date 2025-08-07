@@ -1,35 +1,54 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import styles from "./PartnersSection.module.css";
-import { api } from "../api";
-import { chooseImage, isNull, nonNull } from "./admin/Utils";
+import React, { useEffect, useRef, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import styles from './PartnersSection.module.css';
 
 const PartnersSection = () => {
-  const [partners, setPartners] = useState([]);
-  const [images, setImages] = useState([]);
+  const partners = [
+    {
+      id: 1,
+      name: "R.O.C.S.",
+      country: "Россия",
+      modalDescription: "Инновационные средства по уходу за полостью рта с акцентом на натуральные компоненты. Инновационные средства по уходу за полостью рта с акцентом на натуральные компоненты",
+      image: "../images/rocs.png",
+      alt: "Логотип компании R.O.C.S."
+    },
+    {
+      id: 2,
+      name: "SPLAT",
+      country: "Россия",
+      modalDescription: "",
+      image: "../images/splat.png",
+      alt: "Логотип компании SPLAT"
+    },
+    {
+      id: 3,
+      name: "Straumann Group",
+      country: "Швейцария",
+      modalDescription: "",
+      image: "../images/straumann.png",
+      alt: "Логотип компании Straumann Group"
+    },
+    {
+      id: 4,
+      name: "Dentsply Sirona",
+      country: "Германия",
+      modalDescription: "",
+      image: "../images/dentsply.png",
+      alt: "Логотип компании Dentsply Sirona"
+    },
+    {
+      id: 5,
+      name: "Septodont",
+      country: "Франция",
+      modalDescription: "",
+      image: "../images/septodont.png",
+      alt: "Логотип компании Septodont"
+    }
+  ];
 
-  useEffect(() => {
-    api.getPartners().then((res) => {
-      if (res.error) {
-        console.error("Could not load partners", res.error);
-        return;
-      }
-      const newPartners = (res.data ?? []).sort(byPosition);
-      setPartners(newPartners);
-      return Promise.all(
-        newPartners.map((p) => {
-          const imageId = chooseImage(p);
-          if (isNull(imageId)) {
-            return Promise.resolve(undefined);
-          }
-          return api.getPartnerImage(imageId).then((res) => res.data);
-        })
-      ).then((newImages) => setImages(newImages.filter(nonNull)));
-    });
-  }, []);
   const swiperRef = useRef(null);
   const [selectedPartner, setSelectedPartner] = useState(null);
 
@@ -40,7 +59,7 @@ const PartnersSection = () => {
     loop: true,
     navigation: true,
     autoplay: {
-      delay: 3000,
+      delay: 30000,
       disableOnInteraction: false,
       pauseOnMouseEnter: true,
     },
@@ -62,23 +81,27 @@ const PartnersSection = () => {
         swiperRef.current.update();
       }
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const openModal = (partner) => {
     setSelectedPartner(partner);
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden'; 
   };
 
   const closeModal = () => {
     setSelectedPartner(null);
-    document.body.style.overflow = "auto";
+    document.body.style.overflow = 'auto';
   };
 
+  
   const splitDescription = (desc) => {
     const halfLength = Math.ceil(desc.length / 2);
-    return [desc.slice(0, halfLength), desc.slice(halfLength)];
+    return [
+      desc.slice(0, halfLength),
+      desc.slice(halfLength),
+    ];
   };
 
   return (
@@ -89,31 +112,20 @@ const PartnersSection = () => {
           <Swiper {...swiperOptions} className={styles.partnersSwiper}>
             {partners.map((partner) => (
               <SwiperSlide key={partner.id}>
-                <div
-                  className={styles.partnersCard}
-                  onClick={() => openModal(partner)}
-                >
+                <div className={styles.partnersCard} onClick={() => openModal(partner)}>
                   <div className={styles.partnersImgContainer}>
                     <img
                       className={styles.partnersImg}
-                      src={
-                        images.find(
-                          (image) => image.id === chooseImage(partner)
-                        )?.data
-                      }
+                      src={partner.image}
                       width="250"
                       height="150"
-                      alt={partner.name}
+                      alt={partner.alt}
                     />
                   </div>
                   <h3 className={styles.partnersName}>{partner.name}</h3>
-                  <p className={styles.partnersCountry}>
-                    Страна: {partner.country}
-                  </p>
+                  <p className={styles.partnersCountry}>Страна: {partner.country}</p>
                   <div className={styles.partnersDescriptionContainer}>
-                    <p className={styles.partnersDescription}>
-                      {partner.description}
-                    </p>
+                    <p className={styles.partnersDescription}>{partner.description}</p>
                   </div>
                 </div>
               </SwiperSlide>
@@ -124,30 +136,22 @@ const PartnersSection = () => {
 
       {selectedPartner && (
         <div className={styles.modalOverlay} onClick={closeModal}>
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <button className={styles.modalClose} onClick={closeModal}>
               ×
             </button>
             <div className={styles.modalImgContainer}>
               <img
-                src={
-                  images.find(
-                    (image) => image.id === chooseImage(selectedPartner)
-                  )?.data
-                }
-                alt={selectedPartner.name}
+                src={selectedPartner.image}
+                alt={selectedPartner.alt}
                 className={styles.modalImg}
               />
             </div>
             <h3 className={styles.modalName}>{selectedPartner.name}</h3>
-            <p className={styles.modalCountry}>
-              Страна: {selectedPartner.country}
-            </p>
+            <p className={styles.modalCountry}>Страна: {selectedPartner.country}</p>
             <div className={styles.modalDescription}>
-              {selectedPartner.description}
+              <p>{splitDescription(selectedPartner.modalDescription)[0]}</p>
+              <p>{splitDescription(selectedPartner.modalDescription)[1]}</p>
             </div>
           </div>
         </div>

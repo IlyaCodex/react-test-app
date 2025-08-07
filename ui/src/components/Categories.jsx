@@ -13,18 +13,21 @@ const CategoriesSection = () => {
       title: "Врачам",
       description: "Перчатки, шприцы, маски, профессиональные инструменты и многое другое",
       subcategories: categorySubcategories["Врачам"],
+      color: '#38af01',
     },
     {
       id: 2,
       title: "Ученикам",
-      description: "Модели, манекены, базовые инструменты и другое",
+      description: "Перчатки, шприцы, маски, профессиональные инструменты и многое другое",
       subcategories: categorySubcategories["Ученикам"],
+      color: '#fe9e26',
     },
     {
       id: 3,
       title: "Зуботехникам",
       description: "Модели, манекены, базовые инструменты и другое",
       subcategories: categorySubcategories["Зуботехникам"],
+      color: '#2484e3',
     },
   ];
 
@@ -45,13 +48,14 @@ const CategoriesSection = () => {
   return (
     <section className={styles.categories}>
       <div className={styles.container}>
-        <h2 className={styles.titleSection}>Категории товаров</h2>
+        <h2 className={styles.titleSection}>Категории</h2>
         
         <ul className={styles.categoriesList}>
           {categories.map((category) => (
             <li 
               key={category.id}
               className={`${styles.categoriesItem} ${selectedCategory === category.id ? styles.active : ''}`}
+              style={{ backgroundColor: category.color }}
               tabIndex={0}
               onClick={() => handleCategoryClick(category.id)}
               onKeyDown={(e) => e.key === 'Enter' && handleCategoryClick(category.id)}
@@ -85,11 +89,32 @@ const CategoriesSection = () => {
           ))}
         </ul>
 
+    
         <div className={styles.discountBlock}>
-          <h2 className={styles.discountTitle}>Скидка 10% на первый заказ</h2>
-          <p className={styles.discountText}>Получите скидку на ваш первый заказ при регистрации</p>
-          <button className={styles.discountBtn} onClick={() => navigate('/catalog')}>Перейти в каталог</button>
+          <img className={`${styles.icon} ${styles.iconTopLeft}`} src="../images/cb5bce878efd52bc1a0cfc888087321a0b2ad59a.png" alt="" />
+          <img className={`${styles.icon} ${styles.iconTopRight}`} src="../images/bd81022cea39a00ba8b909d677a2cc0553f649cf.png" alt="" />
+          <img className={`${styles.icon} ${styles.iconBottomLeft}`} src="../images/b6b30e89dfc43f6f7151cbd795de0059dc6f652e.png" alt="" />
+          <img className={`${styles.icon} ${styles.iconBottomRight}`} src="../images/6106f2b1919bf5d3ab46df4dc04cec56746d524c.png" alt="" />
+          <div className={styles.discountContent}>
+            <h2 className={styles.discountTitle}>Скидка 10% на первый заказ</h2>
+            <p className={styles.discountText}>Просто, быстро и без лишних условий</p>
+            <button className={styles.discountBtn} onClick={() => navigate('/catalog')}>Перейти в каталог
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M5 12H19M19 12L13 6M19 12L13 18"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className={styles.discountImage}>
+            <img src="../images/2025-08-06_17-36-34.png" alt="Discount Offer" className={styles.discountImg} />
+          </div>
         </div>
+        
       </div>
     </section>
   );

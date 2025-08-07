@@ -5,6 +5,411 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  position: relative;
+}
+
+.container::before {
+    content: "";
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  width: 120%;
+  height: 60%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at center, rgba(56, 175, 1, 0.7) 70%, rgba(56, 175, 1, 0) 100%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: blur(18px);
+} @media (max-width: 768px) {
+  .container::before {
+    width: 100%;
+    height: 37%;
+    top: 82%;
+  }
+}
+
+.titleSection {
+  font-size: 48px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #2F2F2F;
+}
+
+.categoriesList {
+  display: flex;
+  justify-content: center; 
+  gap: 25px;
+  margin-bottom: 25px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.categoriesItem {
+  background-color: #171717; 
+  border-radius: 12px;
+  padding: 30px;
+  color: #ffffff;
+  width: 380px;
+  min-height: 280px;
+  transition: background-color 0.4s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.categoriesItem.active {
+  background-color: #000000; 
+}
+
+.categoriesItem:focus {
+  background-color: #26bf00;
+  outline: transparent;
+}
+
+.categoriesItem:focus .categoriesText {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.categoriesHead {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+  color: #ffffff;
+  font-size: 26px;
+  transition: color 0.4s;
+}
+
+.categoriesHead:hover {
+  color: #ffffff;
+}
+
+.categoriesBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  transition: background-color 0.4s, border 0.4s, transform 0.4s;
+}
+
+.categoriesBtn.rotated {
+  transform: rotate(90deg);
+  transition: transform 0.3s;
+}
+
+.categoriesText {
+  font-size: 20px;
+  max-width: 320px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 15px;
+}
+
+.subcategories {
+  margin-top: 20px;
+}
+
+.subcategoriesList {
+  list-style: none;
+  padding: 0;
+  background-color: #ffffff; 
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.subcategoriesItem {
+  font-size: 16px;
+  color: #171717;
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.subcategoriesItem:hover {
+  background-color: #f0f0f0;
+  color: #171717;
+  border-radius: 15px;
+}
+
+.discountBlock {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 20px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.icon {
+  position: absolute;
+  width: 85px;
+  height: 85px;
+  display: none;
+}
+
+.iconTopLeft {
+  top: -10px;
+  left: -10px;
+  transform: rotate(141deg);
+}
+
+.iconTopRight {
+  top: -10px;
+  right: -10px;
+  transform: rotate(-147deg);
+}
+
+.iconBottomLeft {
+  bottom: -10px;
+  left: -10px;
+  transform: rotate(45deg);
+}
+
+.iconBottomRight {
+  bottom: -10px;
+  right: -10px;
+  transform: rotate(-45deg);
+}
+
+.discountContent {
+  flex: 1;
+  text-align: center;
+  padding-right: 20px;
+}
+
+.discountImage {
+  width: 480px; 
+  height: auto;
+}
+
+.discountImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0 12px 12px 0; 
+}
+
+.discountTitle {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+.discountText {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.discountBtn {
+  padding: 12px 30px;
+  background-color: #4a4a4a;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.discountBtn:focus {
+  background-color: #38af01;
+}
+
+.discountBtn svg {
+  padding-left: 7px;
+  width: 32px;
+}
+
+.discountBtn:hover {
+  background-color: #333;
+}
+
+
+.discountBlock::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  background-color: #f9f9f9;
+  z-index: -1;
+}
+
+
+@media (max-width: 1200px) {
+  .container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  .categoriesList {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .categoriesItem {
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 20px;
+  }
+
+  .discountBlock {
+    flex-direction: column; 
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .discountImage {
+    width: 100%; 
+    max-width: 480px;
+    margin-top: 20px;
+  }
+
+  .discountImg {
+    border-radius: 12px; 
+  }
+}
+
+@media (max-width: 768px) {
+.categoriesList {
+  gap: 0px;
+  margin-bottom: 0px;
+}
+
+  .container {
+    max-width: 720px;
+  }
+
+  .titleSection {
+    font-size: 28px;
+  }
+
+  .categoriesItem {
+    padding: 20px;
+    min-height: 240px;
+  }
+
+  .categoriesHead {
+    font-size: 22px;
+  }
+
+  .categoriesText {
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  .discountBlock {
+    padding: 70px 10px;
+  }
+
+  .discountTitle {
+    font-size: 24px;
+  }
+
+  .discountText {
+    font-size: 14px;
+  }
+
+  .discountBtn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .discountImage {
+    max-width: 100%;
+    display: none;
+  }
+
+   .icon {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .titleSection {
+    font-size: 22px;
+  }
+
+  .categoriesList {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .categoriesItem {
+    width: 100%;
+    padding: 15px;
+    min-height: 200px;
+  }
+
+  .categoriesHead {
+    font-size: 18px;
+  }
+
+  .categoriesText {
+    font-size: 14px;
+  }
+
+  .subcategoriesItem {
+    font-size: 14px;
+  }
+
+  .discountBlock {
+    padding: 70px 10px;
+  }
+
+  .discountTitle {
+    font-size: 20px;
+  }
+
+  .discountText {
+    font-size: 12px;
+  }
+
+  .discountBtn {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+
+  .discountImage {
+    max-width: 100%;
+  }
+}
+
+
+/* .categories {
+  margin-top: 50px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 0 0px;
 }
 
@@ -149,7 +554,7 @@
   background-color: #333;
 }
 
-/* Responsive Design */
+
 @media (max-width: 1200px) {
   .container {
     max-width: 100%;
@@ -264,4 +669,4 @@
     padding: 8px 15px;
     font-size: 12px;
   }
-}
+} */

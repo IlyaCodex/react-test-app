@@ -29,8 +29,8 @@ function MainApp() {
             <div id="stocks"><StocksSection /></div>
             <div id="categories"><CategoriesSection /></div>
             <div id="aboutUs"><WhyUsSection /></div>
-            <div id="delivery"><OrderSection /></div>
             <div id="partners"><PartnersSection /></div>
+            <div id="delivery"><OrderSection /></div>
             <Faq />
             <ContactsSection />
           </>

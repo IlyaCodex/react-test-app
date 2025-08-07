@@ -1,120 +1,168 @@
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 0px; /* Добавлен padding для центрирования контента внутри 1200px */
-  position: relative;
+.home {
+  background-color: #ffffff;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  padding: 40px 0;
+  height: 583px;
   overflow: hidden;
-}
-
-.homeContent {
   display: flex;
-  flex-direction: column;
-  gap: 0px;
-  text-align: center;
   justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
-  font-family: "Manrope", sans-serif;
+  min-height: 80vh; 
 }
 
-.homeImg {
-  margin-bottom: 20px;
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 100%;
 }
 
-img {
-  max-width: 100%;
-  display: block;
-  user-select: none;
+.homeWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  gap: 30px;
+}
+
+.leftContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  text-align: center;
+  gap: 25px;
+}
+
+.rightContent {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
 }
 
 .homeTitle {
+  color: #2f2f2f;
   font-size: 96px;
-  line-height: 1;
-  margin-bottom: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  font-family: "Manrope", sans-serif;
-  font-weight: 800;
+  margin: 0; 
 }
 
 .homeText {
-  font-size: 25px;
-  font-family: "Manrope", sans-serif;
-  width: 315px; 
+  font-size: 20px;
+  color: #444;
+  max-width: 600px; 
+  line-height: 1.5; 
+  margin: 0; 
+  text-align: center; 
 }
 
+
 .homeBtn {
-  position: static;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 19px;
-  font-family: "Manrope", sans-serif;
-  margin: 0 auto; 
-  text-align: center;
-  padding: 12px 25px;
-  background-color: #000000; 
+  background-color: #4a4a4a; 
   color: #fff;
+  border: none;
+  padding: 12px 15px; 
+  width: 267px; 
+  border-radius: 8px;
   text-decoration: none;
-  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 267px;
+  justify-content: center; 
+  text-align: center;
 }
 
 .homeBtn:hover {
-  background-color: #000000de; 
+  background-color: #38af01; 
 }
 
-.btn {
-
+.homeImg {
+  max-width: 100%; 
+  height: auto;
+  object-fit: cover; 
 }
-
 
 @media (max-width: 1024px) {
+  .home {
+    height: auto; 
+    padding: 30px 0;
+    min-height: 0;
+    display: block;
+  }
+
+  .container {
+    height: auto;
+  }
+
+  .homeWrapper {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .leftContent,
+  .rightContent {
+    width: 100%;
+    align-items: center;
+  }
+
   .homeTitle {
-    font-size: 72px;
-  }
-
-  .homeText {
-    font-size: 20px;
-    width: 100%; 
-  }
-
-  .homeBtn {
-    font-size: 16px;
-    padding: 10px 20px;
-    width: 240px; 
-  }
-}
-
-@media (max-width: 768px) {
-  .homeTitle {
-    font-size: 48px;
+    font-size: 64px; 
   }
 
   .homeText {
     font-size: 18px;
   }
 
-  .homeBtn {
-    font-size: 14px;
-    padding: 8px 15px;
-    width: 200px;
+  .homeImg {
+    max-width: 70%;
   }
 }
 
-
-@media (max-width: 480px) {
-  .homeBtn {
-    padding: 13px 15px;
-    font-size: 14px;
-    width: 200px;
+@media (max-width: 768px) {
+  .homeTitle {
+    font-size: 64px;
   }
 
   .homeText {
-    font-size: 14px;
+    font-size: 17px;
+  }
+
+  .homeImg {
+    max-width: 80%;
+  }
+}
+
+@media (max-width: 480px) {
+  .home {
+    padding: 20px 0;
   }
 
   .homeTitle {
-    font-size: 36px;
+    font-size: 64px;
+  }
+
+  .homeText {
+    font-size: 17px;
+  }
+
+  .homeBtn {
+    font-size: 14px;
+    width: 200px; /* Adjusted for mobile */
+  }
+
+  .homeImg {
+    max-width: 100%;
   }
 }

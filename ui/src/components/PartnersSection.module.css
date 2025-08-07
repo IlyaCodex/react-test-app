@@ -1,7 +1,9 @@
 .titleSection {
-    font-size: 36px;
-    font-weight: 700;
+    font-size: 48px;
+    font-weight: 500;
     text-align: center;
+    margin-bottom: 30px;
+    color: #2f2f2f;
 }
 
 .container {
@@ -37,19 +39,22 @@
 
 .partnersCard {
   border-radius: 12px;
-  padding: 20px;
+  /* padding: 20px; */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  background-color: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  padding-bottom: 25px;
 }
 
-.partnersCard:hover {
+/* .partnersCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
+} */
 
 
 .partnersImgContainer {
@@ -63,10 +68,11 @@
 
 
 .partnersImg {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 140%;
   object-fit: contain;
   border-radius: 8px;
+  margin-bottom: 25px;
 }
 
 
@@ -74,8 +80,9 @@
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
-  text-align: center;
+  text-align: left;
   color: #333;
+  padding-left: 20px;
 }
 
 
@@ -83,7 +90,8 @@
   font-size: 14px;
   color: #000000;
   margin-bottom: 15px;
-  text-align: center;
+  text-align: left;
+  padding-left: 20px;
 }
 
 
@@ -148,7 +156,7 @@
     padding: 15px;
   }
   .partnersImgContainer {
-    height: 100px;
+    height: auto;
   }
   .partnersName {
     font-size: 18px;
@@ -200,14 +208,12 @@
 .modalContent {
   background-color: #fff;
   width: 580px;
-  height: 100%;
   padding: 20px;
   border-radius: 10px;
   position: relative;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   max-height: 90vh;
-  overflow: hidden;
-  /* overflow-x: hidden; */
+  /* overflow-y: auto; */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -225,19 +231,17 @@
 }
 
 .modalImgContainer {
-  height: 70%;
   width: 100%;
   margin-bottom: 15px;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .modalImg {
-  height: 100%;
+  width: 520px; 
+  height: auto;
   object-fit: contain;
   border-radius: 5px;
-  
 }
 
 .modalName {

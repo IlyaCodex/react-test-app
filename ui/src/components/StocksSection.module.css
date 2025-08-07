@@ -1,11 +1,10 @@
-.promos {
+.stocks {
   margin-top: 50px;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1210px;
   margin: 0 auto;
-  padding: 0 0px;
 }
 
 .titleSection {
@@ -13,117 +12,182 @@
   line-height: 1.1;
   margin-bottom: 46px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 500;
+  color: #2f2f2f;
 }
 
-.promosSwiper {
+.stocksSwiper {
   width: 100%;
 }
 
-.promosCard {
+.stocksCard {
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background-color: #d9d9d94e;
   border-radius: 10px;
-}
-
-.promosCard h3 {
-    font-size: 17px;
-}
-
-.promosImgContainer {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.promosImg {
-  object-fit: cover;
-  object-position: center;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  width: 100%;
-  border-radius: 15px;
-  height: 250px;
-}
-
-.promosName {
-  margin-bottom: 20px;
-  font-size: 22px;
-  font-weight: 600;
-  text-align: left;
-}
-
-.promosDescription {
-  max-width: 350px;
-  line-height: 1.5;
-  margin-bottom: 35px;
-  color: rgba(23, 23, 23, 0.8); 
-  text-align: left;
-}
-
-.promosLink {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: color 0.4s, border 0.4s;
-  text-decoration: none;
-  color: inherit;
-  text-align: left;
-}
-
-.promosLink:hover {
-  color: rgba(0, 0, 0, 0.7); 
-}
-
-.promosLink:focus {
-  color: #007bff;
-  outline: none;
-}
-
-.promosLink:focus svg {
-  transform: translateX(2px);
+  cursor: pointer;
   transition: transform 0.3s ease;
 }
 
+.stocksCard:hover {
+  transform: scale(1.02);
+}
 
-@media (max-width: 1024px) {
-  .promosDescription {
-    max-width: 100%;
-    margin-bottom: 25px;
+.stocksImgContainer {
+  position: relative;
+  width: 280px;
+  height: 260px; /* Square on desktop */
+  overflow: hidden;
+  border-radius: 13px;
+}
+
+.stocksImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.stocksTextOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px 15px; /* Padding for text at bottom */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); /* Darker gradient from bottom */
+  color: #fff;
+}
+
+.stocksName {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  max-height: 2.4em; /* Limit to approximately 2 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin: 0;
+}
+
+.stocksDescription {
+  display: none;
+}
+
+.stocksLink {
+  display: none;
+}
+
+/* Stories Modal Styles */
+.storiesModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease, fadeOut 0.3s ease forwards;
+  animation-play-state: paused;
+}
+
+.storiesModal {
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  height: 80vh;
+  background: #000;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.storiesProgress {
+  display: flex;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+.storiesProgressBar {
+  height: 100%;
+  background: transparent;
+  transition: background 0.1s linear;
+}
+
+.storiesImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991px) {
+  .stocksImgContainer {
+    width: 100%;
+    height: 400px; /* Taller rectangle on mobile */
+  }
+
+  .stocksSwiper {
+    padding-bottom: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .stocksName {
+    font-size: 20px;
   }
 }
 
-
 @media (max-width: 768px) {
-  .promosImg {
-    margin-bottom: 15px;
+  .stocksImgContainer {
+    height: 350px;
   }
-  
-  .promosName {
-    font-size: 20px;
-    margin-bottom: 15px;
+
+  .stocksName {
+    font-size: 18px;
   }
-  
-  .promosDescription {
-    margin-bottom: 20px;
-    font-size: 15px;
+
+  .stocksText {
+    font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .promosName {
-    font-size: 18px;
+  .stocksImgContainer {
+    height: 300px;
   }
-  
-  .promosLink {
-    font-size: 14px;
-    gap: 8px;
+
+      img, svg {
+        max-width: 100% !important;
+        /* height: auto; */
+    }
+
+  .stocksName {
+    font-size: 15px;
   }
-  
-  .promosLink svg {
-    width: 14px;
-    height: 14px;
+
+  .storiesModal {
+    height: 60vh;
   }
 }

@@ -1,7 +1,7 @@
 /* Footer.module.css */
 
 .container {
-  width: 1306px; /* Set container width to 1306px as requested */
+  max-width: 1306px; /* Set container width to 1306px as requested */
   margin: 0 auto; /* Center the container */
 }
 
