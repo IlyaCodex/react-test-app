@@ -1,4 +1,4 @@
-.stocks {
+.promos {
   margin-top: 50px;
 }
 
@@ -16,11 +16,11 @@
   font-weight: 600;
 }
 
-.stocksSwiper {
+.promosSwiper {
   width: 100%;
 }
 
-.stocksCard {
+.promosCard {
   display: flex;
   flex-direction: column;
   padding: 20px;
@@ -28,16 +28,16 @@
   border-radius: 10px;
 }
 
-.stocksCard h3 {
+.promosCard h3 {
     font-size: 17px;
 }
 
-.stocksImgContainer {
+.promosImgContainer {
   width: 100%;
   margin-bottom: 20px;
 }
 
-.stocksImg {
+.promosImg {
   object-fit: cover;
   object-position: center;
   background-position: center;
@@ -48,14 +48,14 @@
   height: 250px;
 }
 
-.stocksName {
+.promosName {
   margin-bottom: 20px;
   font-size: 22px;
   font-weight: 600;
   text-align: left;
 }
 
-.stocksDescription {
+.promosDescription {
   max-width: 350px;
   line-height: 1.5;
   margin-bottom: 35px;
@@ -63,7 +63,7 @@
   text-align: left;
 }
 
-.stocksLink {
+.promosLink {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -73,23 +73,23 @@
   text-align: left;
 }
 
-.stocksLink:hover {
+.promosLink:hover {
   color: rgba(0, 0, 0, 0.7); 
 }
 
-.stocksLink:focus {
+.promosLink:focus {
   color: #007bff;
   outline: none;
 }
 
-.stocksLink:focus svg {
+.promosLink:focus svg {
   transform: translateX(2px);
   transition: transform 0.3s ease;
 }
 
 
 @media (max-width: 1024px) {
-  .stocksDescription {
+  .promosDescription {
     max-width: 100%;
     margin-bottom: 25px;
   }
@@ -97,32 +97,32 @@
 
 
 @media (max-width: 768px) {
-  .stocksImg {
+  .promosImg {
     margin-bottom: 15px;
   }
   
-  .stocksName {
+  .promosName {
     font-size: 20px;
     margin-bottom: 15px;
   }
   
-  .stocksDescription {
+  .promosDescription {
     margin-bottom: 20px;
     font-size: 15px;
   }
 }
 
 @media (max-width: 480px) {
-  .stocksName {
+  .promosName {
     font-size: 18px;
   }
   
-  .stocksLink {
+  .promosLink {
     font-size: 14px;
     gap: 8px;
   }
   
-  .stocksLink svg {
+  .promosLink svg {
     width: 14px;
     height: 14px;
   }

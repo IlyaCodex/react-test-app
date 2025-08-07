@@ -92,6 +92,19 @@
     }
   }
 }
+.attributes {
+  padding-top: 10px;
+}
+.attribute {
+    /* border: 1px solid black; */
+    width: fit-content;
+    padding: 5px;
+    button {
+      border: 1px solid black;
+      padding: 2px;
+      margin-left: 20px;
+    }
+}
 
 .save {
   background-color: rgb(4, 185, 4);

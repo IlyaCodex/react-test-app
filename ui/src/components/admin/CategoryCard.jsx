@@ -68,13 +68,21 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       setPosition(cat.position);
       setParentCategories(cat.parents);
       setChildCategories(cat.children);
-      setItems(cat.items);
+      loadItems().then((res) => {
+        setAvailableItems(res.data ?? []);
+        setItems(
+          cat.items
+            .map((itemId) =>
+              (res.data ?? []).find((item) => item.id === itemId)
+            )
+            .filter(nonNull)
+        );
+      });
     });
     loadAvailableCategories(level).then(([parent, child]) => {
       setAvailableChildCategories(child);
       setAvailableParentCategories(parent);
     });
-    loadItems().then((res) => setAvailableItems(res.data ?? []));
   }, [categoryId]);
 
   //   const onImageSelect = (e) => {
@@ -135,7 +143,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       //   images,
       parents: parentCategories.filter(nonNull),
       children: childCategories.filter(nonNull),
-      items,
+      items: items.map((item) => item.id),
     });
     onClose();
   };
@@ -257,11 +265,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       <label>
         Продукты:{" "}
         <div className={styles.categories}>
-          {items.map((itemId) => {
-            const item = availableItems.find((i) => i.id === itemId);
-            if (!item) {
-              return null;
-            }
+          {items.map((item) => {
             return (
               <div
                 onClick={() => removeItem(item)}
@@ -277,7 +281,7 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
               Добавить
             </option>
             {availableItems
-              .filter((item) => !items.includes(item))
+              .filter((item) => !items.some((i) => i.id === item.id))
               .map((item) => (
                 <option value={item.id}>{item.name}</option>
               ))}

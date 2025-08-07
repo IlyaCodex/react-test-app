@@ -153,35 +153,45 @@ export const EditContent = () => {
     }
   };
 
+  const getSelectedClassName = (t) => {
+    return t === type ? styles.selected : "";
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.navigation}>
         <div
-          className={styles.link}
+          className={`${styles.link} ${getSelectedClassName("firstLevel")}`}
           onClick={(e) => onLinkClick(e, "firstLevel")}
         >
           Первый уровень
         </div>
         <div
-          className={styles.link}
+          className={`${styles.link} ${getSelectedClassName("secondLevel")}`}
           onClick={(e) => onLinkClick(e, "secondLevel")}
         >
           Второй уровень
         </div>
         <div
-          className={styles.link}
+          className={`${styles.link} ${getSelectedClassName("thirdLevel")}`}
           onClick={(e) => onLinkClick(e, "thirdLevel")}
         >
           Третий уровень
         </div>
-        <div className={styles.link} onClick={(e) => onLinkClick(e, "items")}>
+        <div
+          className={`${styles.link} ${getSelectedClassName("items")}`}
+          onClick={(e) => onLinkClick(e, "items")}
+        >
           Продукты
         </div>
-        <div className={styles.link} onClick={(e) => onLinkClick(e, "promos")}>
+        <div
+          className={`${styles.link} ${getSelectedClassName("promos")}`}
+          onClick={(e) => onLinkClick(e, "promos")}
+        >
           Акции
         </div>
         <div
-          className={styles.link}
+          className={`${styles.link} ${getSelectedClassName("partners")}`}
           onClick={(e) => onLinkClick(e, "partners")}
         >
           Партнеры

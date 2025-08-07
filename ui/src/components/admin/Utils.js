@@ -25,3 +25,5 @@ export const isNull = (obj) => {
 export const nonNull = obj => !isNull(obj);
 
 export const chooseImage = (item) => item.images?.[0];
+
+export const byPosition = (item1, item2) => item1.position - item2.position;

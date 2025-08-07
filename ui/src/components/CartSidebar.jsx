@@ -27,7 +27,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         .map(chooseImage)
         .filter(nonNull)
         .map((imageId) => api.getItemImage(imageId).then((res) => res.data))
-    ).then((arr) => setImages(arr));
+    ).then((arr) => setImages(arr.filter(nonNull)));
   }, [items]);
 
   const calculateTotal = () => {

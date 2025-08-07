@@ -4,7 +4,7 @@ import ProductCard from "../components/ProductCard";
 import ModalWindow from "./ModalWindow";
 import styles from "./CatalogPage.module.css";
 import { api } from "../api";
-import { isNull } from "../components/admin/Utils";
+import { byPosition, isNull } from "../components/admin/Utils";
 
 const CatalogPage = () => {
   const [data, setData] = useState([]);
@@ -80,9 +80,9 @@ const CatalogPage = () => {
           (cat) => cat.id === activeSubSubCategory.id
         );
 
-    setMainCategories(availableMainCategories);
-    setSubCategories(availableSubCategories);
-    setSubSubCategories(availableSubSubCategories);
+    setMainCategories(availableMainCategories.sort(byPosition));
+    setSubCategories(availableSubCategories.sort(byPosition));
+    setSubSubCategories(availableSubSubCategories.sort(byPosition));
 
     let categoriesWithItems = [];
     if (isNull(activeSubSubCategory)) {
@@ -90,7 +90,7 @@ const CatalogPage = () => {
       if (isNull(activeSubCategory)) {
         categoriesWithItems.push(...availableSubCategories);
         if (isNull(activeMainCategory)) {
-          setFilteredProducts(data);
+          setFilteredProducts(data.sort(byPosition));
           return;
         } else {
           categoriesWithItems.push(activeMainCategory);
@@ -111,7 +111,9 @@ const CatalogPage = () => {
       }
     }
 
-    setFilteredProducts(data.filter((product) => tempIds.includes(product.id)));
+    setFilteredProducts(
+      data.filter((product) => tempIds.includes(product.id)).sort(byPosition)
+    );
   }, [data, activeMainCategory, activeSubCategory, activeSubSubCategory]);
 
   const handleMainCategoryClick = (category) => {

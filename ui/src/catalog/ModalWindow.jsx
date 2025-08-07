@@ -133,6 +133,12 @@ const ModalWindow = ({ product, onClose }) => {
                 {}
               </span>
             </p>
+            {product.attributes.map((attr) => (
+              <p key={attr.name}>
+                <span className={styles.detailLabel}>{attr.name}:</span>
+                <span className={styles.detailValue}>{attr.value}</span>
+              </p>
+            ))}
           </div>
           <p className={styles.productPrice}>
             {product.price?.toLocaleString("ru-RU")} ₽

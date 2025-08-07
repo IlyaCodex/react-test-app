@@ -18,7 +18,8 @@ export const Product = ({ data, onClose }) => {
   const [images, setImages] = useState([]);
   const [categories, setCategories] = useState([]);
   const [attributes, setAttributes] = useState([]);
-  const [attribute, setAttribute] = useState("");
+  const [attributeName, setAttributeName] = useState("");
+  const [attributeValue, setAttributeValue] = useState("");
 
   const { auth } = useAuth();
 
@@ -92,7 +93,7 @@ export const Product = ({ data, onClose }) => {
   };
 
   const handleDelete = () => {
-    api.deletePartner(auth, data).then(onClose);
+    api.deleteItem(auth, data).then(onClose);
   };
 
   const removeImage = (image) => {
@@ -113,8 +114,14 @@ export const Product = ({ data, onClose }) => {
   };
 
   const addAttribute = () => {
-    if (!attributes.includes(attribute)) {
-      setAttributes([...attributes, attribute]);
+    if (
+      attributeName &&
+      !attributes.some((attribute) => attribute.name === attributeName)
+    ) {
+      setAttributes([
+        ...attributes,
+        { name: attributeName, value: attributeValue },
+      ]);
     }
   };
 
@@ -266,18 +273,20 @@ export const Product = ({ data, onClose }) => {
         Аттрибуты:
         <div className={styles.attrInput}>
           <input
-            value={attribute}
-            onChange={(e) => setAttribute(e.target.value)}
+            value={attributeName}
+            onChange={(e) => setAttributeName(e.target.value)}
+          />
+          <input
+            value={attributeValue}
+            onChange={(e) => setAttributeValue(e.target.value)}
           />
           <button onClick={addAttribute}>Добавить</button>
         </div>
-        <div className={styles.categories}>
+        <div className={styles.attributes}>
           {attributes.map((att) => (
-            <div
-              onClick={() => removeAttribute(att)}
-              className={styles.category}
-            >
-              {att}
+            <div className={styles.attribute}>
+              {att.name}: {att.value}
+              <button onClick={() => removeAttribute(att)}>Удалить</button>
             </div>
           ))}
         </div>

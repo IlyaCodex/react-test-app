@@ -5,7 +5,7 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, level INTEGER)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, price INTEGER, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN)"
+    "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, price INTEGER, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN, lookup TEXT)"
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS promos (id INTEGER PRIMARY KEY, name TEXT, description TEXT, position INTEGER)"
@@ -21,7 +21,7 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS cat_to_items (cat_id INTEGER, item_id INTEGER)"
   );
   db.run(
-    "CREATE TABLE IF NOT EXISTS attr_of_item (item_id INTEGER, name TEXT)"
+    "CREATE TABLE IF NOT EXISTS attr_of_item (item_id INTEGER, name TEXT, value TEXT)"
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS promo_images (promo_id INTEGER, position INTEGER, data TEXT)"
@@ -130,9 +130,9 @@ async function loadItemImageIds(itemId) {
 }
 
 async function loadAttributes(item) {
-  return getAllAsync("select name from attr_of_item where item_id = ?", [
+  return getAllAsync("select name, value from attr_of_item where item_id = ?", [
     item.id,
-  ]).then((rows) => rows.map((row) => row.name));
+  ]);
 }
 
 async function loadItemCategories(item) {
@@ -376,10 +376,10 @@ function enrichServerWithApiRoutes(app) {
       res.send(wrapResponse([]));
       return;
     }
-    const queryWithWildcards = `%${query}%`;
+    const queryWithWildcards = `%${query.toLowerCase()}%`;
     getAllAsync(
-      "select * from items where (name like ? or article like ?) limit 5",
-      [queryWithWildcards, queryWithWildcards]
+      "select * from items where lookup like ? limit 5",
+      [queryWithWildcards]
     )
       .then((rows) => {
         return Promise.all(
@@ -472,7 +472,7 @@ function enrichServerWithApiRoutes(app) {
       const item = req.body;
       if (item.id) {
         db.run(
-          "update items set name=?, price=?, position=?, article=?, manufacturer=?, description=?, amount=?, in_stock=?, has_promo=? where id=?",
+          "update items set name=?, price=?, position=?, article=?, manufacturer=?, description=?, amount=?, in_stock=?, has_promo=?, lookup=? where id=?",
           item.name,
           item.price,
           item.position,
@@ -482,6 +482,7 @@ function enrichServerWithApiRoutes(app) {
           item.amount,
           item.inStock,
           item.hasPromo,
+          `${item.name} ${item.article}`.toLowerCase(),
           item.id
         );
         getAllAsync("select cat_id from cat_to_items where item_id = ?", [
@@ -543,32 +544,44 @@ function enrichServerWithApiRoutes(app) {
             );
           }
         });
-        getAllAsync("select name from attr_of_item where item_id = ?", [
+        getAllAsync("select name, value from attr_of_item where item_id = ?", [
           item.id,
         ]).then((attributes) => {
-          attributes = attributes.map((row) => row.name);
           const newElements = item.attributes.filter(
-            (att) => !attributes.includes(att)
+            (att) =>
+              !attributes.some((attribute) => attribute.name === att.name)
           );
           const deletedElements = attributes.filter(
-            (att) => !item.attributes.includes(att)
+            (att) =>
+              !item.attributes.some((attribute) => attribute.name === att.name)
+          );
+          const updatedElemets = item.attributes.filter((att) =>
+            attributes.some(
+              (attr) => attr.name === att.name && attr.value !== att.value
+            )
           );
           for (const newEl of newElements) {
-            db.run("insert into attr_of_item (item_id, name) values (?, ?)", [
-              item.id,
-              newEl,
-            ]);
+            db.run(
+              "insert into attr_of_item (item_id, name, value) values (?, ?, ?)",
+              [item.id, newEl.name, newEl.value]
+            );
           }
           for (const deleted of deletedElements) {
             db.run("delete from attr_of_item where item_id = ? and name = ?", [
               item.id,
-              deleted,
+              deleted.name,
             ]);
+          }
+          for (const newEl of updatedElemets) {
+            db.run(
+              "update attr_of_item set value = ? where item_id = ? and name = ?",
+              [newEl.value, item.id, newEl.name]
+            );
           }
         });
       } else {
         insertRow(
-          "insert into items (name, price, position, article, manufacturer, description, amount, in_stock, has_promo) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          "insert into items (name, price, position, article, manufacturer, description, amount, in_stock, has_promo, lookup) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
           [
             item.name,
             item.price,
@@ -579,6 +592,7 @@ function enrichServerWithApiRoutes(app) {
             item.amount,
             item.inStock,
             item.hasPromo,
+            `${item.name} ${item.article}`.toLowerCase()
           ]
         ).then((id) => {
           for (const image of item.images) {
@@ -589,9 +603,10 @@ function enrichServerWithApiRoutes(app) {
           }
 
           for (const attr of item.attributes) {
-            db.run("insert into attr_of_item(item_id, name) values (?, ?)", [
+            db.run("insert into attr_of_item(item_id, name, value) values (?, ?, ?)", [
               id,
-              attr,
+              attr.name,
+              attr.value
             ]);
           }
 

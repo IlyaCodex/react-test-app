@@ -200,12 +200,14 @@
 .modalContent {
   background-color: #fff;
   width: 580px;
+  height: 100%;
   padding: 20px;
   border-radius: 10px;
   position: relative;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   max-height: 90vh;
-  /* overflow-y: auto; */
+  overflow: hidden;
+  /* overflow-x: hidden; */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -223,17 +225,19 @@
 }
 
 .modalImgContainer {
+  height: 70%;
   width: 100%;
   margin-bottom: 15px;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .modalImg {
-  width: 520px; 
-  height: auto;
+  height: 100%;
   object-fit: contain;
   border-radius: 5px;
+  
 }
 
 .modalName {
