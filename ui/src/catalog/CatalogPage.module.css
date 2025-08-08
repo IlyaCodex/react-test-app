@@ -264,7 +264,9 @@
 }
 
 .requestText {
-  width: 540px;
+  /* width: 492px; */
+  padding-left: 8rem;
+  padding-top: 0.5rem;
 }
 
 .requestTitle {
@@ -346,6 +348,7 @@
     width: 100%;
     margin-bottom: 20px;
     text-align: center;
+    padding-left: 0rem;
   }
 
   .requestForm {
@@ -364,6 +367,13 @@
   
 .requestImg {
   width: 200px;
+}
+
+.requestImgLeft {
+  bottom: -34px;
+  left: -47px;
+  opacity: 0.5;
+  transform: rotate(45deg);
 }
 }
 
