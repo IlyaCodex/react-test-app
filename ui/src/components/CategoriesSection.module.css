@@ -231,6 +231,7 @@
   margin: 0 auto;
 }
 
+
 .discountBtn:focus {
   background-color: #38af01;
 }
@@ -241,7 +242,8 @@
 }
 
 .discountBtn:hover {
-  background-color: #333;
+  background-color: #38af01;
+  transition: 0.5s all;
 }
 
 

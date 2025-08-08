@@ -6,6 +6,7 @@ import styles from "./CatalogPage.module.css";
 import { api } from "../api";
 import { byPosition, isNull } from "../components/admin/Utils";
 
+
 const CatalogPage = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -154,18 +155,18 @@ const CatalogPage = () => {
     <section className={styles.catalog}>
       <div className={styles.container}>
         <div className={styles.catalogTop}>
-          <h1 className={styles.catalogTitle}>
+          {/* <h1 className={styles.catalogTitle}>
             {activeMainCategory?.name ?? "Все"}
-          </h1>
+          </h1> */}
           <div className={styles.catalogCategories}>
-            <button
+            {/* <button
               className={`${styles.catalogCategoriesLink} ${
                 activeMainCategory === undefined ? styles.active : ""
               }`}
               onClick={() => handleMainCategoryClick(undefined)}
             >
               Все
-            </button>
+            </button> */}
             {mainCategories.map((category) => (
               <button
                 key={category.id}
@@ -251,30 +252,42 @@ const CatalogPage = () => {
           ))}
         </ul>
 
-        <div className={styles.requestBlock}>
+        <div className={styles.requestBlock} >
+          <img className={`${styles.requestImg} ${styles.requestImgLeft}`} src="../images/8276b9d42395e1f1093dbfe7cdcc029e687c36a5.png" alt=""  />
+          <img className={`${styles.requestImg} ${styles.requestImgRight}`} src="../images/images_right.png" alt="" />
           <div className={styles.requestText}>
             <h2 className={styles.requestTitle}>
-              Не нашли необходимое или не можете определиться?
+              Не нашли необходимое <br/> или не можете определиться?
             </h2>
             <p className={styles.requestDescription}>
-              Оставьте заявку, наши специалисты помогут с выбором и подберут
+              Оставьте заявку, наши специалисты помогут <br/> с выбором и подберут
               решение
             </p>
           </div>
           <div className={styles.requestForm}>
-            <label className={styles.formLabel}>ФИО</label>
+            {/* <label className={styles.formLabel}>ФИО</label> */}
             <input
               type="text"
               className={styles.formInput}
-              placeholder="Введите ФИО"
+              placeholder="Ваше имя"
             />
-            <label className={styles.formLabel}>Номер телефона</label>
+            {/* <label className={styles.formLabel}>Номер телефона</label> */}
             <input
               type="tel"
               className={styles.formInput}
-              placeholder="+7 (___) ___-__-__"
+              placeholder="+7(999)222 22-22"
             />
-            <button className={styles.formButton}>Отправить заявку</button>
+            <button className={styles.formButton}>Отправить заявку
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M5 12H19M19 12L13 6M19 12L13 18"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

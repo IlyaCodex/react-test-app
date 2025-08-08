@@ -36,7 +36,7 @@ const OrderSection = () => {
         <div className={styles.orderInner}>
           <div className={styles.orderInfo}>
             {orderSteps.map((step, index) => (
-              <div key={index} className={styles.orderStep}>
+              <div key={index} className={`${styles.orderStep} ${styles[`step${index}`]}`}>
                 <h3 className={styles.orderSubtitle}>{step.title}</h3>
                 <p className={styles.orderText}>{step.description}</p>
               </div>

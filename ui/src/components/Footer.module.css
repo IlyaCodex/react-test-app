@@ -1,14 +1,42 @@
 /* Footer.module.css */
 
 .container {
-  max-width: 1306px; /* Set container width to 1306px as requested */
-  margin: 0 auto; /* Center the container */
+  max-width: 1308px;
+  position: relative;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px 30px 0px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
+
+
+/* .container::before {
+    content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at center, rgba(56, 175, 1, 0.7) 70%, rgba(56, 175, 1, 0) 100%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: blur(18px);
+} @media (max-width: 768px) {
+  .container::before {
+    width: 100%;
+    height: 37%;
+    top: 82%;
+  }
+} */
 
 .footer {
   padding: 45px 0 20px;
-  background-color: #171717;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #000000;
   margin-top: 20px;
 }
 
@@ -37,7 +65,7 @@
 }
 
 .footerLink {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(0, 0, 0, 0.85);
   border: 1px solid transparent;
   border-radius: 4px;
   font-size: 16px;
@@ -46,11 +74,11 @@
 }
 
 .footerLink:hover {
-  color: #007bff;
+  color: #0db701;
 }
 
 .footerLink:focus {
-  border-color: #007bff;
+  border-color: #0eb402;
   color: #ffffff;
   outline: none;
 }
@@ -85,16 +113,23 @@
 }
 
 .footerSocial:hover svg path {
-  fill: rgba(255, 255, 255, 0.7);
+  fill: rgba(48, 177, 15, 0.884);
 }
 
 .footerSocial:focus {
-  background-color: #007bff;
+  background-color: #21c205;
   outline: none;
 }
 
+.footerSocial svg path {
+  fill: #2f2f2f }
+
 .footerSocial:focus svg path {
-  fill: #ffffff;
+  fill: #0cb609;
+}
+.footerLogo {
+  width: 90px;
+  height: 70px;
 }
 
 /* Специфичные трансформации для иконок */
@@ -130,12 +165,21 @@
   }
   
   .footerColumns {
-    gap: 30px;
-    margin-bottom: 30px;
+    flex-direction: row;      /* Вместо column */
+    flex-wrap: wrap;          /* Разрешаем перенос */
+    gap: 20px;
   }
-  
+
   .footerColumn {
-    gap: 15px;
+    flex: 1 1 calc(50% - 10px); /* 2 колонки в ряд */
+    min-width: 140px;           /* чтобы текст не ломался слишком сильно */
+  }
+
+   
+  .footerInner {
+    gap: 25px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
   
   .footerSubtitle {
@@ -149,14 +193,6 @@
 
 /* Для очень маленьких экранов */
 @media (max-width: 480px) {
-  .footerColumns {
-    gap: 20px;
-    flex-direction: column;
-  }
-  
-  .footerInner {
-    gap: 25px;
-  }
   
   .footerSocials {
     gap: 10px;

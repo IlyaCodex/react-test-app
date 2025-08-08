@@ -19,6 +19,18 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
     color: #000000;
 }
 
+.swiper-button-prev:hover::after {
+  background-color: #1fba04dd;
+  color: #ffffff;
+  transition: 0.3s all;
+}
+
+.swiper-button-next:hover::after {
+   background-color: #1fba04dd;
+    color: #ffffff;
+    transition: 0.3s all;
+}
+
 .swiper-button-next:after {
   margin-right: 22px;
 }

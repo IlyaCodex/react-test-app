@@ -1,8 +1,8 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import styles from './Footer.module.css';
 
 const Footer = () => {
-  // Компоненты иконок для переиспользования
   const TelegramIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="29" viewBox="0 0 28 29" fill="none">
       <path d="M24.1613 4.76325C24.1613 4.76325 26.4277 3.8795 26.2388 6.02575C26.1759 6.90952 25.6093 10.0026 25.1686 13.3483L23.6576 23.2589C23.6576 23.2589 23.5317 24.7108 22.3985 24.9633C21.2652 25.2158 19.5655 24.0796 19.2506 23.8271C18.9988 23.6377 14.529 20.797 12.955 19.4083C12.5143 19.0295 12.0107 18.272 13.018 17.3883L19.6284 11.0758C20.3839 10.3183 21.1394 8.55078 17.9915 10.697L9.17764 16.6939C9.17764 16.6939 8.17034 17.3252 6.28168 16.7571L2.1895 15.4945C2.1895 15.4945 0.67854 14.5477 3.25975 13.6008C9.55541 10.6339 17.299 7.60386 24.1613 4.76325Z" fill="#F0F0F0"/>
@@ -10,7 +10,7 @@ const Footer = () => {
   );
 
   const InstagramIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="29" viewBox="0 0 28 29" fill="none">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="29" viewBox="0 0 28 29" fill="#2f2f2f">
       <path fillRule="evenodd" clipRule="evenodd" d="M14 21.5C17.866 21.5 21 18.366 21 14.5C21 10.634 17.866 7.5 14 7.5C10.134 7.5 7 10.634 7 14.5C7 18.366 10.134 21.5 14 21.5ZM14 19.1667C16.5773 19.1667 18.6667 17.0773 18.6667 14.5C18.6667 11.9227 16.5773 9.83333 14 9.83333C11.4227 9.83333 9.33333 11.9227 9.33333 14.5C9.33333 17.0773 11.4227 19.1667 14 19.1667Z" fill="#F0F0F0"/>
       <path d="M21 6.33301C20.3557 6.33301 19.8333 6.85535 19.8333 7.49967C19.8333 8.144 20.3557 8.66634 21 8.66634C21.6444 8.66634 22.1667 8.144 22.1667 7.49967C22.1667 6.85535 21.6444 6.33301 21 6.33301Z" fill="#F0F0F0"/>
       <path fillRule="evenodd" clipRule="evenodd" d="M1.92961 5.48906C1.16666 6.98644 1.16666 8.94663 1.16666 12.867V16.1337C1.16666 20.054 1.16666 22.0142 1.92961 23.5115C2.60072 24.8287 3.67158 25.8996 4.98873 26.5707C6.48611 27.3337 8.44629 27.3337 12.3667 27.3337H15.6333C19.5537 27.3337 21.5139 27.3337 23.0112 26.5707C24.3284 25.8996 25.3993 24.8287 26.0703 23.5115C26.8333 22.0142 26.8333 20.054 26.8333 16.1337V12.867C26.8333 8.94663 26.8333 6.98644 26.0703 5.48906C25.3993 4.17192 24.3284 3.10106 23.0112 2.42995C21.5139 1.66699 19.5537 1.66699 15.6333 1.66699H12.3667C8.44629 1.66699 6.48611 1.66699 4.98873 2.42995C3.67158 3.10106 2.60072 4.17192 1.92961 5.48906ZM15.6333 4.00033H12.3667C10.368 4.00033 9.00928 4.00215 7.95908 4.08794C6.9361 4.17152 6.41297 4.32301 6.04804 4.50896C5.16994 4.95637 4.45604 5.67028 4.00862 6.54837C3.82268 6.91331 3.67119 7.43644 3.58761 8.45942C3.50181 9.50962 3.49999 10.8683 3.49999 12.867V16.1337C3.49999 18.1324 3.50181 19.491 3.58761 20.5412C3.67119 21.5643 3.82268 22.0874 4.00862 22.4523C4.45604 23.3304 5.16994 24.0442 6.04804 24.4917C6.41297 24.6776 6.9361 24.8292 7.95908 24.9127C9.00928 24.9985 10.368 25.0003 12.3667 25.0003H15.6333C17.6321 25.0003 18.9906 24.9985 20.0409 24.9127C21.0639 24.8292 21.5871 24.6776 21.952 24.4917C22.83 24.0442 23.5439 23.3304 23.9913 22.4523C24.1773 22.0874 24.3288 21.5643 24.4124 20.5412C24.4981 19.491 24.5 18.1324 24.5 16.1337V12.867C24.5 10.8683 24.4981 9.50962 24.4124 8.45942C24.3288 7.43644 24.1773 6.91331 23.9913 6.54837C23.5439 5.67028 22.83 4.95637 21.952 4.50896C21.5871 4.32301 21.0639 4.17152 20.0409 4.08794C18.9906 4.00215 17.6321 4.00033 15.6333 4.00033Z" fill="#F0F0F0"/>
@@ -28,7 +28,7 @@ const Footer = () => {
       <div className={styles.container}>
         <div className={styles.footerInner}>
           <img 
-            src="/images/logo-white.svg" 
+            src="../images/logo.png" 
             width="92" 
             height="61" 
             alt="Логотип Triton" 
@@ -56,21 +56,19 @@ const Footer = () => {
                 <li>
                   <a 
                     className={styles.footerLink} 
-                    href="https://brabus.ru/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
-                    Москва, ул. Ленина, 11
+                    Москва, ул. Петровка, 7
                   </a>
                 </li>
                 <li>
                   <a 
                     className={styles.footerLink} 
-                    href="https://brabus.ru/" 
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
-                    Краснодар, ул. Красная 18
+                    Краснодар, ул. Красная 12
                   </a>
                 </li>
               </ul>
@@ -81,13 +79,13 @@ const Footer = () => {
               <span className={styles.footerSubtitle}>Разделы</span>
               <ul className={styles.footerLinks}>
                 <li>
-                  <a className={styles.footerLink} href="/support">Поддержка</a>
+                  <a href="mailto:info@triton.ru?subject=Запрос%20в%20поддержку&body=Здравствуйте,%20опишите%20свою%20проблему" className={styles.footerLink}>Поддержка</a>
                 </li>
                 <li>
-                  <a className={styles.footerLink} href="/delivery">Доставка</a>
+                  <Link to="/#delivery" className={styles.footerLink}>Доставка</Link>
                 </li>
                 <li>
-                  <a className={styles.footerLink} href="/partners">Партнерам</a>
+                  <Link to="/" className={styles.footerLink}>Партнерам</Link>
                 </li>
               </ul>
             </div>
@@ -99,7 +97,7 @@ const Footer = () => {
                 <li>
                   <a 
                     className={styles.footerSocial} 
-                    href="https://web.telegram.org/" 
+                    href="https://t.me/triton_dent_ru" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     aria-label="Открыть ссылку на Telegram"
@@ -111,7 +109,7 @@ const Footer = () => {
                 <li>
                   <a 
                     className={styles.footerSocial} 
-                    href="https://instagram.com/" 
+                    href="https://www.instagram.com/triton_dent?igsh=aGQwM3BtODgwNWU3&utm_source=qr" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     aria-label="Открыть ссылку на Instagram"
@@ -123,7 +121,7 @@ const Footer = () => {
                 <li>
                   <a 
                     className={styles.footerSocial} 
-                    href="https://vk.com/" 
+                    href="https://vk.com/triton_dent" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     aria-label="Открыть ссылку на ВКонтакте"

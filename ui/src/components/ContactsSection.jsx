@@ -7,7 +7,7 @@ const ContactsSection = () => {
       <div className={styles.container}>
         <div className={styles.contactsInner}>
           <div className={styles.contactsContent}>
-            <h2 className={styles.titleSection}>Ждём вас в наших магазинах</h2>
+            <h2 className={styles.titleSection}>Ждём вас <br/> в наших магазинах</h2>
             <div className={styles.contactsItems}>
               <div className={styles.contactsItem}>
                 <h3 className={styles.contactsSubtitle}>Москва, ул. Ленина 1</h3>
@@ -26,14 +26,13 @@ const ContactsSection = () => {
             </div>
           </div>
           
-          <div className={styles.contactsMap} style={{ position: 'relative', overflow: 'hidden' }}>
+          <div className={styles.contactsMap}>
             <iframe 
-              src="https://yandex.ru/map-widget/v1/?ll=37.741656%2C55.591847&mode=search&oid=1741147695&ol=biz&sctx=ZAAAAAgBEAAaKAoSCZ5eKcsQz0JAEdOgaB7A4EtAEhIJA137Anqh8j8RmPxP%2Fu4d7D8iBgABAgMEBSgKOABAga4HSAFqAnJ1nQHNzMw9oAEAqAEAvQGrE8ZIwgEQr5yfvgbr7YPa9wS%2Fmf%2FgBIICCG1lcmNlZGVzigIAkgIAmgIMZGVza3RvcC1tYXBz&sll=37.741656%2C55.591847&sspn=0.043602%2C0.019418&text=mercedes&utm_source=share&z=15"
-              width="560" 
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2968.8771552703306!2d37.419023303838!3d55.68310406925035!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sru!2sru!4v1754633992314!5m2!1sru!2sru"
+              width="100%" 
               height="460" 
               frameBorder="0"
               allowFullScreen
-              style={{ position: 'relative' }}
               title="Карта расположения магазинов"
             ></iframe>
           </div>
