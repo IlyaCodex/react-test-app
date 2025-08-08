@@ -49,15 +49,15 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   };
 
   const handleAddToCart = () => {
-    addToCart({ ...product, count: 1 }); // Add product with count 1
-    onClose(); // Close the modal
-    onOpenCart(); // Open the cart
+    addToCart({ ...product, count: 1 }); 
+    onClose(); 
+    onOpenCart(); 
   };
 
   const handleBuyNow = () => {
-    addToCart({ ...product, count: 1 }); // Add product with count 1
-    onClose(); // Close the modal
-    onOpenCart(); // Open the cart
+    addToCart({ ...product, count: 1 }); 
+    onClose(); 
+    onOpenCart(); 
   };
 
   if (!product) {
@@ -81,7 +81,21 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
 
           <div className={styles.sliderContainer}>
             <button className={styles.sliderPrevBtn} onClick={handlePrev}>
-              ←
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              style={{ transform: "rotate(180deg)" }}
+             >
+              <path
+                d="M5 12H19M19 12L13 6M19 12L13 18"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+           </svg>
             </button>
             <div className={styles.slider}>
               <div
@@ -105,7 +119,15 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
               </div>
             </div>
             <button className={styles.sliderNextBtn} onClick={handleNext}>
-              →
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M5 12H19M19 12L13 6M19 12L13 18"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
         </div>

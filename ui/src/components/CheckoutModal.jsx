@@ -38,7 +38,7 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
       selfPickup,
       clinicName: formData.clinicName,
     });
-    onClose(); // Close the current modal
+    onClose(); 
   };
 
   return (
