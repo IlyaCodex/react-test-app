@@ -265,7 +265,9 @@ const Header = () => {
                 </div>
               )}
               <button
-                className={styles.headerSearchBtn}
+                className={`${styles.headerSearchBtn} ${
+                  isSearchOpen ? styles.hidden : ""
+                }`}
                 onClick={handleSearchToggle}
                 aria-label={isSearchOpen ? "Закрыть поиск" : "Открыть поиск"}
               >
@@ -500,4 +502,3 @@ export default Header;
 // };
 
 // export default Header;
-

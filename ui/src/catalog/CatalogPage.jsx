@@ -4,7 +4,7 @@ import ProductCard from "../components/ProductCard";
 import ModalWindow from "./ModalWindow";
 import styles from "./CatalogPage.module.css";
 import { api } from "../api";
-import { byPosition, isNull } from "../components/admin/Utils";
+import { byPosition, isNull, nonNull } from "../components/admin/Utils";
 
 const CatalogPage = () => {
   const [data, setData] = useState([]);
@@ -12,8 +12,8 @@ const CatalogPage = () => {
     api.getItems().then((res) => setData(res.data));
   }, []);
 
-  const { mainCategory: urlMainCategory } = useParams();
   const [searchParams] = useSearchParams();
+  const initialMainCategory = searchParams.get("maincategory");
   const initialSubcategory = searchParams.get("subcategory");
 
   const [categories, setCategories] = useState([]);
@@ -23,16 +23,29 @@ const CatalogPage = () => {
 
   const [filteredProducts, setFilteredProducts] = useState(data);
 
-  const [activeMainCategory, setActiveMainCategory] = useState(
-    urlMainCategory || undefined
-  );
-  const [activeSubCategory, setActiveSubCategory] = useState(
-    initialSubcategory || undefined
-  );
-  const [activeSubSubCategory, setActiveSubSubCategory] = useState();
+  const [activeMainCategory, setActiveMainCategory] = useState(undefined);
+  const [activeSubCategory, setActiveSubCategory] = useState(undefined);
+  const [activeSubSubCategory, setActiveSubSubCategory] = useState(undefined);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    if (nonNull(initialMainCategory)) {
+      setActiveMainCategory(
+        categories.find(
+          (category) => category.id.toString() === initialMainCategory
+        ) || undefined
+      );
+    }
+    if (nonNull(initialSubcategory)) {
+      setActiveSubCategory(
+        categories.find(
+          (category) => category.id.toString() === initialSubcategory
+        ) || undefined
+      );
+    }
+  }, [initialMainCategory, initialSubcategory, categories]);
 
   useEffect(() => {
     Promise.all([

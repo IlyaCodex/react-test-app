@@ -1,20 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import styles from './StocksSection.module.css';
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import styles from "./StocksSection.module.css";
+import { api } from "../api";
+import { byPosition, chooseImage, isNull, nonNull } from "./admin/Utils";
 
-const StoriesModal = ({ isOpen, onClose, images }) => {
+const StoriesModal = ({ isOpen, onClose, imageIds, images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef(null);
   const isPausedRef = useRef(false);
 
   useEffect(() => {
-    if (isOpen && images.length > 0) {
+    if (isOpen && imageIds.length > 0) {
       setProgress(0);
       const interval = 100; // Update every 100ms
       const totalDuration = 10000; // 10 seconds
@@ -24,7 +26,7 @@ const StoriesModal = ({ isOpen, onClose, images }) => {
         if (!isPausedRef.current) {
           setProgress((prev) => {
             if (prev >= 100) {
-              if (currentIndex < images.length - 1) {
+              if (currentIndex < imageIds.length - 1) {
                 setCurrentIndex((prevIndex) => prevIndex + 1);
                 return 0;
               } else {
@@ -40,7 +42,7 @@ const StoriesModal = ({ isOpen, onClose, images }) => {
 
       return () => clearInterval(intervalRef.current);
     }
-  }, [isOpen, currentIndex, images.length, onClose]);
+  }, [isOpen, currentIndex, imageIds.length, onClose]);
 
   const handleMouseDown = () => {
     isPausedRef.current = true;
@@ -71,21 +73,22 @@ const StoriesModal = ({ isOpen, onClose, images }) => {
     >
       <div className={styles.storiesModal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.storiesProgress}>
-          {images.map((_, index) => (
+          {imageIds.map((_, index) => (
             <div
               key={index}
               className={styles.storiesProgressBar}
               style={{
-                width: `${100 / images.length}%`,
-                background: index === currentIndex
-                  ? `linear-gradient(to right,rgba(78, 78, 78, 0.78) ${progress}%, transparent ${progress}%)`
-                  : 'transparent',
+                width: `${100 / imageIds.length}%`,
+                background:
+                  index === currentIndex
+                    ? `linear-gradient(to right,rgba(78, 78, 78, 0.78) ${progress}%, transparent ${progress}%)`
+                    : "transparent",
               }}
             />
           ))}
         </div>
         <img
-          src={images[currentIndex]}
+          src={images.find((image) => image.id === imageIds[currentIndex]).data}
           alt={`Story ${currentIndex + 1}`}
           className={styles.storiesImg}
         />
@@ -96,59 +99,37 @@ const StoriesModal = ({ isOpen, onClose, images }) => {
 
 const StocksSection = () => {
   const [selectedStock, setSelectedStock] = useState(null);
+  const [stocks, setStocks] = useState([]);
+  const [images, setImages] = useState([]);
 
-  const stocks = [
-    {
-      id: 1,
-      title: "3 по цене 2",
-      text: "на расходники",
-      image: "../images/f591762b1b0171695e2a2e4c8f62cc85c4817024.jpg",
-      alt: "Получите 10% скидки на Zub",
-      images: ["../images/1.jpg", "../images/2.jpg"]
-    },
-    {
-      id: 2,
-      title: "3 по цене 2",
-      text: "на расходники",
-      image: "../images/7d491769a2032ba19dc50d9f9eef56deb26e0dd1.jpg",
-      alt: "Шаурма в подарок",
-      images: ["../images/2.jpg", "../images/3.png"]
-    },
-    {
-      id: 3,
-      title: "Профи-день",
-      text: "скидки для мастеров",
-      image: "../images/2a4641d72558b67796c7370b39efd6edd67d09e1.jpg",
-      alt: "Уколы и перчатки в подарок",
-      images: ["../images/3.png"]
-    },
-    {
-      id: 4,
-      title: "Инструмент недели",
-      text: "скидка до 40%",
-      image: "../images/ff18b815a6c2eb89696ae2dc573a4bc1db511789.png",
-      alt: "Специальное предложение",
-      images: ["../images/4.jpg", "../images/1.jpg"]
-    },
-  ];
+  useEffect(() => {
+    api.getPromos().then((res) => {
+      if (res.error) {
+        console.error("Could not load promos", res.error);
+        return;
+      }
+      const newPromos = (res.data ?? []).sort(byPosition);
+      setStocks(newPromos);
+      return Promise.all(
+        newPromos.map((p) => {
+          const imageId = chooseImage(p);
+          if (isNull(imageId)) {
+            return Promise.resolve(undefined);
+          }
+          return api.getPromoImage(imageId).then((res) => res.data);
+        })
+      ).then((newImages) => setImages(newImages.filter(nonNull)));
+    });
+  }, []);
 
-  const ArrowIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
-      <path 
-        d="M16.7071 8.70711C17.0976 8.31658 17.0976 7.68342 16.7071 7.29289L10.3431 0.928932C9.95262 0.538408 9.31946 0.538408 8.92893 0.928932C8.53841 1.31946 8.53841 1.95262 8.92893 2.34315L14.5858 8L8.92893 13.6569C8.53841 14.0474 8.53841 14.6805 8.92893 15.0711C9.31946 15.4616 9.95262 15.4616 10.3431 15.0711L16.7071 8.70711ZM0 8V9H16V8V7H0V8Z" 
-        fill="#171717"
-      />
-    </svg>
-  );
-
-const swiperOptions = {
+  const swiperOptions = {
     modules: [Autoplay, Pagination, Navigation],
     spaceBetween: 15, // Reduced space for 4 cards on mobile
     slidesPerView: 4, // Default to 4 on desktop
     loop: true,
     pagination: {
       clickable: true,
-      dynamicBullets: true
+      dynamicBullets: true,
     },
     navigation: true,
     autoplay: {
@@ -156,33 +137,39 @@ const swiperOptions = {
       disableOnInteraction: false,
     },
     breakpoints: {
-      0: { 
+      0: {
         slidesPerView: 2, // 4 cards on mobile
-        spaceBetween: 10 // Tight spacing for mobile
+        spaceBetween: 10, // Tight spacing for mobile
       },
       576: { slidesPerView: 2 },
       768: { slidesPerView: 3 },
-      992: { slidesPerView: 4 }
-    }
+      992: { slidesPerView: 4 },
+    },
   };
   return (
     <section className={styles.stocks} id="stocks">
       <div className={styles.container}>
         <h2 className={styles.titleSection}>Акции</h2>
-        
+
         <Swiper {...swiperOptions} className={styles.stocksSwiper}>
           {stocks.map((stock) => (
             <SwiperSlide key={stock.id}>
-              <div className={styles.stocksCard} onClick={() => setSelectedStock(stock)}>
+              <div
+                className={styles.stocksCard}
+                onClick={() => setSelectedStock(stock)}
+              >
                 <div className={styles.stocksImgContainer}>
-                  <img 
-                    className={styles.stocksImg} 
-                    src={stock.image} 
-                    alt={stock.alt} 
+                  <img
+                    className={styles.stocksImg}
+                    src={
+                      images.find((image) => image.id === chooseImage(stock))
+                        ?.data
+                    }
+                    alt={stock.alt}
                   />
                   <div className={styles.stocksTextOverlay}>
-                    <h3 className={styles.stocksName}>{stock.title}</h3>
-                    <p className={styles.stocksText}>{stock.text}</p>
+                    <h3 className={styles.stocksName}>{stock.name}</h3>
+                    <p className={styles.stocksText}>{stock.description}</p>
                   </div>
                 </div>
               </div>
@@ -190,10 +177,11 @@ const swiperOptions = {
           ))}
         </Swiper>
       </div>
-      <StoriesModal 
-        isOpen={!!selectedStock} 
-        onClose={() => setSelectedStock(null)} 
-        images={selectedStock?.images || []} 
+      <StoriesModal
+        isOpen={!!selectedStock}
+        onClose={() => setSelectedStock(null)}
+        imageIds={selectedStock?.images || []}
+        images={images}
       />
     </section>
   );
