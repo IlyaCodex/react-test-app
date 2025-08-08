@@ -36,6 +36,30 @@
   height: 105px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.step0:hover { background-color: #38AF01; }
+.step1:hover { background-color: #2484E3; }
+.step2:hover { background-color: #FE9E26; }
+.step3:hover { background-color: #CC0001; }
+
+.step0:hover .orderSubtitle,
+.step0:hover .orderText,
+.step1:hover .orderSubtitle,
+.step1:hover .orderText,
+.step2:hover .orderSubtitle,
+.step2:hover .orderText,
+.step3:hover .orderSubtitle,
+.step3:hover .orderText {
+  color: #fff;
+}
+
+.step0:hover .orderSubtitle::before,
+.step1:hover .orderSubtitle::before,
+.step2:hover .orderSubtitle::before,
+.step3:hover .orderSubtitle::before {
+  background-color: #fff;
 }
 
 .orderSubtitle {
@@ -168,7 +192,8 @@
 }
 
 .orderBtn:hover {
-  background-color: #333;
+  background-color: #38af01;
+  transition: 0.5s all;
 }
 
 .hiddenRadio {

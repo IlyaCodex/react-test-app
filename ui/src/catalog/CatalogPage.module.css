@@ -219,8 +219,36 @@
   display: flex;
   justify-content: space-between;
   margin-top: 40px;
-  padding: 20px 0;
+  padding: 20px 20px;
+  height: 400px;
   border-top: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden; 
+}
+
+.requestImg {
+  position: absolute;
+  width: 400px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.requestImgLeft {
+  bottom: -119px;
+  left: -112px;
+  opacity: 0.5;
+  transform: rotate(45deg);
+}
+
+.requestImgRight {
+      top: -62px;
+    right: -64px;
+    opacity: 0.5;
+    opacity: 0.5;
+    z-index: 1;
+    transform: rotate(-136deg);
 }
 
 .requestText {
@@ -241,6 +269,10 @@
 
 .requestForm {
   width: 430px;
+  position: relative;
+  z-index: 2;
+  padding-top: 70px;
+  padding-right: 25px;
 }
 
 .formLabel {
@@ -255,33 +287,47 @@
   height: 40px;
   padding: 8px;
   margin-bottom: 15px;
-  border: 1px solid #000000;
-  border-radius: 4px;
+  /* border: 1px solid #000000; */
+  border-radius: 10px;
   font-size: 14px;
+  background-color: #E7E7E7;
 }
 
 .formButton {
   width: 100%;
   height: 40px;
-  background-color: #000000;
-  color: #ffffff;
+  padding: 12px 30px;
+  background-color: #4a4a4a;
+  color: #fff;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.formButton svg {
+  padding-left: 7px;
+  width: 32px;
 }
 
 .formButton:hover {
-  background-color: #333333;
+  background-color: #38af01;
 }
 
-/* Responsive Design for Mobile */
+
 @media (max-width: 768px) {
   .requestBlock {
     flex-direction: column;
     align-items: center;
     padding: 15px 0;
+    height: auto;
   }
 
   .requestText {
@@ -292,13 +338,23 @@
 
   .requestForm {
     width: 100%;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 0;
   }
+
 
   .formInput, .formButton {
     height: 35px;
     font-size: 12px;
   }
+  
+.requestImg {
+  width: 200px;
 }
+}
+
 
 @media (max-width: 480px) {
   .requestTitle {
