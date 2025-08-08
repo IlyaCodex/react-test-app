@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import styles from "./CartSidebar.module.css";
 import { CartContext } from "../context/CartContext";
 import CheckoutModal from "./CheckoutModal";
+import FinalModal from "./FinalModal";
 import { nonNull } from "./admin/Utils";
 import { api } from "../api";
 
@@ -20,6 +21,9 @@ const chooseImage = (item) => item.images?.[0];
 const CartSidebar = ({ isOpen, onClose }) => {
   const { items, addItems, removeItems } = useContext(CartContext);
   const [images, setImages] = useState([]);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [isFinalModalOpen, setIsFinalModalOpen] = useState(false);
+  const [checkoutData, setCheckoutData] = useState(null);
 
   useEffect(() => {
     Promise.all(
@@ -35,14 +39,23 @@ const CartSidebar = ({ isOpen, onClose }) => {
   };
 
   const totalCount = items.reduce((total, item) => total + item.count, 0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCheckoutClick = () => {
-    setIsModalOpen(true);
+    setIsCheckoutModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseCheckoutModal = () => {
+    setIsCheckoutModalOpen(false);
+  };
+
+  const handleSubmitCheckout = (data) => {
+    setCheckoutData(data);
+    setIsFinalModalOpen(true);
+  };
+
+  const handleCloseFinalModal = () => {
+    setIsFinalModalOpen(false);
+    setCheckoutData(null);
   };
 
   return (
@@ -143,7 +156,15 @@ const CartSidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
-      {isModalOpen && <CheckoutModal onClose={handleCloseModal} />}
+      {isCheckoutModalOpen && (
+        <CheckoutModal
+          onClose={handleCloseCheckoutModal}
+          onSubmit={handleSubmitCheckout}
+        />
+      )}
+      {isFinalModalOpen && (
+        <FinalModal onClose={handleCloseFinalModal} checkoutData={checkoutData} />
+      )}
     </div>
   );
 };

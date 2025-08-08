@@ -20,6 +20,7 @@
   max-height: 90vh;
   overflow-y: auto;
   color: #000000; 
+  position: relative;
 }
 
 .modalHeader {
@@ -42,10 +43,14 @@
   background: none;
   border: none;
   font-size: 44px;
+  font-weight: 200;
   color: #000000; 
   cursor: pointer;
   padding: 0;
   line-height: 1;
+  position: absolute;
+    top: 1px;
+    right: 12px;
 }
 
 .modalBody {
@@ -71,11 +76,11 @@
 }
 
 .toggleButton:first-child {
-  border-radius: 4px 0 0 4px;
+  border-radius: 10px 0 0 10px;
 }
 
 .toggleButton:last-child {
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 10px 10px 0;
 }
 
 .toggleButton:not(.active) {
@@ -84,7 +89,7 @@
 }
 
 .toggleButton.active {
-  background-color: #000000;
+  background-color: #38AF01;
   color: #ffffff;
 }
 
@@ -108,9 +113,9 @@
 
 .input {
   width: 100%;
-  padding: 8px;
-  border: 2px solid #000000;
-  border-radius: 4px;
+  padding: 12px;
+  /* border: 2px solid #000000; */
+  border-radius: 10px;
   background-color: #E7E7E7;
   color: #000000;
   font-size: 14px;
@@ -125,8 +130,8 @@
 .textarea {
   width: 100%;
   padding: 8px;
-  border: 2px solid #000000;
-  border-radius: 4px;
+  /* border: 2px solid #000000; */
+  border-radius: 10px;
   background-color: #E7E7E7;
   color: #000000;
   font-size: 14px;
@@ -145,7 +150,7 @@
   width: 20px;
   height: 20px;
   margin-right: 10px;
-  border: 2px solid #000000;
+  /* border: 2px solid #000000; */
   border-radius: 5px;
   cursor: pointer;
   appearance: none; 
@@ -179,7 +184,7 @@
   padding: 16px 12px;
   border: none;
   border-radius: 10px;
-  background-color: #000000;
+  background-color: #4A4A4A;
   color: #ffffff;
   font-size: 19px;
   cursor: pointer;
@@ -187,7 +192,7 @@
 }
 
 .submitButton:hover {
-  background-color: #333;
+  background-color: #38AF01;
 }
 
 

@@ -1,11 +1,10 @@
-import { useState, useEffect, useContext, useMemo } from "react";
-import modalWindowData from "../data/modalWindow";
+import { useState, useEffect, useContext } from "react";
 import { ProductsContext } from "../context/ProductsContext";
 import { CartContext } from "../context/CartContext";
 import styles from "./ModalWindow.module.css";
 import { api } from "../api";
 
-const ModalWindow = ({ product, onClose }) => {
+const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const imagesPerPage = 4;
@@ -50,7 +49,15 @@ const ModalWindow = ({ product, onClose }) => {
   };
 
   const handleAddToCart = () => {
-    addToCart({ ...product });
+    addToCart({ ...product, count: 1 }); // Add product with count 1
+    onClose(); // Close the modal
+    onOpenCart(); // Open the cart
+  };
+
+  const handleBuyNow = () => {
+    addToCart({ ...product, count: 1 }); // Add product with count 1
+    onClose(); // Close the modal
+    onOpenCart(); // Open the cart
   };
 
   if (!product) {
@@ -130,7 +137,6 @@ const ModalWindow = ({ product, onClose }) => {
               <span className={styles.detailLabel}>По акции:</span>
               <span className={styles.detailValue}>
                 {product.has_promo ? "Да" : "Нет"}
-                {}
               </span>
             </p>
             {product.attributes.map((attr) => (
@@ -151,7 +157,13 @@ const ModalWindow = ({ product, onClose }) => {
             >
               В корзину
             </button>
-            <button className={styles.buyNowBtn}>Купить сейчас</button>
+            <button
+              className={styles.buyNowBtn}
+              onClick={handleBuyNow}
+              disabled={!product.price}
+            >
+              Купить сейчас
+            </button>
           </div>
         </div>
       </div>
