@@ -3,6 +3,8 @@
 .container {
   width: 1306px; /* Set container width to 1306px as requested */
   margin: 0 auto; /* Center the container */
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .catalog {
@@ -28,6 +30,16 @@
   /* &:focus, &:focus-visible {
     border: 2px solid transparent;
   } */
+}
+
+.subCategoriesName {
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.subSubCategoriesName {
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .catalogCategoriesLink:hover {

@@ -6,16 +6,16 @@ import styles from "./CatalogPage.module.css";
 import { api } from "../api";
 import { byPosition, isNull, nonNull } from "../components/admin/Utils";
 
-
 const CatalogPage = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
-    api.getItems().then((res) => setData(res.data));
+    api.getItems().then((res) => setData(Array.isArray(res.data) ? res.data : []));
   }, []);
 
   const [searchParams] = useSearchParams();
   const initialMainCategory = searchParams.get("maincategory");
   const initialSubcategory = searchParams.get("subcategory");
+  const initialSubSubCategories = searchParams.get("subSubCategories");
 
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
@@ -35,99 +35,93 @@ const CatalogPage = () => {
     if (nonNull(initialMainCategory)) {
       setActiveMainCategory(
         categories.find(
-          (category) => category.id.toString() === initialMainCategory
+          (category) => category?.id?.toString() === initialMainCategory
         ) || undefined
       );
     }
     if (nonNull(initialSubcategory)) {
       setActiveSubCategory(
         categories.find(
-          (category) => category.id.toString() === initialSubcategory
+          (category) => category?.id?.toString() === initialSubcategory
         ) || undefined
       );
     }
-  }, [initialMainCategory, initialSubcategory, categories]);
+    if (nonNull(initialSubSubCategories)) {
+      setActiveSubSubCategory(
+        categories.find(
+          (category) => category?.id?.toString() === initialSubSubCategories
+        ) || undefined
+      );
+    }
+  }, [initialMainCategory, initialSubcategory, initialSubSubCategories, categories]);
 
   useEffect(() => {
     Promise.all([
       api.getCategoriesByLevel(1),
       api.getCategoriesByLevel(2),
       api.getCategoriesByLevel(3),
-    ]).then((arr) => setCategories(arr.flatMap((res) => res.data)));
+    ]).then((arr) =>
+      setCategories(Array.isArray(arr) ? arr.flatMap((res) => res?.data || []) : [])
+    );
   }, []);
 
   useEffect(() => {
-    const availableMainCategories = categories.filter((cat) => cat.level === 1);
+    const availableMainCategories = categories
+      ?.filter((cat) => cat?.level === 1)
+      ?.sort(byPosition) || [];
     const activeMainCategories = isNull(activeMainCategory)
       ? availableMainCategories
-      : categories.filter((cat) => cat.id === activeMainCategory.id);
+      : categories?.filter((cat) => cat?.id === activeMainCategory?.id) || [];
 
     let tempIds = [];
-    for (const cat of activeMainCategories) {
-      for (const id of cat.children) {
-        if (!tempIds.includes(id)) {
-          tempIds.push(id);
-        }
-      }
+    for (const cat of activeMainCategories || []) {
+      tempIds = [...tempIds, ...(cat?.children || [])];
     }
-    const availableSubCategories = categories.filter((cat) =>
-      tempIds.includes(cat.id)
-    );
+    const availableSubCategories = categories
+      ?.filter((cat) => tempIds.includes(cat?.id))
+      ?.sort(byPosition) || [];
     const activeSubCategories = isNull(activeSubCategory)
       ? availableSubCategories
-      : availableSubCategories.filter((cat) => cat.id === activeSubCategory.id);
+      : availableSubCategories?.filter((cat) => cat?.id === activeSubCategory?.id) ||
+        [];
 
     tempIds = [];
-    for (const cat of activeSubCategories) {
-      for (const id of cat.children) {
-        if (!tempIds.includes(id)) {
-          tempIds.push(id);
-        }
-      }
+    for (const cat of activeSubCategories || []) {
+      tempIds = [...tempIds, ...(cat?.children || [])];
     }
-    const availableSubSubCategories = categories.filter((cat) =>
-      tempIds.includes(cat.id)
-    );
+    const availableSubSubCategories = categories
+      ?.filter((cat) => tempIds.includes(cat?.id))
+      ?.sort(byPosition) || [];
     const activeSubSubCategories = isNull(activeSubSubCategory)
       ? availableSubSubCategories
-      : availableSubSubCategories.filter(
-          (cat) => cat.id === activeSubSubCategory.id
-        );
+      : availableSubSubCategories?.filter(
+          (cat) => cat?.id === activeSubSubCategory?.id
+        ) || [];
 
-    setMainCategories(availableMainCategories.sort(byPosition));
-    setSubCategories(availableSubCategories.sort(byPosition));
-    setSubSubCategories(availableSubSubCategories.sort(byPosition));
+    setMainCategories(availableMainCategories);
+    setSubCategories(availableSubCategories);
+    setSubSubCategories(availableSubSubCategories);
 
-    let categoriesWithItems = [];
-    if (isNull(activeSubSubCategory)) {
-      categoriesWithItems.push(...availableSubSubCategories);
-      if (isNull(activeSubCategory)) {
-        categoriesWithItems.push(...availableSubCategories);
-        if (isNull(activeMainCategory)) {
-          setFilteredProducts(data.sort(byPosition));
-          return;
-        } else {
-          categoriesWithItems.push(activeMainCategory);
-        }
-      } else {
-        categoriesWithItems.push(activeSubCategory);
+    const productGroups = {};
+    (availableSubSubCategories || []).forEach((subSubCat) => {
+      const products = (data || [])
+        ?.filter((product) => (subSubCat?.items || []).includes(product?.id))
+        ?.sort(byPosition) || [];
+      if (products.length > 0 || !isNull(activeSubSubCategory)) {
+        productGroups[subSubCat?.id] = { name: subSubCat?.name, products };
       }
-    } else {
-      categoriesWithItems.push(activeSubSubCategory);
-    }
+    });
 
-    tempIds = [];
-    for (const cat of categoriesWithItems) {
-      for (const id of cat.items) {
-        if (!tempIds.includes(id)) {
-          tempIds.push(id);
-        }
-      }
+    let sortedProducts = [];
+    if (!isNull(activeSubSubCategory) && activeSubSubCategory?.id in productGroups) {
+      sortedProducts.push(...productGroups[activeSubSubCategory.id].products);
+      delete productGroups[activeSubSubCategory.id];
     }
+    Object.values(productGroups).forEach((group) => {
+      sortedProducts.push(...group.products);
+    });
 
-    setFilteredProducts(
-      data.filter((product) => tempIds.includes(product.id)).sort(byPosition)
-    );
+    setFilteredProducts(sortedProducts.length > 0 ? sortedProducts : data || []);
   }, [data, activeMainCategory, activeSubCategory, activeSubSubCategory]);
 
   const handleMainCategoryClick = (category) => {
@@ -168,27 +162,17 @@ const CatalogPage = () => {
     <section className={styles.catalog}>
       <div className={styles.container}>
         <div className={styles.catalogTop}>
-          {/* <h1 className={styles.catalogTitle}>
-            {activeMainCategory?.name ?? "Все"}
-          </h1> */}
           <div className={styles.catalogCategories}>
-            {/* <button
-              className={`${styles.catalogCategoriesLink} ${
-                activeMainCategory === undefined ? styles.active : ""
-              }`}
-              onClick={() => handleMainCategoryClick(undefined)}
-            >
-              Все
-            </button> */}
-            {mainCategories.map((category) => (
+            {(mainCategories || []).map((category) => (
               <button
-                key={category.id}
+                key={category?.id}
                 className={`${styles.catalogCategoriesLink} ${
-                  activeMainCategory?.id === category.id ? styles.active : ""
+                  activeMainCategory?.id === category?.id ? styles.active : ""
                 }`}
                 onClick={() => handleMainCategoryClick(category)}
+                disabled={!category?.id}
               >
-                {category.name}
+                {category?.name}
               </button>
             ))}
           </div>
@@ -207,17 +191,17 @@ const CatalogPage = () => {
               Все
             </button>
           </li>
-          {subCategories.map((category) => (
-            <li key={category.id}>
+          {(subCategories || []).map((category) => (
+            <li key={category?.id}>
               <button
                 className={`${styles.catalogSubcategory} ${
-                  activeSubCategory?.id === category.id ? styles.active : ""
+                  activeSubCategory?.id === category?.id ? styles.active : ""
                 }`}
                 onClick={() => handleSubCategoryClick(category)}
                 type="button"
-                disabled={activeSubCategory?.id === category.id}
+                disabled={!category?.id || activeSubCategory?.id === category?.id}
               >
-                {category.name}
+                {category?.name}
               </button>
             </li>
           ))}
@@ -236,61 +220,96 @@ const CatalogPage = () => {
               Все
             </button>
           </li>
-          {subSubCategories.map((category) => (
+          {(subSubCategories || []).map((category) => (
             <li
               className={styles.catalogSubSubcategoriesItem}
-              key={category.id}
+              key={category?.id}
             >
               <button
                 className={`${styles.catalogSubSubcategory} ${
-                  activeSubSubCategory?.id === category.id ? styles.active : ""
+                  activeSubSubCategory?.id === category?.id ? styles.active : ""
                 }`}
                 onClick={() => handleSubSubCategoryClick(category)}
                 type="button"
-                disabled={activeSubSubCategory?.id === category.id}
+                disabled={!category?.id || activeSubSubCategory?.id === category?.id}
               >
-                {category.name}
+                {category?.name}
               </button>
             </li>
           ))}
         </ul>
 
-        <ul className={styles.catalogList}>
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onCardClick={handleOpenModal}
-            />
-          ))}
-        </ul>
+        {!isNull(activeMainCategory) && (
+          <div>
+            {activeSubCategory?.name && (
+              <h3 className={styles.subCategoriesName}>{activeSubCategory.name}</h3>
+            )}
+            {(subSubCategories || []).map((subSubCat, index) => {
+              const products = (data || [])
+                ?.filter((product) => (subSubCat?.items || []).includes(product?.id))
+                ?.sort(byPosition) || [];
+              const isSelected = activeSubSubCategory?.id === subSubCat?.id;
 
-        <div className={styles.requestBlock} >
-          <img className={`${styles.requestImg} ${styles.requestImgLeft}`} src="../images/8276b9d42395e1f1093dbfe7cdcc029e687c36a5.png" alt=""  />
-          <img className={`${styles.requestImg} ${styles.requestImgRight}`} src="../images/images_right.png" alt="" />
+              return (
+                <div key={subSubCat?.id} className={styles.subSubCategoryGroup}>
+                  {isSelected && subSubCat?.name && (
+                    <h3 className={styles.subSubCategoriesName}>{subSubCat.name}</h3>
+                  )}
+                  <ul className={styles.catalogList}>
+                    {products.length > 0 ? (
+                      products.map((product) => (
+                        <ProductCard
+                          key={product?.id}
+                          product={product}
+                          onCardClick={handleOpenModal}
+                        />
+                      ))
+                    ) : (
+                      <div className={styles.noProducts}></div>
+                    )}
+                  </ul>
+                  {!isSelected && subSubCat?.name && (
+                    <h3 className={styles.subSubCategoriesName}>{subSubCat.name}</h3>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className={styles.requestBlock}>
+          <img
+            className={`${styles.requestImg} ${styles.requestImgLeft}`}
+            src="../images/8276b9d42395e1f1093dbfe7cdcc029e687c36a5.png"
+            alt=""
+          />
+          <img
+            className={`${styles.requestImg} ${styles.requestImgRight}`}
+            src="../images/images_right.png"
+            alt=""
+          />
           <div className={styles.requestText}>
             <h2 className={styles.requestTitle}>
-              Не нашли необходимое <br/> или не можете определиться?
+              Не нашли необходимое <br /> или не можете определиться?
             </h2>
             <p className={styles.requestDescription}>
-              Оставьте заявку, наши специалисты помогут <br/> с выбором и подберут
-              решение
+              Оставьте заявку, наши специалисты помогут <br /> с выбором и
+              подберут решение
             </p>
           </div>
           <div className={styles.requestForm}>
-            {/* <label className={styles.formLabel}>ФИО</label> */}
             <input
               type="text"
               className={styles.formInput}
               placeholder="Ваше имя"
             />
-            {/* <label className={styles.formLabel}>Номер телефона</label> */}
             <input
               type="tel"
               className={styles.formInput}
               placeholder="+7(999)222 22-22"
             />
-            <button className={styles.formButton}>Отправить заявку
+            <button className={styles.formButton}>
+              Отправить заявку
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M5 12H19M19 12L13 6M19 12L13 18"
