@@ -205,7 +205,9 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
 
 
 /* Каталог стили начало */
-.catalog__top {
+
+
+/* .catalog__top {
   display: flex;
   align-items: flex-end;
   gap: 20px;
@@ -429,7 +431,6 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
   font-size: 18px;
 }
 
-/* Адаптивность для планшетов (768px - 1024px) */
 @media (max-width: 1024px) {
   .catalog__list {
     grid-template-columns: repeat(3, 1fr);
@@ -469,7 +470,7 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
   }
 }
 
-/* Адаптивность для мобильных устройств (до 768px) */
+
 @media (max-width: 768px) {
 
   .catalog__top {
@@ -572,7 +573,6 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
   }
 }
 
-/* Адаптивность для маленьких мобильных устройств (до 480px) */
 @media (max-width: 480px) {
   .catalog__subcategories {
     gap: 8px;
@@ -588,7 +588,6 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
 
   img, svg {
     max-width: 56%;
-    /* height: auto; */
 }
   
   .catalog__sub-subcategory {
@@ -611,7 +610,9 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
   .card__name {
     font-size: 14px;
   }
-}
+} */
+
+
 
 /* Каталог стили конец */
 
