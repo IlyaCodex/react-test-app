@@ -33,8 +33,10 @@ export const api = {
     }).then((response) => response.json());
   },
   searchItems: (query) => {
-    const queryString = new URLSearchParams({query}).toString();
-    return fetch(`/api/items/search?${queryString}`).then(response => response.json());
+    const queryString = new URLSearchParams({ query }).toString();
+    return fetch(`/api/items/search?${queryString}`).then((response) =>
+      response.json()
+    );
   },
   getItemById: (id) => {
     return fetch(`/api/items/${id}`).then((response) => response.json());
@@ -42,17 +44,22 @@ export const api = {
   getItems: () => {
     return fetch(`/api/items/`).then((response) => response.json());
   },
+  getRecomendedItems: (id) => {
+    return fetch(`/api/items/${id}/recomended`).then((response) => response.json());
+  },
   getItemImage: (id) => {
     const cacheHit = imageCache[id];
     if (cacheHit) {
       return Promise.resolve(cacheHit);
     }
-    return fetch(`/api/items/images/${id}`).then((response) => response.json()).then(json => {
-      if (json.data) {
-        imageCache[id] = json;
-      }
-      return json;
-    });
+    return fetch(`/api/items/images/${id}`)
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.data) {
+          imageCache[id] = json;
+        }
+        return json;
+      });
   },
   saveItem: (auth, item) => {
     return fetch(`/api/items/`, {
@@ -125,9 +132,9 @@ export const api = {
   },
 
   checkout: (checkoutData, cartItems) => {
-    return fetch('/api/checkout/', {
+    return fetch("/api/checkout/", {
       headers: getHeaders(),
-      body: JSON.stringify({checkoutData, cartItems}),
-    }).then(response => response.json());
-  }
+      body: JSON.stringify({ checkoutData, cartItems }),
+    }).then((response) => response.json());
+  },
 };

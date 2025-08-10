@@ -4,8 +4,6 @@ import styles from "./CategoriesSection.module.css";
 import { api } from "../api";
 import { byPosition, nonNull } from "./admin/Utils";
 
-const colors = ["#38af01", "#fe9e26", "#2484e3"];
-
 const CategoriesSection = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const navigate = useNavigate();
@@ -59,7 +57,7 @@ const CategoriesSection = () => {
               className={`${styles.categoriesItem} ${
                 selectedCategory === mainCategory.id ? styles.active : ""
               }`}
-              style={{ backgroundColor: colors[index] }}
+              style={{ backgroundColor: mainCategory.color }}
               tabIndex={0}
               onClick={() => handleCategoryClick(mainCategory.id)}
               onKeyDown={(e) =>

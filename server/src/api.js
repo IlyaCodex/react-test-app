@@ -1,18 +1,22 @@
 const sqlite3 = require("sqlite3").verbose();
+const dotenv = require("dotenv");
+dotenv.config();
 const db = new sqlite3.Database(process.env.DB_FILE || "./maindb.sqlite");
-const TelegramBot = require('node-telegram-bot-api');
+const TelegramBot = require("node-telegram-bot-api");
 
 let bot = undefined;
 if (process.env.BOT_TOKEN) {
-  bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
-  bot.on('message', msg => {
-    console.log(JSON.stringify({from: msg.from, content: msg.text}));
+  console.log("starting bot");
+  bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+
+  bot.on("message", (msg) => {
+    console.log(JSON.stringify({ from: msg.from, content: msg.text }));
   });
 }
 
 db.serialize(() => {
   db.run(
-    "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, level INTEGER)"
+    "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, description TEXT, position INTEGER, level INTEGER, color TEXT)"
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, price INTEGER, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN, lookup TEXT)"
@@ -41,6 +45,9 @@ db.serialize(() => {
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS partner_images (partner_id INTEGER, position INTEGER, data TEXT)"
+  );
+  db.run(
+    "CREATE TABLE IF NOT EXISTS recomended_items (parent_id INTEGER, child_id INTEGER)"
   );
 });
 
@@ -190,14 +197,17 @@ function enrichServerWithApiRoutes(app) {
     const managers = process.env.MANAGERS_CHATS;
     try {
       if (!bot || !managers) {
-        throw "Service unavailable"
+        throw "Service unavailable";
       }
-      const {checkoutData, cartItems} = req.body;
-      for (const manager of managers.split(';')) {
-        bot.sendMessage(manager, `Новый заказ:
+      const { checkoutData, cartItems } = req.body;
+      for (const manager of managers.split(";")) {
+        bot.sendMessage(
+          manager,
+          `Новый заказ:
           checkoutData: ${JSON.stringify(checkoutData)}
           Items: ${JSON.stringify(cartItems)}
-          `)
+          `
+        );
       }
     } catch (error) {
       res.statusCode = 500;
@@ -280,9 +290,11 @@ function enrichServerWithApiRoutes(app) {
       const category = req.body;
       if (category.id) {
         db.run(
-          "update categories set name=?, position=? where id=?",
+          "update categories set name=?, description=?, position=?, color=? where id=?",
           category.name,
+          category.description,
           category.position,
+          category.color,
           category.id
         );
 
@@ -362,8 +374,14 @@ function enrichServerWithApiRoutes(app) {
         });
       } else {
         insertRow(
-          "insert into categories (name, position, level) values (?, ?, ?)",
-          [category.name, category.position, category.level]
+          "insert into categories (name, description, position, level, color) values (?, ?, ?, ?, ?)",
+          [
+            category.name,
+            category.description,
+            category.position,
+            category.level,
+            category.color,
+          ]
         ).then((id) => {
           if (category.level > 1) {
             for (const parentId of category.parents) {
@@ -407,10 +425,9 @@ function enrichServerWithApiRoutes(app) {
       return;
     }
     const queryWithWildcards = `%${query.toLowerCase()}%`;
-    getAllAsync(
-      "select * from items where lookup like ? limit 5",
-      [queryWithWildcards]
-    )
+    getAllAsync("select * from items where lookup like ? limit 5", [
+      queryWithWildcards,
+    ])
       .then((rows) => {
         return Promise.all(
           rows.map((row) =>
@@ -481,6 +498,21 @@ function enrichServerWithApiRoutes(app) {
       });
   });
 
+  app.get("/api/items/:id/recomended", (req, res) => {
+    getAllAsync(
+      "select i.* from recomended_items ri join items i on ri.child_id = i.id where ri.parent_id = ?",
+      [req.params.id]
+    )
+      .then((rows) => {
+        res.send(wrapResponse(rows));
+      })
+      .catch((err) => {
+        console.error(err);
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      });
+  });
+
   app.delete("/api/items/:id", (req, res) => {
     try {
       const id = req.params.id;
@@ -515,6 +547,30 @@ function enrichServerWithApiRoutes(app) {
           `${item.name} ${item.article}`.toLowerCase(),
           item.id
         );
+        getAllAsync(
+          "select child_id from recomended_items where parent_id = ?",
+          [item.id]
+        ).then((recomended) => {
+          recomended = recomended.map((row) => row.child_id);
+          const newRecs = item.recomended.filter(
+            (id) => !recomended.includes(id)
+          );
+          const deletedRecs = recomended.filter(
+            (id) => !item.recomended.includes(id)
+          );
+          for (const newEl of newRecs) {
+            db.run(
+              "insert into recomended_items (parent_id, child_id) values (?, ?)",
+              [item.id, newEl]
+            );
+          }
+          for (const deleted of deletedRecs) {
+            db.run(
+              "delete from recomended_items where child_id = ? and parent_id = ?",
+              [deleted, item.id]
+            );
+          }
+        });
         getAllAsync("select cat_id from cat_to_items where item_id = ?", [
           item.id,
         ]).then((categories) => {
@@ -622,7 +678,7 @@ function enrichServerWithApiRoutes(app) {
             item.amount,
             item.inStock,
             item.hasPromo,
-            `${item.name} ${item.article}`.toLowerCase()
+            `${item.name} ${item.article}`.toLowerCase(),
           ]
         ).then((id) => {
           for (const image of item.images) {
@@ -633,11 +689,10 @@ function enrichServerWithApiRoutes(app) {
           }
 
           for (const attr of item.attributes) {
-            db.run("insert into attr_of_item(item_id, name, value) values (?, ?, ?)", [
-              id,
-              attr.name,
-              attr.value
-            ]);
+            db.run(
+              "insert into attr_of_item(item_id, name, value) values (?, ?, ?)",
+              [id, attr.name, attr.value]
+            );
           }
 
           for (const categoryId of item.categories) {
@@ -645,6 +700,13 @@ function enrichServerWithApiRoutes(app) {
               categoryId,
               id,
             ]);
+          }
+
+          for (const recomended of item.recomended) {
+            db.run(
+              "insert into recomended_items(parent_id, child_id) values (?, ?)",
+              [id, recomended]
+            );
           }
         });
       }

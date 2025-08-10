@@ -5,6 +5,7 @@ import { api } from "../../api";
 import { useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { isNull, nonNull } from "./Utils";
+import { Sketch } from "@uiw/react-color";
 
 function loadCategory(category, level) {
   if (isNull(category)) {
@@ -54,6 +55,8 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
   const [parentCategories, setParentCategories] = useState([]);
   const [childCategories, setChildCategories] = useState([]);
   const [items, setItems] = useState([]);
+  const [color, setColor] = useState("");
+  const [description, setDescription] = useState("");
 
   const [availableParentCategories, setAvailableParentCategories] = useState(
     []
@@ -68,6 +71,8 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       setPosition(cat.position);
       setParentCategories(cat.parents);
       setChildCategories(cat.children);
+      setColor(cat.color);
+      setDescription(cat.description);
       loadItems().then((res) => {
         setAvailableItems(res.data ?? []);
         setItems(
@@ -140,6 +145,8 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       name,
       level,
       position,
+      color,
+      description,
       //   images,
       parents: parentCategories.filter(nonNull),
       children: childCategories.filter(nonNull),
@@ -159,29 +166,13 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
         Название*:{" "}
         <input value={name} onChange={(e) => setName(e.target.value)} />
       </label>
-      {/* <div className={styles.images}>
-        <input
-          accept="image/*"
-          type="file"
-          multiple
-          ref={imageInput}
-          hidden
-          onChange={onImageSelect}
+      <label className={styles.textInput}>
+        Описание:
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
-        {(images ?? []).map((image) => (
-          <img
-            className={styles.image}
-            src={URL.createObjectURL(image)}
-            alt="your image"
-          />
-        ))}
-        <div
-          className={styles.imageButton}
-          onClick={() => imageInput.current?.click()}
-        >
-          <span>&#x2b;</span>
-        </div>
-      </div> */}
+      </label>
       <label className={styles.position}>
         Позиция:{" "}
         <input
@@ -194,6 +185,11 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
           onChange={(e) => setPosition(e.target.value)}
         />
       </label>
+      <label className={styles.colorPicker}>
+        Цвет:
+        <Sketch color={color} onChange={(color) => setColor(color.hex)} />
+      </label>
+
       {level > 1 ? (
         <label>
           Родительские категории:{" "}

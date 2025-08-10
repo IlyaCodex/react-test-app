@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./Card.module.css";
 import { api } from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { convertFiles } from "./Utils";
+import { convertFiles, nonNull } from "./Utils";
 import { isNull } from "./Utils";
 
 export const Product = ({ data, onClose }) => {
@@ -20,10 +20,12 @@ export const Product = ({ data, onClose }) => {
   const [attributes, setAttributes] = useState([]);
   const [attributeName, setAttributeName] = useState("");
   const [attributeValue, setAttributeValue] = useState("");
+  const [recomended, setRecomended] = useState([]);
 
   const { auth } = useAuth();
 
   const [availableCategories, setAvailableCategories] = useState([]);
+  const [availableRecomended, setAvailableRecomended] = useState([]);
 
   const imageInput = useRef(null);
 
@@ -63,7 +65,16 @@ export const Product = ({ data, onClose }) => {
           )
         ).then((images) => setImages(images));
       });
+      api
+        .getRecomendedItems(data)
+        .then((response) =>
+          setRecomended((response.data ?? []).map((rec) => rec.id))
+        );
     }
+    api
+      .getItems()
+      .then((response) => setAvailableRecomended(response.data ?? []));
+
     Promise.all([
       api.getCategoriesByLevel(1),
       api.getCategoriesByLevel(2),
@@ -88,6 +99,7 @@ export const Product = ({ data, onClose }) => {
       amount,
       article,
       attributes,
+      recomended,
     };
     api.saveItem(auth, newData).then(onClose);
   };
@@ -111,6 +123,19 @@ export const Product = ({ data, onClose }) => {
 
   const removeCategory = (category) => {
     setCategories([...categories.filter((c) => c !== category)]);
+  };
+
+  const onChangeRecomended = (e) => {
+    e.preventDefault();
+    const id = e.target.value;
+    if (id) {
+      setRecomended([...recomended, +id]);
+    }
+    e.target.value = "disabled";
+  };
+
+  const removeRecomended = (rec) => {
+    setRecomended([...recomended.filter((c) => c !== rec)]);
   };
 
   const addAttribute = () => {
@@ -264,6 +289,35 @@ export const Product = ({ data, onClose }) => {
               )
               .map((category) => (
                 <option value={category.id}>{category.name}</option>
+              ))}
+          </select>
+        </div>
+      </label>
+
+      <label>
+        Рекомендации:
+        <div className={styles.categories}>
+          {recomended
+            .map((rec) =>
+              availableRecomended.find((available) => available.id === rec)
+            )
+            .filter(nonNull)
+            .map((rec) => (
+              <div
+                onClick={() => removeRecomended(rec.id)}
+                className={styles.category}
+              >
+                {rec.name}
+              </div>
+            ))}
+          <select value={"disabled"} onChange={onChangeRecomended}>
+            <option value={"disabled"} selected disabled>
+              Добавить
+            </option>
+            {availableRecomended
+              .filter((rec) => !recomended.some((recId) => rec.id === recId))
+              .map((rec) => (
+                <option value={rec.id}>{rec.name}</option>
               ))}
           </select>
         </div>
