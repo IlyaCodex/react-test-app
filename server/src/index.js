@@ -3,10 +3,15 @@ const path = require("path");
 const app = express();
 const dotenv = require("dotenv");
 const enrichServerWithApiRoutes = require("./api");
+const fs = require("fs");
+const https = require("https");
+
 
 dotenv.config();
 
-const port = process.env.PORT || 3000;
+let port = process.env.PORT;
+
+
 
 const uiDir = path.join(
   path.dirname(require.main?.filename ?? __filename),
@@ -26,6 +31,18 @@ app.get("/{*path}", (req, res) => {
   res.sendFile(path.join(uiDir, "index.html"));
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+if (process.env.CRT && process.env.PR_KEY) {
+  const privateKey = fs.readFileSync(process.env.PR_KEY);
+  const certificate = fs.readFileSync(process.env.CRT);
+  port = port ?? 443;
+  const server = https.createServer({key: privateKey, cert: certificate}, app);
+
+  server.listen(port, () => {
+    console.log(`HTTPS server listening on port ${port}`);
+  });
+} else {
+  port = port ?? 3000;
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+}

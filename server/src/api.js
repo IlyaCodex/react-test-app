@@ -1,5 +1,15 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database(process.env.DB_FILE || "./maindb.sqlite");
+const TelegramBot = require('node-telegram-bot-api');
+
+let bot = undefined;
+if (process.env.BOT_TOKEN) {
+  bot = new TelegramBot(process.env.BOT_TOKEN, {polling: true});
+  bot.on('message', msg => {
+    console.log(JSON.stringify({from: msg.from, content: msg.text}));
+  });
+}
+
 db.serialize(() => {
   db.run(
     "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, level INTEGER)"
@@ -175,6 +185,26 @@ function enrichServerWithApiRoutes(app) {
   });
   app.put("/api/{*path}", checkAuth);
   app.delete("/api/{*path}", checkAuth);
+
+  app.post("/api/checkout/", (req, res) => {
+    const managers = process.env.MANAGERS_CHATS;
+    try {
+      if (!bot || !managers) {
+        throw "Service unavailable"
+      }
+      const {checkoutData, cartItems} = req.body;
+      for (const manager of managers.split(';')) {
+        bot.sendMessage(manager, `Новый заказ:
+          checkoutData: ${JSON.stringify(checkoutData)}
+          Items: ${JSON.stringify(cartItems)}
+          `)
+      }
+    } catch (error) {
+      res.statusCode = 500;
+      res.send(wrapResponse(undefined, error));
+      return;
+    }
+  });
 
   app.get("/api/admin/login/", (req, res) => {
     checkAuth(req, res, () => res.send(wrapResponse("Success")));

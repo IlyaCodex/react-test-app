@@ -4,8 +4,8 @@ import styles from "./FinalModal.module.css";
 import { CartContext } from "../context/CartContext";
 import { api } from "../api";
 
-const FinalModal = ({ onClose, checkoutData }) => {
-  const { items, addItems, removeItems } = useContext(CartContext);
+const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
+  const { items, addItems, removeItems, clearCart } = useContext(CartContext);
   const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -31,6 +31,10 @@ const FinalModal = ({ onClose, checkoutData }) => {
     if (delta > 0) addItems(item);
     else if (delta < 0 && item.count > 1) removeItems(item);
   };
+
+  const handleSubmit = () => {
+    api.checkout({...checkoutData, totalPrice: calculateTotal()}, items.map(item => ({name: item.name, article: item.article, price: item.price, count: item.count})));
+  }
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -108,7 +112,7 @@ const FinalModal = ({ onClose, checkoutData }) => {
                 {calculateTotal().toLocaleString("ru-RU")} ₽
               </p>
             </div>
-            <button className={styles.submitButton}>Оформить заказ</button>
+            <button className={styles.submitButton} onClick={handleSubmit}>Оформить заказ</button>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ export const CartContext = createContext({
   items: [],
   addItems: (...items) => {},
   removeItems: (...items) => {},
+  clearCart: () => {},
 });
 
 const storageKey = "cart";
@@ -53,8 +54,10 @@ export const CartContextProvider = ({ children }) => {
     [items]
   );
 
+  const clearCart = useCallback(() => setItems([]), []);
+
   return (
-    <CartContext value={{ items, addItems, removeItems }}>
+    <CartContext value={{ items, addItems, removeItems, clearCart }}>
       {children}
     </CartContext>
   );

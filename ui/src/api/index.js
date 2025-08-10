@@ -45,7 +45,6 @@ export const api = {
   getItemImage: (id) => {
     const cacheHit = imageCache[id];
     if (cacheHit) {
-      console.log('image cache hit for ' + id);
       return Promise.resolve(cacheHit);
     }
     return fetch(`/api/items/images/${id}`).then((response) => response.json()).then(json => {
@@ -124,4 +123,11 @@ export const api = {
       headers: getHeaders(auth),
     }).then((response) => response.json());
   },
+
+  checkout: (checkoutData, cartItems) => {
+    return fetch('/api/checkout/', {
+      headers: getHeaders(),
+      body: JSON.stringify({checkoutData, cartItems}),
+    }).then(response => response.json());
+  }
 };
