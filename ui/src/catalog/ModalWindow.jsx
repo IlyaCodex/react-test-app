@@ -3,6 +3,7 @@ import { ProductsContext } from "../context/ProductsContext";
 import { CartContext } from "../context/CartContext";
 import styles from "./ModalWindow.module.css";
 import { api } from "../api";
+import { isNull } from "../components/admin/Utils";
 
 const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,13 +15,13 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
 
   useEffect(() => {
     Promise.all(
-      product.images.map((imageId) =>
+      product?.images.map((imageId) =>
         api.getItemImage(imageId).then((res) => res.data)
-      )
+      ) ?? []
     ).then((images) =>
       setSliderImages(images.sort((a, b) => a.position - b.position))
     );
-  }, [product.images]);
+  }, [product?.images]);
 
   useEffect(() => {
     let tempIndex = currentIndex;
@@ -49,15 +50,15 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   };
 
   const handleAddToCart = () => {
-    addToCart({ ...product, count: 1 }); 
-    onClose(); 
-    onOpenCart(); 
+    addToCart({ ...product, count: 1 });
+    onClose();
+    //onOpenCart();
   };
 
   const handleBuyNow = () => {
-    addToCart({ ...product, count: 1 }); 
-    onClose(); 
-    onOpenCart(); 
+    addToCart({ ...product, count: 1 });
+    onClose();
+    //onOpenCart();
   };
 
   if (!product) {
@@ -81,21 +82,21 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
 
           <div className={styles.sliderContainer}>
             <button className={styles.sliderPrevBtn} onClick={handlePrev}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              style={{ transform: "rotate(180deg)" }}
-             >
-              <path
-                d="M5 12H19M19 12L13 6M19 12L13 18"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-           </svg>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{ transform: "rotate(180deg)" }}
+              >
+                <path
+                  d="M5 12H19M19 12L13 6M19 12L13 18"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
             <div className={styles.slider}>
               <div
@@ -119,7 +120,7 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
               </div>
             </div>
             <button className={styles.sliderNextBtn} onClick={handleNext}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M5 12H19M19 12L13 6M19 12L13 18"
                   stroke="white"
@@ -175,14 +176,14 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
             <button
               className={styles.addToCartBtn}
               onClick={handleAddToCart}
-              disabled={!product.price}
+              disabled={isNull(product.price)}
             >
               В корзину
             </button>
             <button
               className={styles.buyNowBtn}
               onClick={handleBuyNow}
-              disabled={!product.price}
+              disabled={isNull(product.price)}
             >
               Купить сейчас
             </button>

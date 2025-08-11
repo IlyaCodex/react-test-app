@@ -17,6 +17,7 @@ import { CookiesProvider } from 'react-cookie';
 import { ProductsContextProvider } from './context/ProductsContext';
 import { FavoriteProvider } from './context/FavoriteContext';
 import { AdminPage } from './components/admin/AdminPage';
+import { ItemModalProvider } from './context/ItemModalContext';
 
 function MainApp() {
   return (
@@ -57,14 +58,21 @@ function App() {
 
   return (
     <div className="app">
-      <CookiesProvider defaultSetOptions={{path: '/', maxAge: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30)}}>
+      <CookiesProvider
+        defaultSetOptions={{
+          path: "/",
+          maxAge: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30,
+        }}
+      >
         <ProductsContextProvider>
           <CartContextProvider>
             <FavoriteProvider>
-            <Routes>
-              <Route path="/admin" element={<AdminPage />} />
-              <Route path="*" element={<MainApp />}/>
-            </Routes>
+              <ItemModalProvider>
+                <Routes>
+                  <Route path="/admin" element={<AdminPage />} />
+                  <Route path="*" element={<MainApp />} />
+                </Routes>
+              </ItemModalProvider>
             </FavoriteProvider>
           </CartContextProvider>
         </ProductsContextProvider>

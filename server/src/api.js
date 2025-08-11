@@ -504,7 +504,16 @@ function enrichServerWithApiRoutes(app) {
       [req.params.id]
     )
       .then((rows) => {
-        res.send(wrapResponse(rows));
+        Promise.all([
+          ...rows.map((row) =>
+            loadItemImageIds(row.id).then((imageIds) => (row.images = imageIds))
+          ),
+          ...rows.map((row) =>
+            loadAttributes(row.id).then(
+              (attributes) => (row.attributes = attributes)
+            )
+          ),
+        ]).then(() => res.send(wrapResponse(rows)));
       })
       .catch((err) => {
         console.error(err);

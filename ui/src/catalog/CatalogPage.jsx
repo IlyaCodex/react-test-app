@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import ModalWindow from "./ModalWindow";
 import styles from "./CatalogPage.module.css";
 import { api } from "../api";
 import { byPosition, isNull, nonNull } from "../components/admin/Utils";
+import { useItemModal } from "../context/ItemModalContext";
 
 const CatalogPage = () => {
   const [data, setData] = useState([]);
@@ -30,8 +30,7 @@ const CatalogPage = () => {
   const [activeSubCategory, setActiveSubCategory] = useState(undefined);
   const [activeSubSubCategory, setActiveSubSubCategory] = useState(undefined);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const {onOpenItemModal} = useItemModal();
 
   useEffect(() => {
     if (nonNull(initialMainCategory)) {
@@ -151,16 +150,6 @@ const CatalogPage = () => {
     setActiveSubSubCategory(category);
   };
 
-  const handleOpenModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-  };
-
   return (
     <section className={styles.catalog}>
       <div className={styles.container}>
@@ -271,7 +260,7 @@ const CatalogPage = () => {
                       <ProductCard
                         key={product?.id}
                         product={product}
-                        onCardClick={handleOpenModal}
+                        onCardClick={onOpenItemModal}
                       />
                     ))
                   ) : (
@@ -299,7 +288,7 @@ const CatalogPage = () => {
                         <ProductCard
                           key={product?.id}
                           product={product}
-                          onCardClick={handleOpenModal}
+                          onCardClick={onOpenItemModal}
                         />
                       ))
                     ) : (
@@ -358,10 +347,6 @@ const CatalogPage = () => {
           </div>
         </div>
       </div>
-
-      {isModalOpen && (
-        <ModalWindow product={selectedProduct} onClose={handleCloseModal} />
-      )}
     </section>
   );
 };

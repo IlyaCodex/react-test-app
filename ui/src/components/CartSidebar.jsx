@@ -5,6 +5,7 @@ import CheckoutModal from "./CheckoutModal";
 import FinalModal from "./FinalModal";
 import { nonNull } from "./admin/Utils";
 import { api } from "../api";
+import { useItemModal } from "../context/ItemModalContext";
 
 const getSuffix = (count) => {
   if (count === 1) {
@@ -16,7 +17,7 @@ const getSuffix = (count) => {
   return "товаров";
 };
 
-const chooseImage = (item) => item.images?.[0];
+const chooseImage = (item) => item?.images?.[0];
 
 const CartSidebar = ({ isOpen, onClose }) => {
   const { items, addItems, removeItems } = useContext(CartContext);
@@ -24,6 +25,8 @@ const CartSidebar = ({ isOpen, onClose }) => {
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const [isFinalModalOpen, setIsFinalModalOpen] = useState(false);
   const [checkoutData, setCheckoutData] = useState(null);
+  const [recomendedItems, setRecomendedItems] = useState([]);
+  const { onOpenItemModal } = useItemModal();
 
   useEffect(() => {
     Promise.all(
@@ -31,7 +34,24 @@ const CartSidebar = ({ isOpen, onClose }) => {
         .map(chooseImage)
         .filter(nonNull)
         .map((imageId) => api.getItemImage(imageId).then((res) => res.data))
-    ).then((arr) => setImages(arr.filter(nonNull)));
+    ).then(async (arr) => {
+      const newImages = arr.filter(nonNull);
+      setImages(newImages);
+      const recomended = await Promise.all(
+        items.map((item) => api.getRecomendedItems(item.id))
+      ).then((responses) =>
+        responses.flatMap((response) => response.data).filter(nonNull)
+      );
+      console.log(recomended);
+      setRecomendedItems(recomended);
+      const newRecomendedImages = await Promise.all(
+        recomended
+          .map(chooseImage)
+          .filter(nonNull)
+          .map((imageId) => api.getItemImage(imageId).then((res) => res.data))
+      );
+      setImages([...newImages, ...newRecomendedImages.filter(nonNull)]);
+    });
   }, [items]);
 
   const calculateTotal = () => {
@@ -131,9 +151,20 @@ const CartSidebar = ({ isOpen, onClose }) => {
           <div className={styles.recommend}>
             <p className={styles.recommend_title}>Добавьте к заказу</p>
             <div className={styles.recommend_scroll}>
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className={styles.recommend_item}>
-                  <img src="/icons/recommend.png" alt="Рекомендация" />
+              {recomendedItems.map((item) => (
+                <div
+                  key={item.id}
+                  className={styles.recommend_item}
+                  onClick={() => onOpenItemModal(item)}
+                >
+                  <img
+                    title={item.name}
+                    src={
+                      images.find((image) => image.id === chooseImage(item))
+                        ?.data
+                    }
+                    alt="Рекомендация"
+                  />
                 </div>
               ))}
             </div>
@@ -163,7 +194,10 @@ const CartSidebar = ({ isOpen, onClose }) => {
         />
       )}
       {isFinalModalOpen && (
-        <FinalModal onClose={handleCloseFinalModal} checkoutData={checkoutData} />
+        <FinalModal
+          onClose={handleCloseFinalModal}
+          checkoutData={checkoutData}
+        />
       )}
     </div>
   );
