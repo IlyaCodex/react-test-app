@@ -298,7 +298,9 @@
     height: 23px;
   }
 
-    
+  .toCart {
+    font-size: 9px;
+  } 
 
   .headerRight {
     gap: 15px;

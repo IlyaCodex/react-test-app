@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import CartSidebar from "./CartSidebar";
 import styles from "./Navbar.module.css";
 import { FavoritesSidebar } from "./FavoritesSidebar";
+import CheckoutModal from "./CheckoutModal"; 
 import { useDebounce } from "../hooks/debounce";
 import { api } from "../api";
 import { isNull, chooseImage } from "./admin/Utils";
@@ -21,6 +22,7 @@ const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [foundItems, setFoundItems] = useState(undefined);
@@ -91,6 +93,9 @@ const Header = () => {
   const handleCartClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (window.innerWidth <= 768) {
+      setIsMenuOpen(false); 
+    }
     setIsCartOpen(true);
   };
 
@@ -132,6 +137,14 @@ const Header = () => {
 
   const toCart = (item) => {
     addItems(...Array.from({ length: item.count }).map(() => item));
+  };
+
+  const handleOpenCheckoutModal = () => {
+    setIsCheckoutModalOpen(true); 
+  };
+
+  const handleCloseCheckoutModal = () => {
+    setIsCheckoutModalOpen(false); 
   };
 
   return (
@@ -280,7 +293,11 @@ const Header = () => {
             >
               <Heart size={20} color="#fff" />
             </button>
-            <button className={styles.requestBtn} type="button">
+            <button
+              className={styles.requestBtn}
+              type="button"
+              onClick={handleOpenCheckoutModal}
+            >
               Оставить заявку
             </button>
           </div>
@@ -374,6 +391,10 @@ const Header = () => {
             </nav>
           </div>
         </div>
+      )}
+
+      {isCheckoutModalOpen && (
+        <CheckoutModal onClose={handleCloseCheckoutModal} /> 
       )}
     </header>
   );

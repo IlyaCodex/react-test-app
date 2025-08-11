@@ -19,6 +19,7 @@
   display: flex;
   justify-content: center;
   box-shadow: -17px 17px 50px 0 rgba(0, 0, 0, 0.4);
+  background-color: #21d500;
 }
 
 .catalogCategories {
@@ -37,6 +38,7 @@
   font-weight: 500;
   border-radius: 4px;
   transition: color 0.4s, border 0.4s;
+  color: #242424;
   padding-bottom: 8px;
   &:focus,
   &:focus-visible {
@@ -61,12 +63,12 @@
 }
 
 .catalogCategoriesLink:hover {
-  color: #858585;
+  color: #ffffff;
 }
 
 .catalogCategoriesLink:focus {
   border-color: #007aff;
-  color: #4d4d4d;
+  color: #ffffff;
 }
 
 .catalogTitle {
@@ -361,6 +363,7 @@
     align-items: center;
     padding: 15px 0;
     height: auto;
+    width: 92%;
   }
 
   .requestText {
@@ -393,6 +396,27 @@
     left: -47px;
     opacity: 0.5;
     transform: rotate(45deg);
+  }
+
+  .catalogSubcategories, .catalogSubSubcategories, .subCategoriesName, .subSubCategoriesName {
+    padding-left: 15px;
+  }
+
+  .catalogList {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .catalogCategoriesLink {
+    &:focus,
+    &:focus-visible {
+      border: 0;
+    }
+    &.active {
+      font-size: 34px;
+      color: #ffffff;
+      padding-bottom: 0;
+    }
   }
 }
 
@@ -464,6 +488,7 @@
 
   .catalogCategories {
     gap: 15px;
+    flex-wrap: wrap;
   }
 
   .catalogTitle {

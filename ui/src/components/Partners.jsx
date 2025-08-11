@@ -106,11 +106,7 @@ const PartnersSection = () => {
                   <p className={styles.partnersCountry}>
                     Страна: {partner.country}
                   </p>
-                  <div className={styles.partnersDescriptionContainer}>
-                    <p className={styles.partnersDescription}>
-                      {partner.description}
-                    </p>
-                  </div>
+                  {/* Удалено отображение описания в карточке */}
                 </div>
               </SwiperSlide>
             ))}

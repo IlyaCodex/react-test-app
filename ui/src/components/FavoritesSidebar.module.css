@@ -1,5 +1,3 @@
-/* стили корзины начало */
-
 .cart_dialog {
   position: fixed;
   width: 400px;
@@ -91,6 +89,27 @@
   flex-direction: column;
   gap: 5px;
   padding-bottom: 15px;
+}
+
+.Favoritecounter {
+  display: flex;
+  gap: 5px;
+}
+
+.toCart {
+  padding: 5px 10px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.toCart.added {
+  background-color: #07b107; 
+  color: #fff; 
 }
 
 .item {

@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "@dr.pogodin/react-helmet";
 import styles from "./HomeSection.module.css";
 import { Link } from "react-router-dom";
 
