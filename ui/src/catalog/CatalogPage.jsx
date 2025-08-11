@@ -39,6 +39,11 @@ const CatalogPage = () => {
           (category) => category?.id?.toString() === initialMainCategory
         ) || undefined
       );
+    } else {
+      setActiveMainCategory(
+        categories.filter((cat) => cat.level === 1).sort(byPosition)?.[0] ??
+          undefined
+      );
     }
   }, [initialMainCategory, categories]);
 
