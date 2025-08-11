@@ -42,7 +42,6 @@ const CartSidebar = ({ isOpen, onClose }) => {
       ).then((responses) =>
         responses.flatMap((response) => response.data).filter(nonNull)
       );
-      console.log(recomended);
       setRecomendedItems(recomended);
       const newRecomendedImages = await Promise.all(
         recomended

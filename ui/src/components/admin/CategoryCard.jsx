@@ -187,7 +187,10 @@ export const CategoryCard = ({ category: categoryId, level, onClose }) => {
       </label>
       <label className={styles.colorPicker}>
         Цвет:
-        <Sketch color={color} onChange={(color) => setColor(color.hex)} />
+        <Sketch
+          color={color || undefined}
+          onChange={(color) => setColor(color.hex)}
+        />
       </label>
 
       {level > 1 ? (

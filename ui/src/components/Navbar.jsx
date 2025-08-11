@@ -79,7 +79,6 @@ const Header = () => {
             return api.getItemImage(imageId).then((res) => res.data);
           })
         ).then((arr) => {
-          console.log(arr);
           setFoundImages(arr.filter((image) => !!image));
         });
       });

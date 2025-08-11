@@ -30,7 +30,7 @@ const CatalogPage = () => {
   const [activeSubCategory, setActiveSubCategory] = useState(undefined);
   const [activeSubSubCategory, setActiveSubSubCategory] = useState(undefined);
 
-  const {onOpenItemModal} = useItemModal();
+  const { onOpenItemModal } = useItemModal();
 
   useEffect(() => {
     if (nonNull(initialMainCategory)) {
@@ -40,6 +40,9 @@ const CatalogPage = () => {
         ) || undefined
       );
     }
+  }, [initialMainCategory, categories]);
+
+  useEffect(() => {
     if (nonNull(initialSubcategory)) {
       setActiveSubCategory(
         categories.find(
@@ -47,6 +50,9 @@ const CatalogPage = () => {
         ) || undefined
       );
     }
+  }, [initialSubcategory, categories]);
+
+  useEffect(() => {
     if (nonNull(initialSubSubCategories)) {
       setActiveSubSubCategory(
         categories.find(
@@ -54,12 +60,7 @@ const CatalogPage = () => {
         ) || undefined
       );
     }
-  }, [
-    initialMainCategory,
-    initialSubcategory,
-    initialSubSubCategories,
-    categories,
-  ]);
+  }, [initialSubSubCategories, categories]);
 
   useEffect(() => {
     Promise.all([
