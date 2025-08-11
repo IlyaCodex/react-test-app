@@ -9,7 +9,9 @@ import { byPosition, isNull, nonNull } from "../components/admin/Utils";
 const CatalogPage = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
-    api.getItems().then((res) => setData(Array.isArray(res.data) ? res.data : []));
+    api
+      .getItems()
+      .then((res) => setData(Array.isArray(res.data) ? res.data : []));
   }, []);
 
   const [searchParams] = useSearchParams();
@@ -22,7 +24,7 @@ const CatalogPage = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [subSubCategories, setSubSubCategories] = useState([]);
 
-  const [filteredProducts, setFilteredProducts] = useState(data);
+  const [sortedProducts, setSortedProducts] = useState({});
 
   const [activeMainCategory, setActiveMainCategory] = useState(undefined);
   const [activeSubCategory, setActiveSubCategory] = useState(undefined);
@@ -53,7 +55,12 @@ const CatalogPage = () => {
         ) || undefined
       );
     }
-  }, [initialMainCategory, initialSubcategory, initialSubSubCategories, categories]);
+  }, [
+    initialMainCategory,
+    initialSubcategory,
+    initialSubSubCategories,
+    categories,
+  ]);
 
   useEffect(() => {
     Promise.all([
@@ -61,68 +68,64 @@ const CatalogPage = () => {
       api.getCategoriesByLevel(2),
       api.getCategoriesByLevel(3),
     ]).then((arr) =>
-      setCategories(Array.isArray(arr) ? arr.flatMap((res) => res?.data || []) : [])
+      setCategories(
+        Array.isArray(arr) ? arr.flatMap((res) => res?.data || []) : []
+      )
     );
   }, []);
 
   useEffect(() => {
-    const availableMainCategories = categories
-      ?.filter((cat) => cat?.level === 1)
-      ?.sort(byPosition) || [];
+    const dataByCategory = {};
+
+    for (const item of data) {
+      for (const catId of item.categories) {
+        let items = dataByCategory[catId] ?? [];
+        items.push(item);
+        dataByCategory[catId] = items;
+      }
+    }
+    Object.values(dataByCategory).forEach((arr) => arr.sort(byPosition));
+    setSortedProducts(dataByCategory);
+  }, [data]);
+
+  useEffect(() => {
+    const availableMainCategories =
+      categories?.filter((cat) => cat?.level === 1)?.sort(byPosition) || [];
     const activeMainCategories = isNull(activeMainCategory)
       ? availableMainCategories
       : categories?.filter((cat) => cat?.id === activeMainCategory?.id) || [];
+
+    if (isNull(activeMainCategory) && availableMainCategories.length) {
+      setActiveMainCategory(activeMainCategories[0]);
+    }
 
     let tempIds = [];
     for (const cat of activeMainCategories || []) {
       tempIds = [...tempIds, ...(cat?.children || [])];
     }
-    const availableSubCategories = categories
-      ?.filter((cat) => tempIds.includes(cat?.id))
-      ?.sort(byPosition) || [];
+    const availableSubCategories =
+      categories
+        ?.filter((cat) => tempIds.includes(cat?.id))
+        ?.sort(byPosition) || [];
     const activeSubCategories = isNull(activeSubCategory)
       ? availableSubCategories
-      : availableSubCategories?.filter((cat) => cat?.id === activeSubCategory?.id) ||
-        [];
+      : availableSubCategories?.filter(
+          (cat) => cat?.id === activeSubCategory?.id
+        ) || [];
 
     tempIds = [];
     for (const cat of activeSubCategories || []) {
       tempIds = [...tempIds, ...(cat?.children || [])];
     }
-    const availableSubSubCategories = categories
-      ?.filter((cat) => tempIds.includes(cat?.id))
-      ?.sort(byPosition) || [];
-    const activeSubSubCategories = isNull(activeSubSubCategory)
-      ? availableSubSubCategories
-      : availableSubSubCategories?.filter(
-          (cat) => cat?.id === activeSubSubCategory?.id
-        ) || [];
+    const availableSubSubCategories =
+      categories
+        ?.filter((cat) => tempIds.includes(cat?.id))
+        ?.sort(byPosition) || [];
 
     setMainCategories(availableMainCategories);
     setSubCategories(availableSubCategories);
     setSubSubCategories(availableSubSubCategories);
-
-    const productGroups = {};
-    (availableSubSubCategories || []).forEach((subSubCat) => {
-      const products = (data || [])
-        ?.filter((product) => (subSubCat?.items || []).includes(product?.id))
-        ?.sort(byPosition) || [];
-      if (products.length > 0 || !isNull(activeSubSubCategory)) {
-        productGroups[subSubCat?.id] = { name: subSubCat?.name, products };
-      }
-    });
-
-    let sortedProducts = [];
-    if (!isNull(activeSubSubCategory) && activeSubSubCategory?.id in productGroups) {
-      sortedProducts.push(...productGroups[activeSubSubCategory.id].products);
-      delete productGroups[activeSubSubCategory.id];
-    }
-    Object.values(productGroups).forEach((group) => {
-      sortedProducts.push(...group.products);
-    });
-
-    setFilteredProducts(sortedProducts.length > 0 ? sortedProducts : data || []);
-  }, [data, activeMainCategory, activeSubCategory, activeSubSubCategory]);
+  }, [activeMainCategory, activeSubCategory, activeSubSubCategory, categories]);
 
   const handleMainCategoryClick = (category) => {
     if (activeMainCategory === category) {
@@ -161,7 +164,10 @@ const CatalogPage = () => {
   return (
     <section className={styles.catalog}>
       <div className={styles.container}>
-        <div className={styles.catalogTop}>
+        <div
+          className={styles.catalogTop}
+          style={{ backgroundColor: activeMainCategory?.color }}
+        >
           <div className={styles.catalogCategories}>
             {(mainCategories || []).map((category) => (
               <button
@@ -199,7 +205,9 @@ const CatalogPage = () => {
                 }`}
                 onClick={() => handleSubCategoryClick(category)}
                 type="button"
-                disabled={!category?.id || activeSubCategory?.id === category?.id}
+                disabled={
+                  !category?.id || activeSubCategory?.id === category?.id
+                }
               >
                 {category?.name}
               </button>
@@ -231,7 +239,9 @@ const CatalogPage = () => {
                 }`}
                 onClick={() => handleSubSubCategoryClick(category)}
                 type="button"
-                disabled={!category?.id || activeSubSubCategory?.id === category?.id}
+                disabled={
+                  !category?.id || activeSubSubCategory?.id === category?.id
+                }
               >
                 {category?.name}
               </button>
@@ -240,21 +250,49 @@ const CatalogPage = () => {
         </ul>
 
         {!isNull(activeMainCategory) && (
-          <div>
+          <div className={styles.products}>
             {activeSubCategory?.name && (
-              <h3 className={styles.subCategoriesName}>{activeSubCategory.name}</h3>
+              <h3 className={styles.subCategoriesName}>
+                {activeSubCategory.name}
+              </h3>
+            )}
+            {activeSubSubCategory && (
+              <div
+                key={activeSubSubCategory.id}
+                className={styles.subSubCategoryGroup}
+              >
+                <h3 className={styles.subSubCategoriesName}>
+                  {activeSubSubCategory.name}
+                </h3>
+
+                <ul className={styles.catalogList}>
+                  {sortedProducts[activeSubSubCategory.id]?.length ? (
+                    sortedProducts[activeSubSubCategory.id].map((product) => (
+                      <ProductCard
+                        key={product?.id}
+                        product={product}
+                        onCardClick={handleOpenModal}
+                      />
+                    ))
+                  ) : (
+                    <div className={styles.noProducts}></div>
+                  )}
+                </ul>
+              </div>
             )}
             {(subSubCategories || []).map((subSubCat, index) => {
-              const products = (data || [])
-                ?.filter((product) => (subSubCat?.items || []).includes(product?.id))
-                ?.sort(byPosition) || [];
               const isSelected = activeSubSubCategory?.id === subSubCat?.id;
+              if (isSelected) {
+                return null;
+              }
+              const products = sortedProducts[subSubCat.id] ?? [];
 
               return (
-                <div key={subSubCat?.id} className={styles.subSubCategoryGroup}>
-                  {isSelected && subSubCat?.name && (
-                    <h3 className={styles.subSubCategoriesName}>{subSubCat.name}</h3>
-                  )}
+                <div key={subSubCat.id} className={styles.subSubCategoryGroup}>
+                  <h3 className={styles.subSubCategoriesName}>
+                    {subSubCat.name}
+                  </h3>
+
                   <ul className={styles.catalogList}>
                     {products.length > 0 ? (
                       products.map((product) => (
@@ -268,9 +306,6 @@ const CatalogPage = () => {
                       <div className={styles.noProducts}></div>
                     )}
                   </ul>
-                  {!isSelected && subSubCat?.name && (
-                    <h3 className={styles.subSubCategoriesName}>{subSubCat.name}</h3>
-                  )}
                 </div>
               );
             })}
