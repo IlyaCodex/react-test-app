@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import { useFavorites } from "../context/FavoriteContext";
+import styles from "./ProductCard.module.css";
 
 const ProductCard = ({ product, onCardClick }) => {
   const [images, setImages] = useState([]);
-
   const { isFavorite, toggleFavorite } = useFavorites();
-
   const isFav = useMemo(() => isFavorite(product.id), [isFavorite]);
 
   const _toggleFavorite = (e) => {
-    console.log("toggle fav");
     e.preventDefault();
     e.stopPropagation();
     toggleFavorite(product);
@@ -23,11 +21,14 @@ const ProductCard = ({ product, onCardClick }) => {
       )
     ).then((imagesData) => setImages(imagesData));
   }, [product.images]);
+
   return (
-    <li className="card" onClick={() => onCardClick(product)}>
-      <div className="card__head">
+    <li className={styles.card} onClick={() => onCardClick(product)}>
+      <div className={styles.card__head}>
         <button
-          className={`card__favorite ${isFav ? "active" : undefined}`}
+          className={`${styles.card__favorite} ${
+            isFav ? styles.card__favoriteActive : ""
+          }`}
           type="button"
           onClick={_toggleFavorite}
         >
@@ -51,7 +52,7 @@ const ProductCard = ({ product, onCardClick }) => {
         </button>
         {images.length ? <img src={images[0].data} alt={product.name} /> : null}
       </div>
-      <button className="card__add" type="button">
+      <button className={styles.card__add} type="button">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="40"
@@ -68,10 +69,10 @@ const ProductCard = ({ product, onCardClick }) => {
           />
         </svg>
       </button>
-      <span className="card__price">
+      <span className={styles.card__price}>
         {product.price.toLocaleString("ru-RU")} ₽
       </span>
-      <p className="card__name">{product.name}</p>
+      <p className={styles.card__name}>{product.name}</p>
     </li>
   );
 };
