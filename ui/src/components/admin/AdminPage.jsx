@@ -28,12 +28,12 @@ export const AdminPage = () => {
         <div className={styles.loginForm}>
           <input
             onChange={(e) => setLogin(e.target.value ?? "")}
-            className={styles.username}
+            className={styles.username} placeholder="Логин"
           />
           <input
             onChange={(e) => setPassword(e.target.value ?? "")}
             className={styles.password}
-            type="password"
+            type="password" placeholder="Пароль"
           />
           <button
             className={styles.loginButton}
