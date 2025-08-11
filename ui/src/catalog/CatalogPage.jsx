@@ -95,10 +95,6 @@ const CatalogPage = () => {
       ? availableMainCategories
       : categories?.filter((cat) => cat?.id === activeMainCategory?.id) || [];
 
-    if (isNull(activeMainCategory) && availableMainCategories.length) {
-      setActiveMainCategory(activeMainCategories[0]);
-    }
-
     let tempIds = [];
     for (const cat of activeMainCategories || []) {
       tempIds = [...tempIds, ...(cat?.children || [])];
