@@ -1,3 +1,324 @@
+/* .modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContainer {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  padding: 20px 24px 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: none;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999999;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #f5f5f5;
+  color: #666666;
+}
+
+.modalContent {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 120px;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  border: 2px dashed #e0e0e0;
+}
+
+.imageIcon {
+  color: #c0c0c0;
+  font-size: 24px;
+}
+
+.formSection {
+  margin-bottom: 20px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.fieldLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 8px;
+}
+
+.optional {
+  font-size: 12px;
+  color: #999999;
+  font-weight: normal;
+}
+
+.textInput,
+.textArea,
+.numberInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #333333;
+  background-color: #fafafa;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.textInput:focus,
+.textArea:focus,
+.numberInput:focus {
+  outline: none;
+  border-color: #007AFF;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.textArea {
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.numberInput {
+  max-width: 100px;
+}
+
+.colorPickerWrapper {
+  position: relative;
+}
+
+
+.categorySection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 12px;
+}
+
+.categoryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.categoryPill {
+  background-color: #f0f0f0;
+  color: #333333;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.categoryPill:hover {
+  background-color: #ffebee;
+  border-color: #ffcdd2;
+  color: #d32f2f;
+}
+
+.addButton {
+  position: relative;
+  background-color: #f8f9fa;
+  border: 2px dashed #e0e0e0;
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addButton:hover {
+  border-color: #007AFF;
+  background-color: rgba(0, 122, 255, 0.05);
+}
+
+.hiddenSelect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.plusIcon {
+  font-size: 18px;
+  color: #007AFF;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.modalActions {
+  padding: 20px 24px 24px 24px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 12px;
+}
+
+.primaryButton {
+  flex: 1;
+  background: linear-gradient(135deg, #007AFF 0%, #0056CC 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+}
+
+.dangerButton {
+  background-color: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dangerButton:hover {
+  background-color: #ff3742;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+@media (max-width: 640px) {
+  .modalOverlay {
+    padding: 16px;
+  }
+  
+  .modalContainer {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+  
+  .modalHeader {
+    padding: 16px 20px 0 20px;
+  }
+  
+  .modalContent {
+    padding: 20px;
+  }
+  
+  .modalActions {
+    padding: 16px 20px 20px 20px;
+    flex-direction: column;
+  }
+  
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .modalTitle {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categoryGrid {
+    gap: 6px;
+  }
+  
+  .categoryPill,
+  .addButton {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  
+  .imagePlaceholder {
+    height: 100px;
+  }
+} */
+
+/* Прошлые стили админки */
 .container {
   display: flex;
   flex-direction: column;
@@ -31,8 +352,6 @@
   height: 200px;
   padding: 10px;
   > * {
-    /* height: 80px;
-    width: 80px; */
     border: 1px solid gray;
     border-radius: 5px;
   }
@@ -96,7 +415,6 @@
   padding-top: 10px;
 }
 .attribute {
-    /* border: 1px solid black; */
     width: fit-content;
     padding: 5px;
     button {

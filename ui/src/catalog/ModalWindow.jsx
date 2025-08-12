@@ -8,6 +8,7 @@ import { isNull } from "../components/admin/Utils";
 const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [copied, setCopied] = useState(false);
   const imagesPerPage = 4;
   const { addItems: addToCart } = useContext(CartContext);
 
@@ -31,6 +32,18 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
     setCurrentPage(Math.floor(tempIndex / imagesPerPage));
   }, [currentIndex, sliderImages]);
 
+  const copyArticleToClipboard = () => {
+    navigator.clipboard
+      .writeText(product.article)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch((err) => {
+        console.error("Не удалось скопировать артикул:", err);
+      });
+  };
+
   const handlePrev = () => {
     setCurrentIndex((prev) => {
       if (prev <= 0) {
@@ -52,13 +65,11 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const handleAddToCart = () => {
     addToCart({ ...product, count: 1 });
     onClose();
-    //onOpenCart();
   };
 
   const handleBuyNow = () => {
     addToCart({ ...product, count: 1 });
     onClose();
-    //onOpenCart();
   };
 
   if (!product) {
@@ -140,27 +151,20 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
           <div className={styles.modalDetails}>
             <p>
               <span className={styles.detailLabel}>Артикул:</span>
-              <span className={styles.detailValue}>{product.article}</span>
+              <div className={styles.articteCopyBlock}>
+                <button
+                  className={styles.copyButton}
+                  onClick={copyArticleToClipboard}
+                  title="Скопировать артикул"
+                >
+                  {copied ? "Скопировано" : "Копировать"}
+                </button>
+                <span className={styles.detailValue}>{product.article}</span>
+              </div>
             </p>
             <p>
               <span className={styles.detailLabel}>Производитель:</span>
               <span className={styles.detailValue}>{product.manufacturer}</span>
-            </p>
-            <p>
-              <span className={styles.detailLabel}>Количество:</span>
-              <span className={styles.detailValue}>{product.amount} шт.</span>
-            </p>
-            <p>
-              <span className={styles.detailLabel}>В наличии:</span>
-              <span className={styles.detailValue}>
-                {product.in_stock ? "Да" : "Нет"}
-              </span>
-            </p>
-            <p>
-              <span className={styles.detailLabel}>По акции:</span>
-              <span className={styles.detailValue}>
-                {product.has_promo ? "Да" : "Нет"}
-              </span>
             </p>
             {product.attributes.map((attr) => (
               <p key={attr.name}>

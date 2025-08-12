@@ -26,14 +26,17 @@ export const AdminPage = () => {
     return (
       <div className={styles.container}>
         <div className={styles.loginForm}>
+          <h3 className={styles.headerForm}>Добро пожаловать, Админ</h3>
           <input
             onChange={(e) => setLogin(e.target.value ?? "")}
-            className={styles.username} placeholder="Логин"
+            className={styles.username}
+            placeholder="Логин"
           />
           <input
             onChange={(e) => setPassword(e.target.value ?? "")}
             className={styles.password}
-            type="password" placeholder="Пароль"
+            type="password"
+            placeholder="Пароль"
           />
           <button
             className={styles.loginButton}

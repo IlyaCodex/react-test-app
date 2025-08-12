@@ -14,6 +14,15 @@
   box-sizing: border-box;
 }
 
+.copyButton {
+  margin-right: 15px;
+}
+
+.copyButton:hover {
+  color: green;
+  transition: 0.5s all;
+}
+
 .modalContent {
   background: #fff;
   padding: 20px;
