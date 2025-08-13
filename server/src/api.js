@@ -325,16 +325,16 @@ function enrichServerWithApiRoutes(app) {
     });
   });
 
-  app.post("/api/checkout/", (req, res) => {
-    const managers = process.env.MANAGERS_CHATS;
+  app.post("/api/checkout/", async (req, res) => {
     try {
-      if (!bot || !managers) {
+      const operators = await getAllAsync("select * from operators");
+      if (!bot || !operators.length) {
         throw "Service unavailable";
       }
       const { checkoutData, cartItems } = req.body;
-      for (const manager of managers.split(";")) {
+      for (const operator of operators) {
         bot.sendMessage(
-          manager,
+          operator.chat,
           `Новый заказ:
           checkoutData: ${JSON.stringify(checkoutData)}
           Items: ${JSON.stringify(cartItems)}
