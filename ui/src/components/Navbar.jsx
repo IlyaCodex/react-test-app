@@ -11,7 +11,8 @@ import { Link, useNavigate } from "react-router-dom";
 import CartSidebar from "./CartSidebar";
 import styles from "./Navbar.module.css";
 import { FavoritesSidebar } from "./FavoritesSidebar";
-import CheckoutModal from "./CheckoutModal";
+// import CheckoutModal from "./CheckoutModal";
+import CheckoutModal from "./CheckoutModalHeader"
 import { useDebounce } from "../hooks/debounce";
 import { api } from "../api";
 import { isNull, chooseImage, nonNull } from "./admin/Utils";

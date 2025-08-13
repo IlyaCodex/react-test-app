@@ -318,7 +318,7 @@
   -moz-appearance: none;
 }
 
-/* Добавьте в конец файла */
+/* уведомление об отправке данных */
 .successMessage {
   background-color: #dff0d8;
   color: #3c763d;
