@@ -33,15 +33,29 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
   };
 
   const handleSubmit = () => {
-    api.checkout({...checkoutData, totalPrice: calculateTotal()}, items.map(item => ({name: item.name, article: item.article, price: item.price, count: item.count})));
-  }
+    api
+      .checkout(
+        { ...checkoutData, totalPrice: calculateTotal() },
+        items.map((item) => ({
+          name: item.name,
+          article: item.article,
+          price: item.price,
+          count: item.count,
+        }))
+      )
+      .then((response) => {
+        if (!response.error) {
+          clearCart();
+          onClose();
+        }
+      });
+  };
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-      <h2 className={styles.modalTitle}>Оформление заказа</h2>
+        <h2 className={styles.modalTitle}>Оформление заказа</h2>
         <div className={styles.modalHeader}>
-          
           <button className={styles.closeButton} onClick={onClose}>
             ×
           </button>
@@ -50,16 +64,25 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
           <div className={styles.columns}>
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Получатель</h3>
-              <p><strong>ФИО:</strong> {checkoutData.fullName || "Не указано"}</p>
-              <p><strong>Телефон:</strong> {checkoutData.phone || "Не указан"}</p>
-              <p><strong>Почта:</strong> {checkoutData.email || "Не указана"}</p>
+              <p>
+                <strong>ФИО:</strong> {checkoutData.fullName || "Не указано"}
+              </p>
+              <p>
+                <strong>Телефон:</strong> {checkoutData.phone || "Не указан"}
+              </p>
+              <p>
+                <strong>Почта:</strong> {checkoutData.email || "Не указана"}
+              </p>
             </div>
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Доставка</h3>
               {checkoutData.selfPickup ? (
                 <p>Заберу сам (самовывозом)</p>
               ) : (
-                <p><strong>Адрес:</strong> {checkoutData.deliveryAddress || "Не указан"}</p>
+                <p>
+                  <strong>Адрес:</strong>{" "}
+                  {checkoutData.deliveryAddress || "Не указан"}
+                </p>
               )}
             </div>
           </div>
@@ -112,7 +135,9 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
                 {calculateTotal().toLocaleString("ru-RU")} ₽
               </p>
             </div>
-            <button className={styles.submitButton} onClick={handleSubmit}>Оформить заказ</button>
+            <button className={styles.submitButton} onClick={handleSubmit}>
+              Оформить заказ
+            </button>
           </div>
         </div>
       </div>
