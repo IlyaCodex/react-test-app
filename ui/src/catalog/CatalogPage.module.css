@@ -1,7 +1,7 @@
 /* CatalogPage.module.css */
 
 .container {
-  width: 100%; /* Set container width to 1306px as requested */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -436,7 +436,6 @@
   }
 }
 
-/* Адаптивность для планшетов (768px - 1024px) */
 @media (max-width: 1024px) {
   .catalogList {
     grid-template-columns: repeat(3, 1fr);
@@ -476,7 +475,6 @@
   }
 }
 
-/* Адаптивность для мобильных устройств (до 768px) */
 @media (max-width: 768px) {
   .catalogTop {
     flex-direction: column;
@@ -580,7 +578,6 @@
   }
 }
 
-/* Адаптивность для маленьких мобильных устройств (до 480px) */
 @media (max-width: 480px) {
   .catalogSubcategories {
     gap: 8px;

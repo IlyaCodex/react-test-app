@@ -35,7 +35,7 @@
 .stocksImgContainer {
   position: relative;
   width: 280px;
-  height: 260px; /* Square on desktop */
+  height: 260px; 
   overflow: hidden;
   border-radius: 13px;
 }
@@ -55,8 +55,8 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 10px 15px; /* Padding for text at bottom */
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); /* Darker gradient from bottom */
+  padding: 10px 15px; 
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent); 
   color: #fff;
 }
 
@@ -64,7 +64,7 @@
   font-size: 22px;
   font-weight: 600;
   line-height: 1.2;
-  max-height: 2.4em; /* Limit to approximately 2 lines */
+  max-height: 2.4em; 
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -81,7 +81,6 @@
   display: none;
 }
 
-/* Stories Modal Styles */
 .storiesModalOverlay {
   position: fixed;
   top: 0;
@@ -141,11 +140,10 @@
   to { opacity: 0; }
 }
 
-/* Responsive Adjustments */
 @media (max-width: 991px) {
   .stocksImgContainer {
     width: 100%;
-    height: 400px; /* Taller rectangle on mobile */
+    height: 400px; 
   }
 
   .stocksSwiper {
