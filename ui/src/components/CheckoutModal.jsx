@@ -123,7 +123,9 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
                 disabled={selfPickup}
                 required={!selfPickup}
               />
-              <label className={styles.label}>Комментарий (необязательно)</label>
+              <label className={styles.label}>
+                Комментарий (необязательно)
+              </label>
               <textarea
                 className={styles.textarea}
                 placeholder="Дополнительная информация"
@@ -192,7 +194,9 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
                 placeholder="Введите название"
                 required
               />
-              <label className={styles.label}>Комментарий (необязательно)</label>
+              <label className={styles.label}>
+                Комментарий (необязательно)
+              </label>
               <textarea
                 className={styles.textarea}
                 placeholder="Дополнительная информация"
@@ -201,7 +205,16 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
           )}
 
           <button className={styles.submitButton} onClick={handleSubmit}>
-            Оформить заказ
+            Продолжить оформление
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M5 12H19M19 12L13 6M19 12L13 18"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         </div>
       </div>

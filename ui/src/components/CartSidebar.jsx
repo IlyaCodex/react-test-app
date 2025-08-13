@@ -90,10 +90,11 @@ const CartSidebar = ({ isOpen, onClose }) => {
         }}
       >
         <div className={styles.header}>
-          <div />
-          <p>Корзина</p>
-          <button onClick={onClose}>×</button>
+          <button className={styles.close_button} onClick={onClose}>
+            ×
+          </button>
         </div>
+
         <div className={styles.content}>
           <div className={styles.summary}>
             <span>
@@ -108,24 +109,16 @@ const CartSidebar = ({ isOpen, onClose }) => {
             ) : (
               items.map((item, index) => (
                 <div key={item.id} className={styles.item}>
-                  <div className={styles.description}>
-                    <img
-                      src={
-                        images.find((image) => image.id === chooseImage(item))
-                          ?.data
-                      }
-                      alt={item.name}
-                      className={styles.image}
-                    />
+                  <img
+                    src={
+                      images.find((image) => image.id === chooseImage(item))
+                        ?.data
+                    }
+                    alt={item.name}
+                    className={styles.image}
+                  />
 
-                    <div className={styles.details}>
-                      <p className={styles.item_name}>{item.name}</p>
-                      <p className={styles.item_price}>
-                        {item.price?.toLocaleString("ru-RU")} ₽
-                      </p>
-                    </div>
-                  </div>
-                  <div className={styles.buttons}>
+                  <div className={styles.item_info}>
                     <button
                       className={styles.delete}
                       onClick={() =>
@@ -136,10 +129,19 @@ const CartSidebar = ({ isOpen, onClose }) => {
                     >
                       ×
                     </button>
-                    <div className={styles.counter}>
-                      <button onClick={() => removeItems(item)}>-</button>
-                      <div>{item.count}</div>
-                      <button onClick={() => addItems(item)}>+</button>
+                    <div className={styles.details}>
+                      <p className={styles.item_name}>{item.name}</p>
+                      <p className={styles.item_brand}>{item.brand || ""}</p>
+                    </div>
+                    <div className={styles.price_and_counter}>
+                      <p className={styles.item_price}>
+                        {item.price?.toLocaleString("ru-RU")} ₽
+                      </p>
+                      <div className={styles.counter}>
+                        <button onClick={() => removeItems(item)}>-</button>
+                        <span>{item.count}</span>
+                        <button onClick={() => addItems(item)}>+</button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -169,21 +171,26 @@ const CartSidebar = ({ isOpen, onClose }) => {
             </div>
           </div>
         </div>
+
         <div className={styles.footer}>
-          <div></div>
-          <div className={styles.row}>
-            <div className={styles.total}>
-              <div className={styles.count}>
-                {totalCount} {getSuffix(totalCount)}
-              </div>
-              <div className={styles.price}>
-                {calculateTotal().toLocaleString("ru-RU")} ₽
-              </div>
+          <div className={styles.total_section}>
+            <div className={styles.total_label}>Сумма заказа</div>
+            <div className={styles.total_price}>
+              {calculateTotal().toLocaleString("ru-RU")} ₽
             </div>
-            <button className={styles.checkout} onClick={handleCheckoutClick}>
-              Перейти к оформлению
-            </button>
           </div>
+          <button className={styles.checkout} onClick={handleCheckoutClick}>
+            Перейти к оформлению
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M5 12H19M19 12L13 6M19 12L13 18"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
       {isCheckoutModalOpen && (

@@ -1,5 +1,4 @@
 .header {
-  /* margin: 30px 0 120px; */
   font-family: "Manrope", sans-serif;
   height: 74px;
   background-color: #ffffff;
@@ -66,48 +65,46 @@
   transition: all 0.3s ease;
 }
 
-.searchForm {
-  position: absolute;
-  right: 0;
+/* Оверлей для поиска */
+.searchOverlay {
+  position: fixed;
   top: 0;
-  /* transform: translateY(-50%); */
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 10px;
+}
 
+.searchModal {
+  width: 90%;
+  max-width: 850px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.searchForm {
   display: flex;
   flex-direction: column;
   background-color: white;
   border-radius: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
 .searchInput {
-  width: 0;
-  padding: 10px;
+  width: 100%;
+  padding: 20px;
   border: none;
   outline: none;
-  font-size: 16px;
-  transition: all 0.3s ease;
-}
-
-.searchContainer.active .searchForm {
-  opacity: 1;
-  visibility: visible;
-}
-
-.searchContainer.active .searchInput {
-  width: 850px;
-  padding: 10px 15px;
-  background-color: #fff;
-}
-
-.searchCategory {
-  display: flex;
-  width: 100%;
-  height: 10vh;
-  align-items: center;
+  font-size: 18px;
+  border-bottom: 1px solid #eee;
 }
 
 .categoryList {
@@ -117,76 +114,110 @@
 .itemContainer {
   display: flex;
   flex-direction: column;
-  padding: 5px;
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .notFound {
-  padding: 15px;
+  padding: 20px;
+  text-align: center;
+  color: #666;
 }
 
 .searchItem {
   display: flex;
   width: 100%;
-  height: 10vh;
-  align-items: end;
+  min-height: 80px;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.searchItem:last-child {
+  border-bottom: none;
 }
 
 .itemInfo {
-  height: 100%;
   display: flex;
   flex-grow: 1;
-  img {
-    height: 100%;
-  }
+  align-items: center;
+  gap: 15px;
+}
+
+.itemInfo img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .itemButtons {
   display: flex;
-  height: 25px;
-  align-items: end;
-  justify-content: center;
-  gap: 5px;
+  align-items: center;
+  gap: 10px;
 }
 
 .counter {
   display: flex;
-  background-color: #cecece;
-  border-radius: 5px;
-  width: 80px;
-  height: 100%;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  width: 100px;
+  height: 35px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
 
-  * {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
+.counter * {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
 
-  button:hover {
-    background-color: #dbdbdb;
-  }
+.counter button:hover {
+  background-color: #e0e0e0;
 }
 
 .toCart {
-  background-color: black;
+  background-color: #000;
   color: white;
-  border-radius: 5px;
-  font-weight: 300;
-  padding: 0 10px;
-  height: 100%;
+  border: none;
+  border-radius: 8px;
+  font-weight: 400;
+  padding: 8px 16px;
+  height: 35px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toCart:hover {
+  background-color: #333;
 }
 
 .toCatalog {
-  background-color: black;
+  background-color: #000;
   color: white;
-  border-radius: 5px;
-  font-weight: 300;
-  padding: 0 10px;
-  height: 25px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 400;
+  padding: 8px 16px;
+  height: 35px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #333;
+  }
 }
 
 .headerSearchBtn,
@@ -316,16 +347,43 @@
     height: 23px;
   }
 
-  .toCart {
-    font-size: 9px;
-  }
-
   .headerRight {
     gap: 15px;
   }
 
-  .searchContainer.active .searchInput {
-    width: 405px;
+  .searchModal {
+    width: 95%;
+    margin: 0 10px;
+  }
+
+  .searchInput {
+    padding: 15px;
+    font-size: 16px;
+  }
+
+  .searchItem {
+    min-height: 70px;
+    padding: 8px;
+  }
+
+  .itemInfo img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .name {
+    font-size: 14px;
+  }
+
+  .counter {
+    width: 80px;
+    height: 30px;
+  }
+
+  .toCart {
+    font-size: 12px;
+    padding: 6px 12px;
+    height: 30px;
   }
 
   .headerSearchBtn,
@@ -347,8 +405,55 @@
 }
 
 @media (max-width: 480px) {
-  .searchContainer.active .searchInput {
-    width: 162px;
+  .searchOverlay {
+    padding-top: 10px;
+  }
+
+  .searchModal {
+    width: 98%;
+    margin: 0 5px;
+  }
+
+  .searchInput {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .searchItem {
+    min-height: 60px;
+    padding: 6px;
+    /* flex-direction: column; */
+    align-items: center;
+    gap: 10px;
+  }
+
+  .itemInfo {
+    width: 100%;
+  }
+
+  .itemInfo img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .name {
+    font-size: 13px;
+  }
+
+  .itemButtons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .counter {
+    width: 70px;
+    height: 28px;
+  }
+
+  .toCart {
+    font-size: 11px;
+    padding: 4px 8px;
+    height: 28px;
   }
 
   .menuBtn {

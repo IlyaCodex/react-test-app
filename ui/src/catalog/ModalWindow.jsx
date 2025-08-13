@@ -10,9 +10,13 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [copied, setCopied] = useState(false);
   const imagesPerPage = 4;
-  const { addItems: addToCart } = useContext(CartContext);
+
+  const { items: cartItems, addItems, removeItems } = useContext(CartContext);
 
   const [sliderImages, setSliderImages] = useState([]);
+
+  const cartItem = cartItems.find((item) => item.id === product?.id);
+  const itemCount = cartItem ? cartItem.count : 0;
 
   useEffect(() => {
     Promise.all(
@@ -63,13 +67,13 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   };
 
   const handleAddToCart = () => {
-    addToCart({ ...product, count: 1 });
-    onClose();
+    addItems({ ...product, count: 1 });
   };
 
   const handleBuyNow = () => {
-    addToCart({ ...product, count: 1 });
+    addItems({ ...product, count: 1 });
     onClose();
+    onOpenCart();
   };
 
   if (!product) {
@@ -82,6 +86,16 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
         <button className={styles.modalCloseBtn} onClick={onClose}>
           ×
         </button>
+
+        <div className={styles.mobileBlock}>
+          <h4 className={styles.mobileProductName}>{product.name}</h4>
+          <p>
+            <span className={styles.mobileDetailValue}>
+              {product.description}
+            </span>
+          </p>
+        </div>
+
         <div className={styles.modalImageColumn}>
           {sliderImages.length && (
             <img
@@ -144,10 +158,13 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
           </div>
         </div>
         <div className={styles.modalDetailsColumn}>
-          <h4 className={styles.productName}>{product.name}</h4>
-          <p>
-            <span className={styles.detailValue}>{product.description}</span>
-          </p>
+          <div className={styles.desktopBlock}>
+            <h4 className={styles.productName}>{product.name}</h4>
+            <p>
+              <span className={styles.detailValue}>{product.description}</span>
+            </p>
+          </div>
+
           <div className={styles.modalDetails}>
             <p>
               <span className={styles.detailLabel}>Артикул:</span>
@@ -177,13 +194,21 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
             {product.price?.toLocaleString("ru-RU")} ₽
           </p>
           <div className={styles.buttonGroup}>
-            <button
-              className={styles.addToCartBtn}
-              onClick={handleAddToCart}
-              disabled={isNull(product.price)}
-            >
-              В корзину
-            </button>
+            {itemCount > 0 ? (
+              <div className={styles.counter}>
+                <button onClick={() => removeItems(product)}>-</button>
+                <div>{itemCount}</div>
+                <button onClick={() => addItems(product)}>+</button>
+              </div>
+            ) : (
+              <button
+                className={styles.addToCartBtn}
+                onClick={handleAddToCart}
+                disabled={isNull(product.price)}
+              >
+                В корзину
+              </button>
+            )}
             <button
               className={styles.buyNowBtn}
               onClick={handleBuyNow}

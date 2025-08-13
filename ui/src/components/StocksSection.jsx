@@ -18,8 +18,8 @@ const StoriesModal = ({ isOpen, onClose, imageIds, images }) => {
   useEffect(() => {
     if (isOpen && imageIds.length > 0) {
       setProgress(0);
-      const interval = 100; // Update every 100ms
-      const totalDuration = 10000; // 10 seconds
+      const interval = 100; 
+      const totalDuration = 4000; 
       const increment = 100 / (totalDuration / interval);
 
       intervalRef.current = setInterval(() => {
@@ -124,8 +124,8 @@ const StocksSection = () => {
 
   const swiperOptions = {
     modules: [Autoplay, Pagination, Navigation],
-    spaceBetween: 15, // Reduced space for 4 cards on mobile
-    slidesPerView: 4, // Default to 4 on desktop
+    spaceBetween: 15,
+    slidesPerView: 4, 
     loop: true,
     pagination: {
       clickable: true,
@@ -138,8 +138,8 @@ const StocksSection = () => {
     },
     breakpoints: {
       0: {
-        slidesPerView: 2, // 4 cards on mobile
-        spaceBetween: 10, // Tight spacing for mobile
+        slidesPerView: 2,
+        spaceBetween: 10, 
       },
       576: { slidesPerView: 2 },
       768: { slidesPerView: 3 },

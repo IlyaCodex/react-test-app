@@ -45,38 +45,43 @@ const CategoriesSection = () => {
     </svg>
   );
 
+  const selectedMainCategory = mainCategories.find(
+    (cat) => cat.id === selectedCategory
+  );
+
   return (
     <section className={styles.categories}>
       <div className={styles.container}>
         <h2 className={styles.titleSection}>Категории</h2>
 
-        <ul className={styles.categoriesList}>
+        <div className={styles.categoriesWrapper}>
           {mainCategories.sort(byPosition).map((mainCategory, index) => (
-            <li
-              key={mainCategory.id}
-              className={`${styles.categoriesItem} ${
-                selectedCategory === mainCategory.id ? styles.active : ""
-              }`}
-              style={{ backgroundColor: mainCategory.color }}
-              tabIndex={0}
-              onClick={() => handleCategoryClick(mainCategory.id)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && handleCategoryClick(mainCategory.id)
-              }
-            >
-              <div className={styles.categoriesHead}>
-                {mainCategory.name}
-                <div
-                  className={`${styles.categoriesBtn} ${
-                    selectedCategory === mainCategory.id ? styles.rotated : ""
-                  }`}
-                >
-                  <ArrowIcon />
+            <div key={mainCategory.id} className={styles.categoryContainer}>
+              <div
+                className={`${styles.categoriesItem} ${
+                  selectedCategory === mainCategory.id ? styles.active : ""
+                }`}
+                style={{ backgroundColor: mainCategory.color }}
+                tabIndex={0}
+                onClick={() => handleCategoryClick(mainCategory.id)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleCategoryClick(mainCategory.id)
+                }
+              >
+                <div className={styles.categoriesHead}>
+                  {mainCategory.name}
+                  <div
+                    className={`${styles.categoriesBtn} ${
+                      selectedCategory === mainCategory.id ? styles.rotated : ""
+                    }`}
+                  >
+                    <ArrowIcon />
+                  </div>
                 </div>
+                <p className={styles.categoriesText}>
+                  {mainCategory.description}
+                </p>
               </div>
-              <p className={styles.categoriesText}>
-                {mainCategory.description}
-              </p>
 
               {selectedCategory === mainCategory.id && (
                 <div className={styles.subcategories}>
@@ -101,9 +106,9 @@ const CategoriesSection = () => {
                   </ul>
                 </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
 
         <div className={styles.discountBlock}>
           <img
