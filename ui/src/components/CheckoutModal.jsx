@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CheckoutModal.module.css";
+// import { api } from "../api";
 
 const CheckoutModal = ({ onClose, onSubmit }) => {
   const [isIndividual, setIsIndividual] = useState(true);

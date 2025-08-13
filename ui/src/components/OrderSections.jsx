@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./OrderSection.module.css";
+import { api } from "../api";
 
 const CustomSelect = ({ value, onChange, options, placeholder, className }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,6 +60,9 @@ const OrderSection = () => {
     contact: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); 
+
   const orderSteps = [
     {
       title: "Составьте заказ",
@@ -107,9 +111,95 @@ const OrderSection = () => {
     setFormData((prev) => ({ ...prev, contact: value }));
   };
 
+  const validateForm = () => {
+    if (!formData.fio.trim()) return false;
+    if (!formData.phone.trim()) return false;
+    if (formData.type === "legal" && !formData.organization.trim())
+      return false;
+    return true;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form data:", formData);
+
+    if (!validateForm()) {
+      setSubmitStatus("error");
+      setTimeout(() => setSubmitStatus(null), 5000);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+   
+    const checkoutData =
+      formData.type === "legal"
+        ? {
+           
+            fullName: `${formData.fio} (${formData.organization})`, 
+            phone: formData.phone,
+            email: "",
+            deliveryAddress: `Организация: ${formData.fio}, Клиника: ${formData.organization}`,
+            selfPickup: false,
+            type: "legal",
+            contactMethod: "tel",
+            organizationName: formData.fio,
+            clinicName: formData.organization,
+          }
+        : {
+            
+            fullName: formData.fio,
+            phone: formData.phone,
+            email: "",
+            deliveryAddress: formData.contact
+              ? `Способ связи: ${
+                  contactOptions.find((opt) => opt.value === formData.contact)
+                    ?.label || formData.contact
+                }`
+              : "",
+            selfPickup: false,
+            type: "individual",
+            contactMethod: formData.contact || "tel",
+          };
+
+    console.log("Отправляемые данные:", { checkoutData, cartItems: [] });
+
+    
+    api
+      .checkout(checkoutData, [])
+      .then((response) => {
+        console.log("Ответ сервера:", response);
+
+        if (response && !response.error) {
+          setSubmitStatus("success");
+         
+          setFormData({
+            type: "individual",
+            fio: "",
+            phone: "",
+            organization: "",
+            contact: "",
+          });
+        } else {
+          setSubmitStatus("error");
+          console.error(
+            "Ошибка при отправке заявки:",
+            response?.error || "Неизвестная ошибка"
+          );
+        }
+      })
+      .catch((error) => {
+        setSubmitStatus("error");
+        console.error("Ошибка при отправке заявки:", error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+
+        
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 2000);
+      });
   };
 
   return (
@@ -150,7 +240,7 @@ const OrderSection = () => {
                       checked={formData.type === "individual"}
                       onChange={handleTypeChange}
                       className={styles.hiddenRadio}
-                    />{" "}
+                    />
                     Физ. лицо
                   </label>
                   <label
@@ -165,7 +255,7 @@ const OrderSection = () => {
                       checked={formData.type === "legal"}
                       onChange={handleTypeChange}
                       className={styles.hiddenRadio}
-                    />{" "}
+                    />
                     Юр. лицо
                   </label>
                 </div>
@@ -228,17 +318,40 @@ const OrderSection = () => {
                   </div>
                 )}
               </div>
-              <button className={styles.orderBtn} type="submit">
-                Оставить заявку
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M5 12H19M19 12L13 6M19 12L13 18"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+
+           
+              {submitStatus === "success" && (
+                <div className={styles.successMessage}>
+                  Заявка успешно отправлена! Мы свяжемся с вами в ближайшее
+                  время.
+                </div>
+              )}
+              {submitStatus === "error" && (
+                <div className={styles.errorMessage}>
+                  Ошибка при отправке заявки. Пожалуйста, проверьте заполнение
+                  полей и попробуйте позже.
+                </div>
+              )}
+
+              <button
+                className={`${styles.orderBtn} ${
+                  isSubmitting ? styles.loading : ""
+                }`}
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Отправка..." : "Оставить заявку"}
+                {!isSubmitting && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M5 12H19M19 12L13 6M19 12L13 18"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
               </button>
             </form>
           </div>

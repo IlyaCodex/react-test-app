@@ -318,6 +318,33 @@
   -moz-appearance: none;
 }
 
+/* Добавьте в конец файла */
+.successMessage {
+  background-color: #dff0d8;
+  color: #3c763d;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.errorMessage {
+  background-color: #f2dede;
+  color: #a94442;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 15px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.orderBtn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 
 @media (max-width: 920px) {
   .container {
