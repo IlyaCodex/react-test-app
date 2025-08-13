@@ -166,10 +166,10 @@ if (process.env.BOT_TOKEN) {
           newPassword,
           botPasswordSettingKey,
         ]);
-      }
-    } else {
-      getAllAsync("select * from operators where chat = ?", [msg.chat.id]).then(
-        (rows) => {
+      } else {
+        getAllAsync("select * from operators where chat = ?", [
+          msg.chat.id,
+        ]).then((rows) => {
           if (rows?.length) {
             db.run(
               "delete from operators where chat = ?",
@@ -201,8 +201,8 @@ if (process.env.BOT_TOKEN) {
               }
             );
           }
-        }
-      );
+        });
+      }
     }
   });
 }

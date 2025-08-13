@@ -155,6 +155,7 @@ export const api = {
   checkout: (checkoutData, cartItems) => {
     return fetch("/api/checkout/", {
       headers: getHeaders(),
+      method: "post",
       body: JSON.stringify({ checkoutData, cartItems }),
     }).then((response) => response.json());
   },
