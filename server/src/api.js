@@ -327,8 +327,11 @@ function enrichServerWithApiRoutes(app) {
 
   app.post("/api/checkout/", async (req, res) => {
     try {
+      if (!bot) {
+        throw "Service unavailable";
+      }
       const operators = await getAllAsync("select * from operators");
-      if (!bot || !operators.length) {
+      if (!operators.length) {
         throw "Service unavailable";
       }
       const { checkoutData, cartItems } = req.body;
@@ -336,9 +339,23 @@ function enrichServerWithApiRoutes(app) {
         bot.sendMessage(
           operator.chat,
           `Новый заказ:
-          checkoutData: ${JSON.stringify(checkoutData)}
-          Items: ${JSON.stringify(cartItems)}
-          `
+ФИО: ${checkoutData.fullName}
+Телефон: ${checkoutData.phone}
+Email: ${checkoutData.email}
+Адрес: ${checkoutData.delivaryAddress}
+Самовывоз: ${checkoutData.selfPickup ? "Да" : "Нет"}
+Название клиники: ${checkoutData.clinicName}
+Сумма при оформлении: ${checkoutData.totalPrice}
+
+Корзина: 
+${cartItems
+  .map(
+    (item) => `Название: ${item.name}
+Артикул: ${item.article}
+Кол-во: ${item.count}
+Цена: ${item.price}`
+  )
+  .join("\n\n")}`
         );
       }
     } catch (error) {
