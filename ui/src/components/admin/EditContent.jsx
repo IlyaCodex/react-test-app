@@ -8,7 +8,7 @@ import { Partner } from "./Partner";
 import { Promo } from "./Promo";
 import { Product } from "./Product";
 import { useAuth } from "../../context/AuthContext";
-import { Admin } from "./ADmin";
+import { Admin } from "./Admin";
 
 function levelFromType(type) {
   switch (type) {
