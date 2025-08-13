@@ -25,7 +25,9 @@
   pointer-events: none;
   opacity: 0.5;
   filter: blur(18px);
-} @media (max-width: 768px) {
+} 
+
+@media (max-width: 768px) {
   .container::before {
     width: 100%;
     height: 37%;
@@ -43,7 +45,7 @@
 
 .categoriesWrapper {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   gap: 25px;
   margin-bottom: 25px;
   width: 100%;
@@ -54,6 +56,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .categoriesItem {
@@ -67,6 +71,7 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .categoriesItem.active {
@@ -121,13 +126,11 @@
   margin-bottom: 15px;
 }
 
-
 .subcategories {
-  width: 100%;
-  /* margin-top: 20px; */
+  width: 100%; 
   margin-bottom: 0;
   padding: 20px;
-  background-color: #ffffff; 
+  background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   animation: slideDown 0.3s ease-out;
@@ -159,10 +162,8 @@
   color: #171717;
   cursor: pointer;
   padding: 8px 16px;
-  /* background-color: #f8f8f8; */
   border-radius: 8px;
   transition: all 0.2s ease;
-  /* border: 1px solid #e0e0e0; */
 }
 
 .subcategoriesItem:hover {
@@ -302,7 +303,6 @@
   .categoriesItem {
     width: 100%;
     max-width: 380px;
-    /* margin-bottom: 20px; */
     margin-top: 10px;
   }
 
@@ -338,10 +338,11 @@
 }
 
 @media (max-width: 768px) {
-.categoriesWrapper {
-  gap: 0px;
-  margin-bottom: 0px;
-}
+  .categoriesWrapper {
+    gap: 0px;
+    margin-bottom: 0px;
+    flex-wrap: wrap;
+  }
 
   .container {
     max-width: 720px;
@@ -351,9 +352,17 @@
     font-size: 36px;
   }
 
+  .categoryContainer {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 15px;
+  }
+
   .categoriesItem {
     padding: 20px;
     min-height: 240px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .categoriesHead {
@@ -421,7 +430,7 @@
     display: none;
   }
 
-   .icon {
+  .icon {
     display: block;
   }
 }
@@ -438,11 +447,18 @@
 
   .categoriesWrapper {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .categoryContainer {
+    width: 100%;
+    margin-bottom: 0;
   }
 
   .categoriesItem {
     width: 100%;
+    max-width: 100%;
     padding: 15px;
     min-height: 200px;
   }
