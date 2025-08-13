@@ -349,7 +349,7 @@ function enrichServerWithApiRoutes(app) {
 ФИО: ${checkoutData.fullName}
 Телефон: ${checkoutData.phone}
 Email: ${checkoutData.email}
-Адрес: ${checkoutData.delivaryAddress}
+Адрес: ${checkoutData.deliveryAddress}
 Самовывоз: ${checkoutData.selfPickup ? "Да" : "Нет"}
 Название клиники: ${checkoutData.clinicName}
 Сумма при оформлении: ${checkoutData.totalPrice}
@@ -365,6 +365,7 @@ ${cartItems
   .join("\n\n")}`
         );
       }
+      res.send(wrapResponse("Success"));
     } catch (error) {
       res.statusCode = 500;
       res.send(wrapResponse(undefined, error));
