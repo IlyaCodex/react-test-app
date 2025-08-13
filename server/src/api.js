@@ -162,10 +162,17 @@ if (process.env.BOT_TOKEN) {
       if (lines.length === 2) {
         const newPassword = lines[1];
         botPassword = newPassword;
-        db.run("update settings set value = ? where key = ?", [
-          newPassword,
-          botPasswordSettingKey,
-        ]);
+        db.run(
+          "update settings set value = ? where key = ?",
+          [newPassword, botPasswordSettingKey],
+          (err) => {
+            if (!err) {
+              bot.sendMessage(msg.chat.id, "Пароль изменен!");
+            } else {
+              console.error("Error while updating bot password", err);
+            }
+          }
+        );
       } else {
         getAllAsync("select * from operators where chat = ?", [
           msg.chat.id,
