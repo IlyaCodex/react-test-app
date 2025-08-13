@@ -30,6 +30,14 @@ const CatalogPage = () => {
   const [activeSubCategory, setActiveSubCategory] = useState(undefined);
   const [activeSubSubCategory, setActiveSubSubCategory] = useState(undefined);
 
+  // Состояния для формы
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error'
+
   const { onOpenItemModal } = useItemModal();
 
   useEffect(() => {
@@ -150,6 +158,81 @@ const CatalogPage = () => {
       return;
     }
     setActiveSubSubCategory(category);
+  };
+
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) return false;
+    if (!formData.phone.trim()) return false;
+    return true;
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      setSubmitStatus("error");
+      setTimeout(() => setSubmitStatus(null), 5000);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    
+    const checkoutData = {
+      fullName: formData.name,
+      phone: formData.phone,
+      email: "",
+      deliveryAddress: "Заявка с каталога - консультация по товарам",
+      selfPickup: false,
+      type: "individual",
+      contactMethod: "tel",
+    };
+
+    console.log("Отправляемые данные из каталога:", {
+      checkoutData,
+      cartItems: [],
+    });
+
+   
+    api
+      .checkout(checkoutData, [])
+      .then((response) => {
+        console.log("Ответ сервера:", response);
+
+        if (response && !response.error) {
+          setSubmitStatus("success");
+          
+          setFormData({
+            name: "",
+            phone: "",
+          });
+        } else {
+          setSubmitStatus("error");
+          console.error(
+            "Ошибка при отправке заявки:",
+            response?.error || "Неизвестная ошибка"
+          );
+        }
+      })
+      .catch((error) => {
+        setSubmitStatus("error");
+        console.error("Ошибка при отправке заявки:", error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+
+        
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 2000);
+      });
   };
 
   return (
@@ -323,30 +406,62 @@ const CatalogPage = () => {
               подберут решение
             </p>
           </div>
-          <div className={styles.requestForm}>
+          <form className={styles.requestForm} onSubmit={handleFormSubmit}>
             <input
               type="text"
+              name="name"
               className={styles.formInput}
               placeholder="Ваше имя"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+              maxLength="255"
             />
             <input
               type="tel"
+              name="phone"
               className={styles.formInput}
               placeholder="+7(999)222 22-22"
+              value={formData.phone}
+              onChange={handleInputChange}
+              required
+              maxLength="255"
             />
-            <button className={styles.formButton}>
-              Отправить заявку
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M5 12H19M19 12L13 6M19 12L13 18"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+
+            
+            {submitStatus === "success" && (
+              <div className={styles.successMessage}>
+                Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.
+              </div>
+            )}
+            {submitStatus === "error" && (
+              <div className={styles.errorMessage}>
+                Ошибка при отправке заявки. Пожалуйста, проверьте заполнение
+                полей и попробуйте позже.
+              </div>
+            )}
+
+            <button
+              className={`${styles.formButton} ${
+                isSubmitting ? styles.loading : ""
+              }`}
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Отправка..." : "Отправить заявку"}
+              {!isSubmitting && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M5 12H19M19 12L13 6M19 12L13 18"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </section>
