@@ -5,14 +5,17 @@ import { useAuth } from "../../context/AuthContext";
 import { convertFiles, nonNull } from "./Utils";
 import { isNull } from "./Utils";
 
-// Функция для генерации артикула
-const generateArticle = () => {
-  const fixedPart = "11701"; // Фиксированная часть
-  const randomPart = Math.floor(100000 + Math.random() * 900000); // 6 случайных цифр
-  return `${fixedPart}${randomPart}`;
+const generateArticle = (articles) => {
+  let newArticle;
+  const fixedPart = "11701"; 
+  do {
+    const randomPart = Math.floor(Math.random() * 1000000);
+    newArticle = `${fixedPart}${randomPart}`;
+  } while (articles.includes(newArticle));
+  return newArticle;
 };
 
-export const Product = ({ data, onClose }) => {
+export const Product = ({ data, onClose, articles }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [position, setPosition] = useState(1);
@@ -36,7 +39,6 @@ export const Product = ({ data, onClose }) => {
 
   const imageInput = useRef(null);
 
-  // Генерация артикула при создании нового продукта
   useEffect(() => {
     if (isNull(data) && !article) {
       setArticle(generateArticle());

@@ -7,14 +7,14 @@ import {
   ChevronDown,
   MapPin,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CartSidebar from "./CartSidebar";
 import styles from "./Navbar.module.css";
 import { FavoritesSidebar } from "./FavoritesSidebar";
-import CheckoutModal from "./CheckoutModal"; 
+import CheckoutModal from "./CheckoutModal";
 import { useDebounce } from "../hooks/debounce";
 import { api } from "../api";
-import { isNull, chooseImage } from "./admin/Utils";
+import { isNull, chooseImage, nonNull } from "./admin/Utils";
 import { CartContext } from "../context/CartContext";
 
 const Header = () => {
@@ -28,6 +28,7 @@ const Header = () => {
   const [foundItems, setFoundItems] = useState(undefined);
   const [foundImages, setFoundImages] = useState([]);
   const { addItems } = useContext(CartContext);
+  const navigate = useNavigate();
 
   const searchRef = useRef(null);
 
@@ -69,8 +70,8 @@ const Header = () => {
   useEffect(() => {
     if (debouncedSearchQuery) {
       api.searchItems(debouncedSearchQuery).then((res) => {
-        const items = res.data;
-        setFoundItems(items);
+        const items = res.data.items;
+        setFoundItems([...items, ...res.data.categories]);
         Promise.all(
           items.map((item) => {
             item.count = 1;
@@ -94,7 +95,7 @@ const Header = () => {
     e.preventDefault();
     e.stopPropagation();
     if (window.innerWidth <= 768) {
-      setIsMenuOpen(false); 
+      setIsMenuOpen(false);
     }
     setIsCartOpen(true);
   };
@@ -140,11 +141,53 @@ const Header = () => {
   };
 
   const handleOpenCheckoutModal = () => {
-    setIsCheckoutModalOpen(true); 
+    setIsCheckoutModalOpen(true);
   };
 
   const handleCloseCheckoutModal = () => {
-    setIsCheckoutModalOpen(false); 
+    setIsCheckoutModalOpen(false);
+  };
+
+  const renderFoundCategory = (category) => {
+    const cats = [];
+    if (category.level === 3) {
+      cats.push(category.parent.parent);
+    }
+    if (category.level >= 2) {
+      cats.push(category.parent);
+    }
+    cats.push(category);
+    return (
+      <div className={styles.searchCategory}>
+        <div className={styles.categoryList}>
+          {category.level === 3 ? (
+            <>{`${category.parent.parent.name} > `}</>
+          ) : null}
+          {category.level >= 2 ? <>{`${category.parent.name} > `}</> : null}
+          <strong>{category.name}</strong>
+        </div>
+        <button
+          className={styles.toCatalog}
+          onClick={() => {
+            const p = {};
+            if (nonNull(cats[0])) {
+              p.maincategory = cats[0].id;
+            }
+            if (nonNull(cats[1])) {
+              p.subcategory = cats[1].id;
+            }
+            if (nonNull(cats[2])) {
+              p.subsubcategory = cats[2].id;
+            }
+            const params = new URLSearchParams(p);
+            navigate(`/catalog?${params.toString()}`);
+            setIsSearchOpen(false);
+          }}
+        >
+          В каталог
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -239,38 +282,43 @@ const Header = () => {
                       {foundItems.length === 0 ? (
                         <div className={styles.notFound}>Ничего не найдено</div>
                       ) : (
-                        foundItems.map((item) => (
-                          <div className={styles.searchItem}>
-                            <div className={styles.itemInfo}>
-                              <img
-                                alt="Картинка"
-                                src={
-                                  foundImages.find(
-                                    (image) => image.id === chooseImage(item)
-                                  )?.data
-                                }
-                              />
-                              <div className={styles.name}>{item.name}</div>
-                            </div>
-                            <div className={styles.itemButtons}>
-                              <div className={styles.counter}>
-                                <button onClick={() => onDecrement(item)}>
-                                  -
-                                </button>
-                                <div>{item.count}</div>
-                                <button onClick={() => onIncrement(item)}>
-                                  +
+                        foundItems.map((item) => {
+                          if (item.level) {
+                            return renderFoundCategory(item);
+                          }
+                          return (
+                            <div className={styles.searchItem}>
+                              <div className={styles.itemInfo}>
+                                <img
+                                  alt="Картинка"
+                                  src={
+                                    foundImages.find(
+                                      (image) => image.id === chooseImage(item)
+                                    )?.data
+                                  }
+                                />
+                                <div className={styles.name}>{item.name}</div>
+                              </div>
+                              <div className={styles.itemButtons}>
+                                <div className={styles.counter}>
+                                  <button onClick={() => onDecrement(item)}>
+                                    -
+                                  </button>
+                                  <div>{item.count}</div>
+                                  <button onClick={() => onIncrement(item)}>
+                                    +
+                                  </button>
+                                </div>
+                                <button
+                                  className={styles.toCart}
+                                  onClick={() => toCart(item)}
+                                >
+                                  В корзину
                                 </button>
                               </div>
-                              <button
-                                className={styles.toCart}
-                                onClick={() => toCart(item)}
-                              >
-                                В корзину
-                              </button>
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   )}
@@ -394,7 +442,7 @@ const Header = () => {
       )}
 
       {isCheckoutModalOpen && (
-        <CheckoutModal onClose={handleCloseCheckoutModal} /> 
+        <CheckoutModal onClose={handleCloseCheckoutModal} />
       )}
     </header>
   );

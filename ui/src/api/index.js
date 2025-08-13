@@ -11,6 +11,24 @@ function getHeaders(auth) {
 const imageCache = {};
 
 export const api = {
+  getAdmins: (auth) => {
+    return fetch("/api/admins/", {
+      headers: getHeaders(auth),
+    }).then((response) => response.json());
+  },
+  saveAdmin: (auth, admin) => {
+    return fetch(`/api/admins/`, {
+      method: "put",
+      headers: getHeaders(auth),
+      body: JSON.stringify(admin),
+    });
+  },
+  deleteAdmin: (auth, login) => {
+    return fetch(`/api/admins/${login}`, {
+      method: "delete",
+      headers: getHeaders(auth),
+    }).then((response) => response.json());
+  },
   getCategoryById: (id) => {
     return fetch(`/api/categories/${id}`).then((response) => response.json());
   },
@@ -45,7 +63,9 @@ export const api = {
     return fetch(`/api/items/`).then((response) => response.json());
   },
   getRecomendedItems: (id) => {
-    return fetch(`/api/items/${id}/recomended`).then((response) => response.json());
+    return fetch(`/api/items/${id}/recomended`).then((response) =>
+      response.json()
+    );
   },
   getItemImage: (id) => {
     const cacheHit = imageCache[id];
@@ -126,6 +146,7 @@ export const api = {
   },
 
   login: (auth) => {
+    console.log(auth);
     return fetch(`/api/admin/login/`, {
       headers: getHeaders(auth),
     }).then((response) => response.json());

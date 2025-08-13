@@ -3,20 +3,11 @@ const dotenv = require("dotenv");
 dotenv.config();
 const db = new sqlite3.Database(process.env.DB_FILE || "./maindb.sqlite");
 const TelegramBot = require("node-telegram-bot-api");
-
-let bot = undefined;
-if (process.env.BOT_TOKEN) {
-  console.log("starting bot");
-  bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
-
-  bot.on("message", (msg) => {
-    console.log(JSON.stringify({ from: msg.from, content: msg.text }));
-  });
-}
+const botPasswordSettingKey = "bot_password";
 
 db.serialize(() => {
   db.run(
-    "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, description TEXT, position INTEGER, level INTEGER, color TEXT)"
+    "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY, name TEXT, description TEXT, position INTEGER, level INTEGER, color TEXT, lookup TEXT)"
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name TEXT, price INTEGER, position INTEGER, article TEXT, manufacturer TEXT, description TEXT, amount TEXT, in_stock BOOLEAN, has_promo BOOLEAN, lookup TEXT)"
@@ -26,6 +17,27 @@ db.serialize(() => {
   );
   db.run(
     "CREATE TABLE IF NOT EXISTS partners (id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT)"
+  );
+  db.run(
+    "CREATE TABLE IF NOT EXISTS admins (login TEXT, password TEXT, super BOOLEAN, UNIQUE(login))"
+  );
+  if (process.env.ADMIN_LOGIN && process.env.ADMIN_PASSWORD) {
+    db.run(
+      "INSERT OR IGNORE INTO admins (login, password, super) VALUES(?,?,?)",
+      [process.env.ADMIN_LOGIN, process.env.ADMIN_PASSWORD, 1]
+    );
+  }
+  db.run(
+    "CREATE TABLE IF NOT EXISTS settings (key TEXT, value TEXT, UNIQUE(key))"
+  );
+  if (process.env.BOT_PASSWORD) {
+    db.run("INSERT OR IGNORE INTO settings (key, value) VALUES(?, ?)", [
+      botPasswordSettingKey,
+      process.env.BOT_PASSWORD,
+    ]);
+  }
+  db.run(
+    "CREATE TABLE IF NOT EXISTS operators (chat INTEGER, username TEXT, UNIQUE(chat))"
   );
 
   db.run(
@@ -51,11 +63,43 @@ db.serialize(() => {
   );
 });
 
-function authorize(login, password) {
-  return login === "admin" && password === "admin";
+async function getAsync(sql, params) {
+  return new Promise((resolve, reject) =>
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(row);
+    })
+  );
 }
 
-const checkAuth = (req, res, next) => {
+async function getAllAsync(sql, params) {
+  return new Promise((resolve, reject) =>
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      // console.log({ sql, params, rows });
+      resolve(rows);
+    })
+  );
+}
+
+function authorize(login, password, checkSuper) {
+  let sql = "select login from admins where login = ? and password = ?";
+  if (checkSuper) {
+    sql += " and super = 1";
+  }
+  return getAllAsync(sql, [login, password])
+    .then((rows) => rows.length > 0)
+    .catch((err) => {
+      console.log("Authorize sql error", err);
+      return false;
+    });
+}
+
+const checkAuth = (req, res, next, checkSuper) => {
   try {
     let auth = req.headers.authorization;
     if (!auth || !auth.startsWith("Basic")) {
@@ -68,12 +112,18 @@ const checkAuth = (req, res, next) => {
       .toString("utf-8")
       .split(":");
 
-    if (authorize(login, password)) {
-      next();
-    } else {
-      res.statusCode = 403;
-      res.send(wrapResponse(undefined, "Not authorized"));
-    }
+    authorize(login, password, checkSuper)
+      .then((authorized) => {
+        if (authorized) {
+          next();
+        } else {
+          return Promise.reject();
+        }
+      })
+      .catch(() => {
+        res.statusCode = 403;
+        res.send(wrapResponse(undefined, "Not authorized"));
+      });
   } catch (reason) {
     console.error(reason);
     res.statusCode = 500;
@@ -93,26 +143,68 @@ async function insertRow(sql, params) {
   );
 }
 
-async function getAsync(sql, params) {
-  return new Promise((resolve, reject) =>
-    db.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(row);
-    })
-  );
-}
+let bot = undefined;
+if (process.env.BOT_TOKEN) {
+  console.log("starting bot");
+  bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
+  let botPassword = undefined;
 
-async function getAllAsync(sql, params) {
-  return new Promise((resolve, reject) =>
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
+  getAsync("select * from settings where key = ?", [
+    botPasswordSettingKey,
+  ]).then((row) => (botPassword = row?.value ?? undefined));
+
+  bot.on("message", (msg) => {
+    if (!msg.text) {
+      return;
+    }
+    const lines = msg.text.split(" ");
+    if (lines[0] === botPassword) {
+      if (lines.length === 2) {
+        const newPassword = lines[1];
+        botPassword = newPassword;
+        db.run("update settings set value = ? where key = ?", [
+          newPassword,
+          botPasswordSettingKey,
+        ]);
       }
-      resolve(rows);
-    })
-  );
+    } else {
+      getAllAsync("select * from operators where chat = ?", [msg.chat.id]).then(
+        (rows) => {
+          if (rows?.length) {
+            db.run(
+              "delete from operators where chat = ?",
+              [msg.chat.id],
+              (err) => {
+                if (!err) {
+                  bot.sendMessage(
+                    msg.chat.id,
+                    "Вы больше не получаете уведомления!"
+                  );
+                } else {
+                  console.error("Error while deleting operator", err);
+                }
+              }
+            );
+          } else {
+            db.run(
+              "insert into operators(chat, username) values(?, ?)",
+              [msg.chat.id, msg.from?.username ?? ""],
+              (err) => {
+                if (!err) {
+                  bot.sendMessage(
+                    msg.chat.id,
+                    "Вы будете получать новые уведомления!"
+                  );
+                } else {
+                  console.error("Error while inserting operator", err);
+                }
+              }
+            );
+          }
+        }
+      );
+    }
+  });
 }
 
 async function loadParentCategories(category) {
@@ -192,6 +284,46 @@ function enrichServerWithApiRoutes(app) {
   });
   app.put("/api/{*path}", checkAuth);
   app.delete("/api/{*path}", checkAuth);
+  app.all("/api/admins/{*path}", (req, res, next) =>
+    checkAuth(req, res, next, true)
+  );
+  app.get("/api/admins/", (req, res) => {
+    getAllAsync("select login, super from admins where super = 0")
+      .then((rows) => {
+        rows.forEach((row) => translateBoolean(row, ["super"]));
+        res.send(wrapResponse(rows));
+      })
+      .catch((reason) => {
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, reason));
+      });
+  });
+
+  app.put("/api/admins/", (req, res) => {
+    const newAdmin = req.body;
+    insertRow(
+      "insert or replace into admins (login, password, super) values (?, ?, 0)",
+      [newAdmin.login, newAdmin.password]
+    )
+      .then((id) => {
+        res.send(wrapResponse(id));
+      })
+      .catch((reason) => {
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, reason));
+      });
+  });
+
+  app.delete("/api/admins/:login", (req, res) => {
+    db.run("delete from admins where login = ?", [req.params.login], (err) => {
+      if (!err) {
+        res.send(wrapResponse("Success"));
+      } else {
+        res.statusCode = 500;
+        res.send(wrapResponse(undefined, err));
+      }
+    });
+  });
 
   app.post("/api/checkout/", (req, res) => {
     const managers = process.env.MANAGERS_CHATS;
@@ -418,28 +550,76 @@ function enrichServerWithApiRoutes(app) {
     }
   });
 
-  app.get("/api/items/search/", (req, res) => {
-    const query = req.query.query;
+  app.get("/api/items/search/", async (req, res) => {
+    let query = req.query.query;
     if (!query) {
       res.send(wrapResponse([]));
       return;
     }
-    const queryWithWildcards = `%${query.toLowerCase()}%`;
-    getAllAsync("select * from items where lookup like ? limit 5", [
-      queryWithWildcards,
-    ])
-      .then((rows) => {
+    query = query.toLowerCase();
+    const queryWithWildcards = `%${query}%`;
+    try {
+      const result = { categories: [], items: [] };
+      const categories1 = await getAllAsync(
+        "select id, name, level from categories where level = 1"
+      );
+      for (const cat of categories1) {
+        if (result.categories.length >= 5) {
+          break;
+        }
+        if (cat.name.toLowerCase().includes(query)) {
+          result.categories.push({ ...cat });
+        }
+      }
+      const categories2 = await getAllAsync(
+        "select c.id, c.name, c.level, cc.parent_id from categories c join cat_to_cat cc on c.id = cc.child_id where level = 2"
+      );
+      for (const cat of categories2) {
+        if (cat.parent_id !== null && cat.parent_id !== undefined) {
+          cat.parent =
+            categories1.find((p) => p.id === cat.parent_id) ?? undefined;
+        }
+        if (result.categories.length >= 5) {
+          break;
+        }
+        if (cat.name.toLowerCase().includes(query)) {
+          result.categories.push({ ...cat });
+        }
+      }
+      const categories3 = await getAllAsync(
+        "select c.id, c.name, c.level, cc.parent_id from categories c join cat_to_cat cc on c.id = cc.child_id where level = 3"
+      );
+      for (const cat of categories3) {
+        if (cat.parent_id !== null && cat.parent_id !== undefined) {
+          cat.parent =
+            categories2.find((p) => p.id === cat.parent_id) ?? undefined;
+        }
+        if (result.categories.length >= 5) {
+          break;
+        }
+        if (cat.name.toLowerCase().includes(query)) {
+          result.categories.push({ ...cat });
+        }
+      }
+
+      const items = await getAllAsync(
+        "select * from items where lookup like ? limit 5",
+        [queryWithWildcards]
+      ).then((rows) => {
         return Promise.all(
           rows.map((row) =>
             loadItemImageIds(row.id).then((imageIds) => (row.images = imageIds))
           )
-        ).then(() => res.send(wrapResponse(rows)));
-      })
-      .catch((error) => {
-        console.error(error);
-        res.statusCode = 500;
-        res.send(wrapResponse(undefined, error));
+        ).then(() => rows);
       });
+      result.items.push(...items);
+
+      res.send(wrapResponse(result));
+    } catch (error) {
+      console.error(error);
+      res.statusCode = 500;
+      res.send(wrapResponse(undefined, error));
+    }
   });
 
   app.get("/api/items/images/:id", (req, res) => {
@@ -864,14 +1044,6 @@ function enrichServerWithApiRoutes(app) {
   });
 
   //    PARTNERS API                                                                            PARTNERS API
-
-  //(id INTEGER PRIMARY KEY, name TEXT, position INTEGER, country TEXT, description TEXT, image TEXT)
-
-  // app.get("/api/sql", (req, res) => {
-  //   const sql = req.query.sql;
-  //   console.log(sql);
-  //   getAllAsync(sql).then((row) => res.send(wrapResponse(row)));
-  // });
 
   app.get("/api/partners/images/:id", (req, res) => {
     const imageId = req.params.id;

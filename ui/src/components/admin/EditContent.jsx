@@ -7,6 +7,8 @@ import { api } from "../../api";
 import { Partner } from "./Partner";
 import { Promo } from "./Promo";
 import { Product } from "./Product";
+import { useAuth } from "../../context/AuthContext";
+import { Admin } from "./ADmin";
 
 function levelFromType(type) {
   switch (type) {
@@ -26,10 +28,9 @@ export const EditContent = () => {
   const [items, setItems] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for burger menu
   const [filter, setFilter] = useState("");
+  const { auth } = useAuth();
 
-  const onLinkClick = (e, t) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const onLinkClick = (t) => {
     if (type === t) {
       return;
     }
@@ -42,6 +43,7 @@ export const EditContent = () => {
   };
 
   useEffect(() => {
+    console.log({ selected, type });
     if (selected) {
       return;
     }
@@ -64,8 +66,27 @@ export const EditContent = () => {
       case "promos":
         api.getPromos().then((response) => setItems(response.data));
         return;
+      case "admins":
+        console.log("123");
+        api
+          .getAdmins(auth)
+          .then((response) => {
+            console.log(response);
+            if (response.error) {
+              alert("У вас нет доступа");
+              onLinkClick("partners");
+            } else {
+              setItems(response.data);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            alert(error);
+            onLinkClick("partners");
+          });
+        return;
     }
-  }, [type, selected]);
+  }, [type, selected, auth]);
 
   const categoryFilter = (category) => {
     const lcFilter = filter?.toLowerCase();
@@ -95,6 +116,11 @@ export const EditContent = () => {
       partner.country.toLowerCase().includes(lcFilter) ||
       partner.description.toLowerCase().includes(lcFilter)
     );
+  };
+
+  const adminsFilter = (admin) => {
+    const lcFilter = filter?.toLowerCase();
+    return !lcFilter || admin.login.toLowerCase().includes(lcFilter);
   };
 
   const renderItems = () => {
@@ -127,6 +153,12 @@ export const EditContent = () => {
         return items
           .filter(partnersFilter)
           .map((item, index) => renderItem({ ...item, index }));
+      case "admins":
+        return items
+          .filter(adminsFilter)
+          .map((item, index) =>
+            renderItem({ ...item, id: item.login, name: item.login, index })
+          );
     }
   };
 
@@ -146,11 +178,14 @@ export const EditContent = () => {
           />
         );
       case "items":
-        return <Product data={id} onClose={onClose} />;
+        const artciles = items.map((item) => item.article);
+        return <Product data={id} onClose={onClose} articles={artciles} />;
       case "partners":
         return <Partner data={id} onClose={onClose} />;
       case "promos":
         return <Promo data={id} onClose={onClose} />;
+      case "admins":
+        return <Admin data={id} onClose={onClose} />;
     }
   };
 
@@ -181,39 +216,45 @@ export const EditContent = () => {
         <div className={styles.navHeader}>Меню админ панели</div>
         <div
           className={`${styles.link} ${getSelectedClassName("firstLevel")}`}
-          onClick={(e) => onLinkClick(e, "firstLevel")}
+          onClick={(e) => onLinkClick("firstLevel")}
         >
           Добавить категории
         </div>
         <div
           className={`${styles.link} ${getSelectedClassName("secondLevel")}`}
-          onClick={(e) => onLinkClick(e, "secondLevel")}
+          onClick={(e) => onLinkClick("secondLevel")}
         >
           Добавить под(категории)
         </div>
         <div
           className={`${styles.link} ${getSelectedClassName("thirdLevel")}`}
-          onClick={(e) => onLinkClick(e, "thirdLevel")}
+          onClick={(e) => onLinkClick("thirdLevel")}
         >
           Добавить Под*2(категории)
         </div>
         <div
           className={`${styles.link} ${getSelectedClassName("items")}`}
-          onClick={(e) => onLinkClick(e, "items")}
+          onClick={(e) => onLinkClick("items")}
         >
           Продукты
         </div>
         <div
           className={`${styles.link} ${getSelectedClassName("promos")}`}
-          onClick={(e) => onLinkClick(e, "promos")}
+          onClick={(e) => onLinkClick("promos")}
         >
           Акции
         </div>
         <div
           className={`${styles.link} ${getSelectedClassName("partners")}`}
-          onClick={(e) => onLinkClick(e, "partners")}
+          onClick={(e) => onLinkClick("partners")}
         >
           Партнеры
+        </div>
+        <div
+          className={`${styles.link} ${getSelectedClassName("admins")}`}
+          onClick={(e) => onLinkClick("admins")}
+        >
+          Админы
         </div>
       </div>
 

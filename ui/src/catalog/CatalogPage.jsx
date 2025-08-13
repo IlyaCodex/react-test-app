@@ -17,7 +17,7 @@ const CatalogPage = () => {
   const [searchParams] = useSearchParams();
   const initialMainCategory = searchParams.get("maincategory");
   const initialSubcategory = searchParams.get("subcategory");
-  const initialSubSubCategories = searchParams.get("subSubCategories");
+  const initialSubSubCategories = searchParams.get("subsubcategory");
 
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
