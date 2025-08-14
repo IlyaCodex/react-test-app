@@ -16,7 +16,6 @@ const generateArticle = (articles) => {
 };
 
 export const Product = ({ data, onClose, articles }) => {
-  console.log(articles);
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [position, setPosition] = useState(1);

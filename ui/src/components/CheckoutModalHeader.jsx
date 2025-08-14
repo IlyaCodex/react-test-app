@@ -83,12 +83,10 @@ const CheckoutModal = ({ onClose, cartItems = [] }) => {
           comment: formData.comment,
         };
 
-    console.log("Отправляемые данные:", { checkoutData, cartItems });
 
     api
       .checkout(checkoutData, cartItems)
       .then((response) => {
-        console.log("Ответ сервера:", response);
 
         if (response && !response.error) {
           setSubmitStatus("success");
