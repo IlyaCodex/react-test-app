@@ -16,6 +16,7 @@ const generateArticle = (articles) => {
 };
 
 export const Product = ({ data, onClose, articles }) => {
+  console.log(articles);
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [position, setPosition] = useState(1);
@@ -38,12 +39,6 @@ export const Product = ({ data, onClose, articles }) => {
   const [availableRecomended, setAvailableRecomended] = useState([]);
 
   const imageInput = useRef(null);
-
-  useEffect(() => {
-    if (isNull(data) && !article) {
-      setArticle(generateArticle());
-    }
-  }, [data, article]);
 
   const onImageSelect = async (e) => {
     const rawFiles = await convertFiles(e.target.files ?? []);
@@ -88,7 +83,7 @@ export const Product = ({ data, onClose, articles }) => {
         );
     } else if (!article) {
       // Генерация артикула для нового продукта
-      setArticle(generateArticle());
+      setArticle(generateArticle(articles));
     }
 
     api
