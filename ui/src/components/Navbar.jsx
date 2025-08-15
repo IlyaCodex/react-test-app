@@ -85,6 +85,12 @@ const Header = () => {
     setIsCartOpen(true);
   };
 
+  const closeMenu = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMenuOpen(false);
+  };
+
   const handleFavoritesClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -296,6 +302,9 @@ const Header = () => {
             className={`${styles.mobileMenu} ${isMenuOpen ? styles.open : ""}`}
           >
             <div className={styles.mobileMenuInner}>
+              <button className={styles.modalCloseBtn} onClick={closeMenu}>
+                ×
+              </button>
               <nav className={styles.mobileNav}>
                 <ul className={styles.mobileList}>
                   <li>

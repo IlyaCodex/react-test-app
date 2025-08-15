@@ -1,5 +1,5 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Header from "./components/Navbar";
 import Footer from "./components/Footer";
 import CatalogPage from "./catalog/CatalogPage";
@@ -8,39 +8,51 @@ import StocksSection from "./components/StocksSection";
 import CategoriesSection from "./components/Categories";
 import PartnersSection from "./components/Partners";
 // import DeliveryOrderSections from "./components/DeliveryOrderSections";
-import OrderSection from './components/OrderSections';
+import NotFound from "./components/notFound";
+import OrderSection from "./components/OrderSections";
 import ContactsSection from "./components/ContactsSection";
-import WhyUsSection from './components/WhyUsSection';
-import Faq from './components/Faq';
-import { CartContextProvider } from './context/CartContext';
-import { CookiesProvider } from 'react-cookie';
-import { ProductsContextProvider } from './context/ProductsContext';
-import { FavoriteProvider } from './context/FavoriteContext';
-import { AdminPage } from './components/admin/AdminPage';
-import { ItemModalProvider } from './context/ItemModalContext';
+import WhyUsSection from "./components/WhyUsSection";
+import Faq from "./components/Faq";
+import { CartContextProvider } from "./context/CartContext";
+import { CookiesProvider } from "react-cookie";
+import { ProductsContextProvider } from "./context/ProductsContext";
+import { FavoriteProvider } from "./context/FavoriteContext";
+import { AdminPage } from "./components/admin/AdminPage";
+import { ItemModalProvider } from "./context/ItemModalContext";
 
-function MainApp() {
+function HomePage() {
+  return (
+    <>
+      <HomeSection />
+      <div id="stocks"><StocksSection /></div>
+      <div id="categories"><CategoriesSection /></div>
+      <div id="aboutUs"><WhyUsSection /></div>
+      <div id="partners"><PartnersSection /></div>
+      <div id="delivery"><OrderSection /></div>
+       <Faq />
+      <ContactsSection />
+    </>
+  );
+}
+
+function LayoutWrapper({ children }) {
   return (
     <>
       <Header />
-      <Routes>
-        <Route path="/" element={
-          <>
-            <HomeSection />
-            <div id="stocks"><StocksSection /></div>
-            <div id="categories"><CategoriesSection /></div>
-            <div id="aboutUs"><WhyUsSection /></div>
-            <div id="partners"><PartnersSection /></div>
-            <div id="delivery"><OrderSection /></div>
-            <Faq />
-            <ContactsSection />
-          </>
-        } />
-        <Route path="/catalog/:mainCategory?" element={<CatalogPage />} />
-      </Routes>
+      {children}
       <Footer />
     </>
-  )
+  );
+}
+
+function MainApp() {
+  return (
+    <Routes>
+      <Route path="/" element={<LayoutWrapper> <HomePage /> </LayoutWrapper>}/>
+      <Route path="/catalog/:mainCategory?" element={<LayoutWrapper> <CatalogPage /> </LayoutWrapper>} />
+      <Route path="*" element={<LayoutWrapper> <NotFound /> </LayoutWrapper>} />
+    </Routes>
+  );
 }
 
 function App() {
@@ -51,7 +63,7 @@ function App() {
     if (hash) {
       const element = document.getElementById(hash.substring(1));
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: "smooth" });
       }
     }
   }, [location]);
@@ -79,7 +91,6 @@ function App() {
       </CookiesProvider>
     </div>
   );
-};
+}
 
 export default App;
-

@@ -214,7 +214,7 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
               onClick={handleBuyNow}
               disabled={isNull(product.price)}
             >
-              Купить сейчас
+              Перейти в корзину
             </button>
           </div>
         </div>

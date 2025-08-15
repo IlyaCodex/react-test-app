@@ -42,10 +42,11 @@ label, p, h1, h2, h3, h4, h5, h6, div, span, button {
     border-radius: 50%;
     padding: 5px 15px;
     color: #000000;
+    margin-right: 30px;
 }
 
 .swiper-button-prev:after {
-  display: none;
+  /* display: none; */
 }
 
 .swiper-button-next:after {

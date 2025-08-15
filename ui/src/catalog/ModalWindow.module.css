@@ -276,13 +276,14 @@
 
 .counter {
   display: flex;
-  background-color: #cecece;
-  border-radius: 5px;
-  width: 80px;
-  height: auto;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+    background-color: #19b800;
+    border-radius: 5px;
+    width: 40%;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: aliceblue;
   * {
     flex-grow: 1;
     display: flex;
@@ -292,7 +293,7 @@
   }
 
   button:hover {
-    background-color: #dbdbdb;
+    background-color: #00ab1f72;
   }
 }
 

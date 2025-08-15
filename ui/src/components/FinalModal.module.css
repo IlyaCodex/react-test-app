@@ -221,12 +221,14 @@ color: #171717;
     }
 
     .footer {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        display: block;
+        /* flex-direction: column;
+        align-items: center; */
+        /* gap: 10px; */
     }
 
     .submitButton {
         width: 100%;
         text-align: center;
+        margin-top: 10px;
     } }

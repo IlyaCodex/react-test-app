@@ -7,6 +7,9 @@ import { api } from "../api";
 const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
   const { items, addItems, removeItems, clearCart } = useContext(CartContext);
   const [images, setImages] = useState([]);
+  const [isEditingRecipient, setIsEditingRecipient] = useState(false);
+  const [isEditingDelivery, setIsEditingDelivery] = useState(false);
+  const [editedData, setEditedData] = useState(checkoutData || {});
 
   useEffect(() => {
     Promise.all(
@@ -16,6 +19,10 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
         .map((imageId) => api.getItemImage(imageId).then((res) => res.data))
     ).then((arr) => setImages(arr.filter((img) => img)));
   }, [items]);
+
+  useEffect(() => {
+    setEditedData(checkoutData || {});
+  }, [checkoutData]);
 
   const calculateTotal = () => {
     return items.reduce((total, item) => total + item.price * item.count, 0);
@@ -35,7 +42,7 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
   const handleSubmit = () => {
     api
       .checkout(
-        { ...checkoutData, totalPrice: calculateTotal() },
+        { ...editedData, totalPrice: calculateTotal() }, // Use edited data
         items.map((item) => ({
           name: item.name,
           article: item.article,
@@ -51,6 +58,29 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
       });
   };
 
+  const handleEditRecipient = () => {
+    setIsEditingRecipient(true);
+  };
+
+  const handleEditDelivery = () => {
+    setIsEditingDelivery(true);
+  };
+
+  const handleSaveRecipient = () => {
+    setIsEditingRecipient(false);
+    // Optionally call onSubmit or update parent state if needed
+  };
+
+  const handleSaveDelivery = () => {
+    setIsEditingDelivery(false);
+    // Optionally call onSubmit or update parent state if needed
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -63,26 +93,119 @@ const FinalModal = ({ onClose, checkoutData, onSubmit }) => {
         <div className={styles.modalBody}>
           <div className={styles.columns}>
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Получатель</h3>
-              <p>
-                <strong>ФИО:</strong> {checkoutData.fullName || "Не указано"}
-              </p>
-              <p>
-                <strong>Телефон:</strong> {checkoutData.phone || "Не указан"}
-              </p>
-              <p>
-                <strong>Почта:</strong> {checkoutData.email || "Не указана"}
-              </p>
+              <h3 className={styles.sectionTitle}>
+                Получатель
+                {!isEditingRecipient && (
+                  <span
+                    className={styles.editIcon}
+                    onClick={handleEditRecipient}
+                  >
+                    ✎
+                  </span>
+                )}
+              </h3>
+              {isEditingRecipient ? (
+                <div>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={editedData.fullName || ""}
+                    onChange={handleInputChange}
+                    placeholder="ФИО"
+                  />
+                  <input
+                    type="text"
+                    name="phone"
+                    value={editedData.phone || ""}
+                    onChange={handleInputChange}
+                    placeholder="Телефон"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={editedData.email || ""}
+                    onChange={handleInputChange}
+                    placeholder="Почта"
+                  />
+                  <button
+                    className={styles.saveButton}
+                    onClick={handleSaveRecipient}
+                  >
+                    Сохранить
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p>
+                    <strong>ФИО:</strong> {editedData.fullName || "Не указано"}
+                  </p>
+                  <p>
+                    <strong>Телефон:</strong> {editedData.phone || "Не указан"}
+                  </p>
+                  <p>
+                    <strong>Почта:</strong> {editedData.email || "Не указана"}
+                  </p>
+                </div>
+              )}
             </div>
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Доставка</h3>
-              {checkoutData.selfPickup ? (
-                <p>Заберу сам (самовывозом)</p>
+              <h3 className={styles.sectionTitle}>
+                Доставка
+                {!isEditingDelivery && (
+                  <span
+                    className={styles.editIcon}
+                    onClick={handleEditDelivery}
+                  >
+                    ✎
+                  </span>
+                )}
+              </h3>
+              {isEditingDelivery ? (
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="selfPickup"
+                      checked={editedData.selfPickup || false}
+                      onChange={(e) =>
+                        setEditedData((prev) => ({
+                          ...prev,
+                          selfPickup: e.target.checked,
+                          deliveryAddress: e.target.checked
+                            ? ""
+                            : prev.deliveryAddress,
+                        }))
+                      }
+                    />
+                    Заберу сам (самовывозом)
+                  </label>
+                  {!editedData.selfPickup && (
+                    <input
+                      type="text"
+                      name="deliveryAddress"
+                      value={editedData.deliveryAddress || ""}
+                      onChange={handleInputChange}
+                      placeholder="Адрес доставки"
+                    />
+                  )}
+                  <button
+                    className={styles.saveButton}
+                    onClick={handleSaveDelivery}
+                  >
+                    Сохранить
+                  </button>
+                </div>
               ) : (
-                <p>
-                  <strong>Адрес:</strong>{" "}
-                  {checkoutData.deliveryAddress || "Не указан"}
-                </p>
+                <div>
+                  {editedData.selfPickup ? (
+                    <p>Заберу сам (самовывозом)</p>
+                  ) : (
+                    <p>
+                      <strong>Адрес:</strong>{" "}
+                      {editedData.deliveryAddress || "Не указан"}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           </div>
