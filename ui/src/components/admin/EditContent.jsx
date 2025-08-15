@@ -43,7 +43,7 @@ export const EditContent = () => {
   };
 
   useEffect(() => {
-    console.log({ selected, type });
+    ({ selected, type });
     if (selected) {
       return;
     }
@@ -67,11 +67,9 @@ export const EditContent = () => {
         api.getPromos().then((response) => setItems(response.data));
         return;
       case "admins":
-        console.log("123");
         api
           .getAdmins(auth)
           .then((response) => {
-            console.log(response);
             if (response.error) {
               alert("У вас нет доступа");
               onLinkClick("partners");
@@ -80,7 +78,6 @@ export const EditContent = () => {
             }
           })
           .catch((error) => {
-            console.log(error);
             alert(error);
             onLinkClick("partners");
           });

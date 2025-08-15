@@ -39,12 +39,6 @@ export const Product = ({ data, onClose, articles }) => {
 
   const imageInput = useRef(null);
 
-  useEffect(() => {
-    if (isNull(data) && !article) {
-      setArticle(generateArticle());
-    }
-  }, [data, article]);
-
   const onImageSelect = async (e) => {
     const rawFiles = await convertFiles(e.target.files ?? []);
     const biggestPosition = (images ?? []).reduce(
@@ -88,7 +82,7 @@ export const Product = ({ data, onClose, articles }) => {
         );
     } else if (!article) {
       // Генерация артикула для нового продукта
-      setArticle(generateArticle());
+      setArticle(generateArticle(articles));
     }
 
     api

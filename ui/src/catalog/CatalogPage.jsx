@@ -195,17 +195,10 @@ const CatalogPage = () => {
       contactMethod: "tel",
     };
 
-    console.log("Отправляемые данные из каталога:", {
-      checkoutData,
-      cartItems: [],
-    });
-
    
     api
       .checkout(checkoutData, [])
       .then((response) => {
-        console.log("Ответ сервера:", response);
-
         if (response && !response.error) {
           setSubmitStatus("success");
           

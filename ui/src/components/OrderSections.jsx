@@ -164,13 +164,11 @@ const OrderSection = () => {
             contactMethod: formData.contact || "tel",
           };
 
-    console.log("Отправляемые данные:", { checkoutData, cartItems: [] });
 
     
     api
       .checkout(checkoutData, [])
       .then((response) => {
-        console.log("Ответ сервера:", response);
 
         if (response && !response.error) {
           setSubmitStatus("success");

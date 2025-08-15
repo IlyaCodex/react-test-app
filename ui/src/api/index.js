@@ -146,7 +146,6 @@ export const api = {
   },
 
   login: (auth) => {
-    console.log(auth);
     return fetch(`/api/admin/login/`, {
       headers: getHeaders(auth),
     }).then((response) => response.json());
