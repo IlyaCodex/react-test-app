@@ -9,11 +9,13 @@ export const Promo = ({ data, onClose }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
+  const [storiesImages, setStoriesImages] = useState([]);
   const [position, setPosition] = useState(1);
 
   const { auth } = useAuth();
 
   const imageInput = useRef(null);
+  const storiesImageInput = useRef(null);
 
   const onImageSelect = async (e) => {
     const rawFiles = await convertFiles(e.target.files ?? []);
@@ -29,6 +31,20 @@ export const Promo = ({ data, onClose }) => {
     setImages(newImages);
   };
 
+  const onStoriesImageSelect = async (e) => {
+    const rawFiles = await convertFiles(e.target.files ?? []);
+    const biggestPosition = (storiesImages ?? []).reduce(
+      (biggest, image) => Math.max(biggest, image.position),
+      0
+    );
+    const files = rawFiles.map((file, index) => ({
+      data: file,
+      position: biggestPosition + 1 + index,
+    }));
+    const newStoriesImages = [...storiesImages, ...files];
+    setStoriesImages(newStoriesImages);
+  };
+
   useEffect(() => {
     if (!isNull(data)) {
       api.getPromoById(data).then((response) => {
@@ -36,11 +52,18 @@ export const Promo = ({ data, onClose }) => {
         setName(promo.name);
         setDescription(promo.description);
         setPosition(promo.position);
+
         Promise.all(
           promo.images?.map((imageId) =>
             api.getPromoImage(imageId).then((res) => res.data)
-          )
+          ) ?? []
         ).then((images) => setImages(images));
+
+        Promise.all(
+          promo.storiesImages?.map((imageId) =>
+            api.getPromoImage(imageId).then((res) => res.data)
+          ) ?? []
+        ).then((storiesImages) => setStoriesImages(storiesImages));
       });
     }
   }, [data]);
@@ -51,6 +74,7 @@ export const Promo = ({ data, onClose }) => {
       name,
       description,
       images,
+      storiesImages,
       position,
     };
     api.savePromo(auth, newData).then(onClose);
@@ -62,6 +86,10 @@ export const Promo = ({ data, onClose }) => {
 
   const removeImage = (image) => {
     setImages([...images.filter((img) => img !== image)]);
+  };
+
+  const removeStoriesImage = (image) => {
+    setStoriesImages([...storiesImages.filter((img) => img !== image)]);
   };
 
   return (
@@ -78,6 +106,8 @@ export const Promo = ({ data, onClose }) => {
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
+
+      <h3>Основные фото</h3>
       <div className={styles.images}>
         <input
           accept="image/*"
@@ -105,6 +135,36 @@ export const Promo = ({ data, onClose }) => {
           <span>&#x2b;</span>
         </div>
       </div>
+
+      <h3>Добавление в сторис</h3>
+      <div className={styles.images}>
+        <input
+          accept="image/*"
+          type="file"
+          multiple
+          ref={storiesImageInput}
+          hidden
+          onChange={onStoriesImageSelect}
+        />
+        {storiesImages
+          .sort((a, b) => a.position - b.position)
+          .map((image, index) => (
+            <img
+              onClick={() => removeStoriesImage(image)}
+              key={index}
+              className={styles.image}
+              src={image.data}
+              alt="stories image"
+            />
+          ))}
+        <div
+          className={styles.imageButton}
+          onClick={() => storiesImageInput.current?.click()}
+        >
+          <span>&#x2b;</span>
+        </div>
+      </div>
+
       <label className={styles.position}>
         Позиция:
         <input

@@ -9,6 +9,19 @@ export const AdminPage = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
 
+  // const authenticate = ({ login, password }) => {
+  //   const validLogin = "";
+  //   const validPassword = "";
+
+  //   if (login === validLogin && password === validPassword) {
+  //     const newAuth = btoa(`${login}:${password}`);
+  //     setAuth(newAuth);
+  //     console.log("Успешный вход без API");
+  //   } else {
+  //     alert("Неверный логин или пароль");
+  //   }
+  // };
+
   const authenticate = ({ login, password }) => {
     const newAuth = btoa(`VladimirRezepin:VladimirRezipinHOST300!`);
     // const newAuth = btoa(`${login}:${password}`);
