@@ -9,7 +9,7 @@ export const Promo = ({ data, onClose }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
-  const [storiesImages, setStoriesImages] = useState([]);
+  const [storyImages, setStoryImages] = useState([]);
   const [position, setPosition] = useState(1);
 
   const { auth } = useAuth();
@@ -18,7 +18,9 @@ export const Promo = ({ data, onClose }) => {
   const storiesImageInput = useRef(null);
 
   const onImageSelect = async (e) => {
-    const rawFiles = await convertFiles(e.target.files ?? []);
+    const rawFiles = (await convertFiles(e.target.files ?? [])).filter(
+      (file) => !images.some((image) => image.data === file)
+    );
     const biggestPosition = (images ?? []).reduce(
       (biggest, image) => Math.max(biggest, image.position),
       0
@@ -32,8 +34,10 @@ export const Promo = ({ data, onClose }) => {
   };
 
   const onStoriesImageSelect = async (e) => {
-    const rawFiles = await convertFiles(e.target.files ?? []);
-    const biggestPosition = (storiesImages ?? []).reduce(
+    const rawFiles = (await convertFiles(e.target.files ?? [])).filter(
+      (file) => !images.some((image) => image.data === file)
+    );
+    const biggestPosition = (storyImages ?? []).reduce(
       (biggest, image) => Math.max(biggest, image.position),
       0
     );
@@ -41,8 +45,8 @@ export const Promo = ({ data, onClose }) => {
       data: file,
       position: biggestPosition + 1 + index,
     }));
-    const newStoriesImages = [...storiesImages, ...files];
-    setStoriesImages(newStoriesImages);
+    const newStoriesImages = [...storyImages, ...files];
+    setStoryImages(newStoriesImages);
   };
 
   useEffect(() => {
@@ -60,10 +64,10 @@ export const Promo = ({ data, onClose }) => {
         ).then((images) => setImages(images));
 
         Promise.all(
-          promo.storiesImages?.map((imageId) =>
-            api.getPromoImage(imageId).then((res) => res.data)
+          promo.storyImages?.map((imageId) =>
+            api.getPromoStoryImage(imageId).then((res) => res.data)
           ) ?? []
-        ).then((storiesImages) => setStoriesImages(storiesImages));
+        ).then((storyImages) => setStoryImages(storyImages));
       });
     }
   }, [data]);
@@ -74,7 +78,7 @@ export const Promo = ({ data, onClose }) => {
       name,
       description,
       images,
-      storiesImages,
+      storyImages,
       position,
     };
     api.savePromo(auth, newData).then(onClose);
@@ -89,7 +93,7 @@ export const Promo = ({ data, onClose }) => {
   };
 
   const removeStoriesImage = (image) => {
-    setStoriesImages([...storiesImages.filter((img) => img !== image)]);
+    setStoryImages([...storyImages.filter((img) => img !== image)]);
   };
 
   return (
@@ -146,7 +150,7 @@ export const Promo = ({ data, onClose }) => {
           hidden
           onChange={onStoriesImageSelect}
         />
-        {storiesImages
+        {storyImages
           .sort((a, b) => a.position - b.position)
           .map((image, index) => (
             <img

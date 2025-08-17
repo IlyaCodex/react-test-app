@@ -1,11 +1,13 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
+import CartSidebar from "../components/CartSidebar";
 
 export const CartContext = createContext({
   items: [],
   addItems: (...items) => {},
   removeItems: (...items) => {},
   clearCart: () => {},
+  openCart: () => {},
+  closeCart: () => {},
 });
 
 const storageKey = "cart";
@@ -14,6 +16,7 @@ const loadCart = () => JSON.parse(localStorage.getItem(storageKey) ?? "[]");
 
 export const CartContextProvider = ({ children }) => {
   const [items, setItems] = useState(loadCart());
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(items));
@@ -55,9 +58,14 @@ export const CartContextProvider = ({ children }) => {
   );
 
   const clearCart = useCallback(() => setItems([]), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
+  const openCart = useCallback(() => setIsOpen(true), []);
 
   return (
-    <CartContext value={{ items, addItems, removeItems, clearCart }}>
+    <CartContext
+      value={{ items, addItems, removeItems, clearCart, openCart, closeCart }}
+    >
+      <CartSidebar isOpen={isOpen} onClose={closeCart} />
       {children}
     </CartContext>
   );

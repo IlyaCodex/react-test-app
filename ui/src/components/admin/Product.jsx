@@ -44,7 +44,9 @@ export const Product = ({ data, onClose, articles }) => {
   const imageInput = useRef(null);
 
   const onImageSelect = async (e) => {
-    const rawFiles = await convertFiles(e.target.files ?? []);
+    const rawFiles = (await convertFiles(e.target.files ?? [])).filter(
+      (file) => !images.some((image) => image.data === file)
+    );
     const biggestPosition = (images ?? []).reduce(
       (biggest, image) => Math.max(biggest, image.position),
       0

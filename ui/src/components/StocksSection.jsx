@@ -9,15 +9,20 @@ import styles from "./StocksSection.module.css";
 import { api } from "../api";
 import { byPosition, chooseImage, isNull, nonNull } from "./admin/Utils";
 
-const StoriesModal = ({ isOpen, onClose, imageIds, images }) => {
+const StoriesModal = ({ isOpen, onClose, imageIds }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef(null);
   const isPausedRef = useRef(false);
+  const [images, setImages] = useState([]);
 
   useEffect(() => {
     if (isOpen && imageIds.length > 0) {
-      setProgress(0);
+      Promise.all(
+        imageIds.map((imageId) =>
+          api.getPromoStoryImage(imageId).then((res) => res.data)
+        )
+      ).then((images) => setImages((images ?? []).filter(nonNull)));
       const interval = 20;
       const totalDuration = 4000;
       const increment = 100 / (totalDuration / interval);
@@ -27,7 +32,7 @@ const StoriesModal = ({ isOpen, onClose, imageIds, images }) => {
           setProgress((prev) => {
             if (prev >= 100) {
               if (currentIndex < imageIds.length - 1) {
-                setCurrentIndex((prevIndex) => prevIndex + 1);
+                setCurrentIndex(currentIndex + 1);
                 return 0;
               } else {
                 clearInterval(intervalRef.current);
@@ -39,10 +44,13 @@ const StoriesModal = ({ isOpen, onClose, imageIds, images }) => {
           });
         }
       }, interval);
-
       return () => clearInterval(intervalRef.current);
     }
-  }, [isOpen, currentIndex, imageIds.length, onClose]);
+    if (!isOpen) {
+      setProgress(0);
+      setCurrentIndex(0);
+    }
+  }, [isOpen, currentIndex, imageIds, onClose]);
 
   const handleMouseDown = () => {
     isPausedRef.current = true;
@@ -88,7 +96,9 @@ const StoriesModal = ({ isOpen, onClose, imageIds, images }) => {
           ))}
         </div>
         <img
-          src={images.find((image) => image.id === imageIds[currentIndex]).data}
+          src={
+            images.find((image) => image.id === imageIds[currentIndex])?.data
+          }
           alt={`Story ${currentIndex + 1}`}
           className={styles.storiesImg}
         />
@@ -121,6 +131,12 @@ const StocksSection = () => {
       ).then((newImages) => setImages(newImages.filter(nonNull)));
     });
   }, []);
+
+  const openStory = (stock) => {
+    if (stock.storyImages?.length) {
+      setSelectedStock(stock);
+    }
+  };
 
   const swiperOptions = {
     modules: [Autoplay, Pagination, Navigation],
@@ -156,7 +172,7 @@ const StocksSection = () => {
             <SwiperSlide key={stock.id}>
               <div
                 className={styles.stocksCard}
-                onClick={() => setSelectedStock(stock)}
+                onClick={() => openStory(stock)}
               >
                 <div className={styles.stocksImgContainer}>
                   <img
@@ -180,8 +196,7 @@ const StocksSection = () => {
       <StoriesModal
         isOpen={!!selectedStock}
         onClose={() => setSelectedStock(null)}
-        imageIds={selectedStock?.images || []}
-        images={images}
+        imageIds={selectedStock?.storyImages || []}
       />
     </section>
   );

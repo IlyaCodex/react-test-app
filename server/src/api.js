@@ -53,6 +53,9 @@ db.serialize(() => {
     "CREATE TABLE IF NOT EXISTS promo_images (promo_id INTEGER, position INTEGER, data TEXT)"
   );
   db.run(
+    "CREATE TABLE IF NOT EXISTS promo_story_images (promo_id INTEGER, position INTEGER, data TEXT)"
+  );
+  db.run(
     "CREATE TABLE IF NOT EXISTS item_images (item_id INTEGER, position INTEGER, data TEXT)"
   );
   db.run(
@@ -260,6 +263,13 @@ async function loadItemCategories(item) {
 async function loadPromoImages(promo) {
   return getAllAsync(
     "select ROWID as id from promo_images where promo_id = ? order by position ASC",
+    [promo.id]
+  ).then((rows) => rows.map((row) => row.id));
+}
+
+async function loadPromoStoryImages(promo) {
+  return getAllAsync(
+    "select ROWID as id from promo_story_images where promo_id = ? order by position ASC",
     [promo.id]
   ).then((rows) => rows.map((row) => row.id));
 }
@@ -942,6 +952,13 @@ ${cartItems
       [imageId]
     ).then((image) => res.send(wrapResponse(image)));
   });
+  app.get("/api/promos/story/images/:id", (req, res) => {
+    const imageId = req.params.id;
+    getAsync(
+      "select ROWID as id, position, data from promo_story_images where ROWID = ?",
+      [imageId]
+    ).then((image) => res.send(wrapResponse(image)));
+  });
 
   app.get("/api/promos/", (req, res) => {
     getAllAsync("select * from promos")
@@ -949,6 +966,9 @@ ${cartItems
         Promise.all([
           ...rows.map((row) =>
             loadPromoImages(row).then((arr) => (row.images = arr))
+          ),
+          ...rows.map((row) =>
+            loadPromoStoryImages(row).then((arr) => (row.storyImages = arr))
           ),
         ]).then(() => res.send(wrapResponse(rows)))
       )
@@ -966,9 +986,10 @@ ${cartItems
           res.send(wrapResponse(undefined));
           return;
         }
-        return loadPromoImages(row)
-          .then((arr) => (row.images = arr))
-          .then(() => res.send(wrapResponse(row)));
+        return Promise.all([
+          loadPromoImages(row).then((arr) => (row.images = arr)),
+          loadPromoStoryImages(row).then((arr) => (row.storyImages = arr)),
+        ]).then(() => res.send(wrapResponse(row)));
       })
       .catch((err) => {
         console.error(err);
@@ -982,6 +1003,7 @@ ${cartItems
       const id = req.params.id;
       db.run("delete from promos where id = ?", id);
       db.run("delete from promo_images where promo_id = ?", id);
+      db.run("delete from promo_story_images where promo_id = ?", id);
       res.send(wrapResponse("Success"));
     } catch (error) {
       console.error(error);
@@ -1038,6 +1060,45 @@ ${cartItems
             );
           }
         });
+
+        getAllAsync(
+          "select position, data from promo_story_images where promo_id = ?",
+          [promo.id]
+        ).then((images) => {
+          const newImages = promo.storyImages.filter(
+            (image) => !images.some((i) => i.data === image.data)
+          );
+          const deletedImages = images.filter(
+            (image) => !promo.storyImages.some((i) => i.data === image.data)
+          );
+          const updatedImages = images.filter((image) => {
+            const updated = promo.storyImages.find(
+              (i) => i.data === image.data
+            );
+            if (updated && updated.position !== image.position) {
+              return true;
+            }
+            return false;
+          });
+          for (const newEl of newImages) {
+            db.run(
+              "insert into promo_story_images (promo_id, position, data) values (?, ?, ?)",
+              [promo.id, newEl.position, newEl.data]
+            );
+          }
+          for (const deleted of deletedImages) {
+            db.run(
+              "delete from promo_story_images where promo_id = ? and data = ?",
+              [promo.id, deleted.data]
+            );
+          }
+          for (const updated of updatedImages) {
+            db.run(
+              "update promo_story_images set position = ? where data = ? and promo_id = ?",
+              [updated.position, updated.data, promo.id]
+            );
+          }
+        });
       } else {
         insertRow(
           "insert into promos (name, position, description) values (?, ?, ?)",
@@ -1056,8 +1117,20 @@ ${cartItems
                 }
               );
             }
+            for (const image of promo.storyImages) {
+              db.run(
+                "insert into promo_story_images(promo_id, position, data) values(?, ?, ?)",
+                [id, image.position, image.data],
+                (err) => {
+                  if (err)
+                    console.error(
+                      "error on insert story image: ", err
+                    );
+                }
+              );
+            }
           })
-          .catch((error) => console.error("error on put promo"));
+          .catch((error) => console.error("error on put promo", error));
       }
 
       res.send(wrapResponse("Success"));

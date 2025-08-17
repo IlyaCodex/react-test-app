@@ -8,7 +8,6 @@ import {
   MapPin,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import CartSidebar from "./CartSidebar";
 import styles from "./Navbar.module.css";
 import { FavoritesSidebar } from "./FavoritesSidebar";
 // import CheckoutModal from "./CheckoutModal";
@@ -20,7 +19,6 @@ import { CartContext } from "../context/CartContext";
 
 const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
@@ -28,7 +26,7 @@ const Header = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [foundItems, setFoundItems] = useState(undefined);
   const [foundImages, setFoundImages] = useState([]);
-  const { addItems } = useContext(CartContext);
+  const { addItems, openCart } = useContext(CartContext);
   const navigate = useNavigate();
 
   const searchRef = useRef(null);
@@ -82,7 +80,7 @@ const Header = () => {
     if (window.innerWidth <= 768) {
       setIsMenuOpen(false);
     }
-    setIsCartOpen(true);
+    openCart();
   };
 
   const closeMenu = (e) => {
@@ -97,17 +95,13 @@ const Header = () => {
     setIsFavoritesOpen(true);
   };
 
-  const handleCartClose = () => {
-    setIsCartOpen(false);
-  };
-
   const handleFavoritesClose = () => {
     setIsFavoritesOpen(false);
   };
 
   const onToCart = () => {
     setIsFavoritesOpen(false);
-    setIsCartOpen(true);
+    openCart();
   };
 
   const handleMenuToggle = () => {
@@ -290,7 +284,6 @@ const Header = () => {
           </div>
         </div>
 
-        <CartSidebar isOpen={isCartOpen} onClose={handleCartClose} />
         <FavoritesSidebar
           isOpen={isFavoritesOpen}
           onClose={handleFavoritesClose}

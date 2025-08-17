@@ -131,6 +131,11 @@ export const api = {
       response.json()
     );
   },
+  getPromoStoryImage: (id) => {
+    return fetch(`/api/promos/story/images/${id}`).then((response) =>
+      response.json()
+    );
+  },
   savePromo: (auth, item) => {
     return fetch(`/api/promos/`, {
       method: "put",

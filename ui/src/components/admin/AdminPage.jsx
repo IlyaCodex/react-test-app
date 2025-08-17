@@ -3,24 +3,15 @@ import styles from "./AdminPage.module.css";
 import { EditContent } from "./EditContent";
 import { AuthProvider } from "../../context/AuthContext";
 import { api } from "../../api";
+import { useCookies } from "react-cookie";
+
+const cookieName = "auth";
 
 export const AdminPage = () => {
-  const [auth, setAuth] = useState();
+  const [{ auth }, setAuth] = useCookies([cookieName]);
+
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-
-  // const authenticate = ({ login, password }) => {
-  //   const validLogin = "";
-  //   const validPassword = "";
-
-  //   if (login === validLogin && password === validPassword) {
-  //     const newAuth = btoa(`${login}:${password}`);
-  //     setAuth(newAuth);
-  //     console.log("Успешный вход без API");
-  //   } else {
-  //     alert("Неверный логин или пароль");
-  //   }
-  // };
 
   const authenticate = ({ login, password }) => {
     const newAuth = btoa(`VladimirRezepin:VladimirRezipinHOST300!`);
@@ -29,7 +20,7 @@ export const AdminPage = () => {
       if (json.error) {
         alert(JSON.stringify(json.error));
       } else {
-        setAuth(newAuth);
+        setAuth(cookieName, newAuth, { path: "/", maxAge: 60 * 60 * 24 });
       }
     });
   };
