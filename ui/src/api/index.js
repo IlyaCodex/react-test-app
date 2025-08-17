@@ -70,16 +70,18 @@ export const api = {
   getItemImage: (id) => {
     const cacheHit = imageCache[id];
     if (cacheHit) {
-      return Promise.resolve(cacheHit);
+      return cacheHit;
     }
-    return fetch(`/api/items/images/${id}`)
+    const requestPromise = fetch(`/api/items/images/${id}`)
       .then((response) => response.json())
       .then((json) => {
-        if (json.data) {
-          imageCache[id] = json;
+        if (json.error) {
+          delete imageCache[id];
         }
         return json;
       });
+    imageCache[id] = requestPromise;
+    return requestPromise;
   },
   saveItem: (auth, item) => {
     return fetch(`/api/items/`, {

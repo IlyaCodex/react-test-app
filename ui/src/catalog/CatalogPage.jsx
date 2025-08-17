@@ -209,53 +209,69 @@ const CatalogPage = () => {
   };
 
   const renderItems = useCallback(() => {
-    return (activeSubCategory ? [activeSubCategory] : subCategories).map(
-      (subCat) => {
-        let subSubCategories = subCat.children
-          .map((childId) => categories.find((cat) => cat.id === childId))
-          .filter(nonNull)
-          .sort(byPosition);
-        if (activeSubSubCategory) {
-          const activeIndex = subSubCategories.indexOf(activeSubSubCategory);
-          if (activeIndex > -1) {
-            const active = subSubCategories.splice(activeIndex, 1);
-            subSubCategories = [...active, ...subSubCategories];
-          }
-        }
-
-        return (
-          <div className={styles.products}>
-            <h3 className={styles.subCategoriesName}>{subCat.name}</h3>
-            {subSubCategories.map((subSubCategory) => {
-              return (
-                <div
-                  key={subSubCategory.id}
-                  className={styles.subSubCategoryGroup}
-                >
-                  <h3 className={styles.subSubCategoriesName}>
-                    {subSubCategory.name}
-                  </h3>
-
-                  <ul className={styles.catalogList}>
-                    {sortedProducts[subSubCategory.id]?.length ? (
-                      sortedProducts[subSubCategory.id].map((product) => (
-                        <ProductCard
-                          key={product?.id}
-                          product={product}
-                          onCardClick={onOpenItemModal}
-                        />
-                      ))
-                    ) : (
-                      <div className={styles.noProducts}></div>
-                    )}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+    const subCats = [];
+    if (activeSubCategory) {
+      subCats.push(activeSubCategory);
+    } else {
+      if (activeSubSubCategory) {
+        const parent = categories.find(
+          (cat) => cat.id === activeSubSubCategory.parents[0]
         );
+        if (parent) {
+          subCats.push(parent);
+        } else {
+          subCats.push(...subCategories);
+        }
+      } else {
+        subCats.push(...subCategories);
       }
-    );
+    }
+
+    return subCats.map((subCat) => {
+      let subSubCategories = subCat.children
+        .map((childId) => categories.find((cat) => cat.id === childId))
+        .filter(nonNull)
+        .sort(byPosition);
+      if (activeSubSubCategory) {
+        const activeIndex = subSubCategories.indexOf(activeSubSubCategory);
+        if (activeIndex > -1) {
+          const active = subSubCategories.splice(activeIndex, 1);
+          subSubCategories = [...active, ...subSubCategories];
+        }
+      }
+
+      return (
+        <div className={styles.products}>
+          <h3 className={styles.subCategoriesName}>{subCat.name}</h3>
+          {subSubCategories.map((subSubCategory) => {
+            return (
+              <div
+                key={subSubCategory.id}
+                className={styles.subSubCategoryGroup}
+              >
+                <h3 className={styles.subSubCategoriesName}>
+                  {subSubCategory.name}
+                </h3>
+
+                <ul className={styles.catalogList}>
+                  {sortedProducts[subSubCategory.id]?.length ? (
+                    sortedProducts[subSubCategory.id].map((product) => (
+                      <ProductCard
+                        key={product?.id}
+                        product={product}
+                        onCardClick={onOpenItemModal}
+                      />
+                    ))
+                  ) : (
+                    <div className={styles.noProducts}></div>
+                  )}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      );
+    });
   }, [
     subCategories,
     activeSubCategory,
