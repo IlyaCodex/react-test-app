@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import styles from "./CatalogPage.module.css";
@@ -22,7 +22,6 @@ const CatalogPage = () => {
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const [subSubCategories, setSubSubCategories] = useState([]);
 
   const [sortedProducts, setSortedProducts] = useState({});
 
@@ -116,24 +115,9 @@ const CatalogPage = () => {
       categories
         ?.filter((cat) => tempIds.includes(cat?.id))
         ?.sort(byPosition) || [];
-    const activeSubCategories = isNull(activeSubCategory)
-      ? availableSubCategories
-      : availableSubCategories?.filter(
-          (cat) => cat?.id === activeSubCategory?.id
-        ) || [];
-
-    tempIds = [];
-    for (const cat of activeSubCategories || []) {
-      tempIds = [...tempIds, ...(cat?.children || [])];
-    }
-    const availableSubSubCategories =
-      categories
-        ?.filter((cat) => tempIds.includes(cat?.id))
-        ?.sort(byPosition) || [];
 
     setMainCategories(availableMainCategories);
     setSubCategories(availableSubCategories);
-    setSubSubCategories(availableSubSubCategories);
   }, [activeMainCategory, activeSubCategory, activeSubSubCategory, categories]);
 
   const handleMainCategoryClick = (category) => {
@@ -160,7 +144,6 @@ const CatalogPage = () => {
     setActiveSubSubCategory(category);
   };
 
-  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -184,7 +167,6 @@ const CatalogPage = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    
     const checkoutData = {
       fullName: formData.name,
       phone: formData.phone,
@@ -195,13 +177,12 @@ const CatalogPage = () => {
       contactMethod: "tel",
     };
 
-   
     api
       .checkout(checkoutData, [])
       .then((response) => {
         if (response && !response.error) {
           setSubmitStatus("success");
-          
+
           setFormData({
             name: "",
             phone: "",
@@ -221,12 +202,79 @@ const CatalogPage = () => {
       .finally(() => {
         setIsSubmitting(false);
 
-        
         setTimeout(() => {
           setSubmitStatus(null);
         }, 2000);
       });
   };
+
+  const renderItems = useCallback(() => {
+    return (activeSubCategory ? [activeSubCategory] : subCategories).map(
+      (subCat) => {
+        let subSubCategories = subCat.children
+          .map((childId) => categories.find((cat) => cat.id === childId))
+          .filter(nonNull)
+          .sort(byPosition);
+        if (activeSubSubCategory) {
+          const activeIndex = subSubCategories.indexOf(activeSubSubCategory);
+          if (activeIndex > -1) {
+            const active = subSubCategories.splice(activeIndex, 1);
+            subSubCategories = [...active, ...subSubCategories];
+          }
+        }
+
+        return (
+          <div className={styles.products}>
+            <h3 className={styles.subCategoriesName}>{subCat.name}</h3>
+            {subSubCategories.map((subSubCategory) => {
+              return (
+                <div
+                  key={subSubCategory.id}
+                  className={styles.subSubCategoryGroup}
+                >
+                  <h3 className={styles.subSubCategoriesName}>
+                    {subSubCategory.name}
+                  </h3>
+
+                  <ul className={styles.catalogList}>
+                    {sortedProducts[subSubCategory.id]?.length ? (
+                      sortedProducts[subSubCategory.id].map((product) => (
+                        <ProductCard
+                          key={product?.id}
+                          product={product}
+                          onCardClick={onOpenItemModal}
+                        />
+                      ))
+                    ) : (
+                      <div className={styles.noProducts}></div>
+                    )}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
+    );
+  }, [
+    subCategories,
+    activeSubCategory,
+    activeSubSubCategory,
+    categories,
+    sortedProducts,
+  ]);
+
+  const getAvailableSubSubCategories = useCallback(() => {
+    return (
+      (activeSubCategory ? [activeSubCategory] : subCategories).flatMap(
+        (subCat) =>
+          subCat.children
+            .map((childId) => categories.find((cat) => cat.id === childId))
+            .filter(nonNull)
+            .sort(byPosition)
+      ) || []
+    );
+  }, [subCategories, activeSubCategory, categories]);
 
   return (
     <section className={styles.catalog}>
@@ -295,89 +343,28 @@ const CatalogPage = () => {
               Все
             </button>
           </li>
-          {(subSubCategories || []).map((category) => (
+          {getAvailableSubSubCategories().map((category) => (
             <li
               className={styles.catalogSubSubcategoriesItem}
-              key={category?.id}
+              key={category.id}
             >
               <button
                 className={`${styles.catalogSubSubcategory} ${
-                  activeSubSubCategory?.id === category?.id ? styles.active : ""
+                  activeSubSubCategory?.id === category.id ? styles.active : ""
                 }`}
                 onClick={() => handleSubSubCategoryClick(category)}
                 type="button"
                 disabled={
-                  !category?.id || activeSubSubCategory?.id === category?.id
+                  !category.id || activeSubSubCategory?.id === category.id
                 }
               >
-                {category?.name}
+                {category.name}
               </button>
             </li>
           ))}
         </ul>
 
-        {!isNull(activeMainCategory) && (
-          <div className={styles.products}>
-            {activeSubCategory?.name && (
-              <h3 className={styles.subCategoriesName}>
-                {activeSubCategory.name}
-              </h3>
-            )}
-            {activeSubSubCategory && (
-              <div
-                key={activeSubSubCategory.id}
-                className={styles.subSubCategoryGroup}
-              >
-                <h3 className={styles.subSubCategoriesName}>
-                  {activeSubSubCategory.name}
-                </h3>
-
-                <ul className={styles.catalogList}>
-                  {sortedProducts[activeSubSubCategory.id]?.length ? (
-                    sortedProducts[activeSubSubCategory.id].map((product) => (
-                      <ProductCard
-                        key={product?.id}
-                        product={product}
-                        onCardClick={onOpenItemModal}
-                      />
-                    ))
-                  ) : (
-                    <div className={styles.noProducts}></div>
-                  )}
-                </ul>
-              </div>
-            )}
-            {(subSubCategories || []).map((subSubCat, index) => {
-              const isSelected = activeSubSubCategory?.id === subSubCat?.id;
-              if (isSelected) {
-                return null;
-              }
-              const products = sortedProducts[subSubCat.id] ?? [];
-
-              return (
-                <div key={subSubCat.id} className={styles.subSubCategoryGroup}>
-                  <h3 className={styles.subSubCategoriesName}>
-                    {subSubCat.name}
-                  </h3>
-
-                  <ul className={styles.catalogList}>
-                    {products.length > 0 ? (
-                      products.map((product) => (
-                        <ProductCard
-                          key={product?.id}
-                          product={product}
-                          onCardClick={onOpenItemModal}
-                        />
-                      ))
-                    ) : (
-                      <div className={styles.noProducts}></div>
-                    )}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {renderItems()}
 
         <div className={styles.requestBlock}>
           <img
@@ -421,7 +408,6 @@ const CatalogPage = () => {
               maxLength="255"
             />
 
-            
             {submitStatus === "success" && (
               <div className={styles.successMessage}>
                 Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.
