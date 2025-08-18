@@ -14,8 +14,7 @@ export const AdminPage = () => {
   const [password, setPassword] = useState("");
 
   const authenticate = ({ login, password }) => {
-    const newAuth = btoa(`VladimirRezepin:VladimirRezipinHOST300!`);
-    // const newAuth = btoa(`${login}:${password}`);
+    const newAuth = btoa(`${login}:${password}`);
     api.login(newAuth).then((json) => {
       if (json.error) {
         alert(JSON.stringify(json.error));
