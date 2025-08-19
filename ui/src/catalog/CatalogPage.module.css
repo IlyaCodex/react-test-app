@@ -425,8 +425,13 @@
     transform: rotate(45deg);
   }
 
-  .catalogSubcategories, .catalogSubSubcategories, .subCategoriesName, .subSubCategoriesName {
+  .catalogCategories,
+  .catalogSubcategories,
+  .catalogSubSubcategories,
+  .subCategoriesName,
+  .subSubCategoriesName {
     padding-left: 15px;
+    padding-right: 15px;
   }
 
   .catalogList {
@@ -448,6 +453,15 @@
 }
 
 @media (max-width: 480px) {
+  .catalogCategories,
+  .catalogSubcategories,
+  .catalogSubSubcategories {
+    flex-wrap: nowrap;
+    overflow: scroll;
+    > * {
+      text-wrap: nowrap;
+    }
+  }
   .requestTitle {
     font-size: 20px;
   }
@@ -513,7 +527,6 @@
 
   .catalogCategories {
     gap: 15px;
-    flex-wrap: wrap;
   }
 
   .catalogTitle {
