@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { ProductsContext } from "../context/ProductsContext";
 import { CartContext } from "../context/CartContext";
 import styles from "./ModalWindow.module.css";
@@ -15,7 +15,7 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
 
   const [sliderImages, setSliderImages] = useState([]);
 
-  const cartItem = cartItems.find((item) => item.id === product?.id);
+  const cartItem = useMemo(() => cartItems.find((item) => item.id === product?.id), [cartItems, product]);
   const itemCount = cartItem ? cartItem.count : 0;
 
   useEffect(() => {
@@ -67,11 +67,13 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   };
 
   const handleAddToCart = () => {
-    addItems({ ...product, count: 1 });
+    addItems(product);
   };
 
   const handleBuyNow = () => {
-    addItems({ ...product, count: 1 });
+    if (itemCount === 0) {
+      addItems(product);
+    }
     onClose();
     onOpenCart();
   };
