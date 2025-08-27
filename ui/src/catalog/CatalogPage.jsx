@@ -263,6 +263,7 @@ const CatalogPage = () => {
                         key={product?.id}
                         product={product}
                         onCardClick={onOpenItemModal}
+                        backgroundColor={activeMainCategory?.color}
                       />
                     ))
                   ) : (
@@ -277,6 +278,7 @@ const CatalogPage = () => {
     });
   }, [
     subCategories,
+    activeMainCategory,
     activeSubCategory,
     activeSubSubCategory,
     categories,

@@ -3,10 +3,11 @@ import { api } from "../api";
 import { useFavorites } from "../context/FavoriteContext";
 import styles from "./ProductCard.module.css";
 
-const ProductCard = ({ product, onCardClick }) => {
+const ProductCard = ({ product, onCardClick, backgroundColor }) => {
   const [images, setImages] = useState([]);
   const { isFavorite, toggleFavorite } = useFavorites();
   const isFav = useMemo(() => isFavorite(product.id), [isFavorite]);
+  const [hovered, setHovered] = useState(false);
 
   const _toggleFavorite = (e) => {
     e.preventDefault();
@@ -24,6 +25,16 @@ const ProductCard = ({ product, onCardClick }) => {
 
   return (
     <li className={styles.card} onClick={() => onCardClick(product)}>
+      <div
+        title="По акции"
+        className={styles.saleLabel}
+        style={{
+          backgroundColor: backgroundColor ?? "black",
+          opacity: product.has_promo ? "100%" : 0,
+        }}
+      >
+        %
+      </div>
       <div className={styles.card__head}>
         <button
           className={`${styles.card__favorite} ${
@@ -52,7 +63,13 @@ const ProductCard = ({ product, onCardClick }) => {
         </button>
         {images.length ? <img src={images[0].data} alt={product.name} /> : null}
       </div>
-      <button className={styles.card__add} type="button">
+      <button
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={styles.card__add}
+        style={{ backgroundColor: hovered ? backgroundColor : undefined }}
+        type="button"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="40"
