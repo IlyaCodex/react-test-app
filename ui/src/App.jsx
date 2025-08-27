@@ -19,17 +19,28 @@ import { ProductsContextProvider } from "./context/ProductsContext";
 import { FavoriteProvider } from "./context/FavoriteContext";
 import { AdminPage } from "./components/admin/AdminPage";
 import { ItemModalProvider } from "./context/ItemModalContext";
+import CartSidebar from "./components/CartSidebar";
 
 function HomePage() {
   return (
     <>
       <HomeSection />
-      <div id="stocks"><StocksSection /></div>
-      <div id="categories"><CategoriesSection /></div>
-      <div id="aboutUs"><WhyUsSection /></div>
-      <div id="partners"><PartnersSection /></div>
-      <div id="delivery"><OrderSection /></div>
-       <Faq />
+      <div id="stocks">
+        <StocksSection />
+      </div>
+      <div id="categories">
+        <CategoriesSection />
+      </div>
+      <div id="aboutUs">
+        <WhyUsSection />
+      </div>
+      <div id="partners">
+        <PartnersSection />
+      </div>
+      <div id="delivery">
+        <OrderSection />
+      </div>
+      <Faq />
       <ContactsSection />
     </>
   );
@@ -41,6 +52,7 @@ function LayoutWrapper({ children }) {
       <Header />
       {children}
       <Footer />
+      <CartSidebar />
     </>
   );
 }
@@ -48,9 +60,33 @@ function LayoutWrapper({ children }) {
 function MainApp() {
   return (
     <Routes>
-      <Route path="/" element={<LayoutWrapper> <HomePage /> </LayoutWrapper>}/>
-      <Route path="/catalog/:mainCategory?" element={<LayoutWrapper> <CatalogPage /> </LayoutWrapper>} />
-      <Route path="*" element={<LayoutWrapper> <NotFound /> </LayoutWrapper>} />
+      <Route
+        path="/"
+        element={
+          <LayoutWrapper>
+            {" "}
+            <HomePage />{" "}
+          </LayoutWrapper>
+        }
+      />
+      <Route
+        path="/catalog/:mainCategory?"
+        element={
+          <LayoutWrapper>
+            {" "}
+            <CatalogPage />{" "}
+          </LayoutWrapper>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <LayoutWrapper>
+            {" "}
+            <NotFound />{" "}
+          </LayoutWrapper>
+        }
+      />
     </Routes>
   );
 }

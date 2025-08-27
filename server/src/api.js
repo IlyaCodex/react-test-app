@@ -363,6 +363,7 @@ Email: ${checkoutData.email}
 Самовывоз: ${checkoutData.selfPickup ? "Да" : "Нет"}
 Название клиники: ${checkoutData.clinicName}
 Сумма при оформлении: ${checkoutData.totalPrice}
+Комментарий: ${checkoutData.comment}
 
 Корзина: 
 ${cartItems
@@ -1122,10 +1123,7 @@ ${cartItems
                 "insert into promo_story_images(promo_id, position, data) values(?, ?, ?)",
                 [id, image.position, image.data],
                 (err) => {
-                  if (err)
-                    console.error(
-                      "error on insert story image: ", err
-                    );
+                  if (err) console.error("error on insert story image: ", err);
                 }
               );
             }

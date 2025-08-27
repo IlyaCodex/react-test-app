@@ -19,7 +19,7 @@ const getSuffix = (count) => {
 
 const chooseImage = (item) => item?.images?.[0];
 
-const CartSidebar = ({ isOpen, onClose }) => {
+const CartSidebar = () => {
   const { items, addItems, removeItems } = useContext(CartContext);
   const [images, setImages] = useState([]);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
@@ -27,6 +27,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
   const [checkoutData, setCheckoutData] = useState(null);
   const [recomendedItems, setRecomendedItems] = useState([]);
   const { onOpenItemModal } = useItemModal();
+  const { isOpen, closeCart } = useContext(CartContext);
 
   useEffect(() => {
     Promise.all(
@@ -80,7 +81,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
   return (
     <div
       className={`${styles.cart} ${isOpen ? styles.open : ""}`}
-      onClick={onClose}
+      onClick={closeCart}
     >
       <div
         className={styles.cart_dialog}
@@ -90,7 +91,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         }}
       >
         <div className={styles.header}>
-          <button className={styles.close_button} onClick={onClose}>
+          <button className={styles.close_button} onClick={closeCart}>
             ×
           </button>
         </div>
@@ -107,7 +108,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
             {items.length === 0 ? (
               <div className={styles.empty}>Корзина пуста</div>
             ) : (
-              items.map((item, index) => (
+              items.map((item) => (
                 <div key={item.id} className={styles.item}>
                   <img
                     src={
@@ -116,6 +117,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
                     }
                     alt={item.name}
                     className={styles.image}
+                    onClick={() => onOpenItemModal(item)}
                   />
 
                   <div className={styles.item_info}>

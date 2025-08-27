@@ -11,11 +11,12 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { FavoritesSidebar } from "./FavoritesSidebar";
 // import CheckoutModal from "./CheckoutModal";
-import CheckoutModal from "./CheckoutModalHeader"
+import CheckoutModal from "./CheckoutModalHeader";
 import { useDebounce } from "../hooks/debounce";
 import { api } from "../api";
 import { isNull, chooseImage, nonNull } from "./admin/Utils";
 import { CartContext } from "../context/CartContext";
+import { useItemModal } from "../context/ItemModalContext";
 
 const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -27,6 +28,7 @@ const Header = () => {
   const [foundItems, setFoundItems] = useState(undefined);
   const [foundImages, setFoundImages] = useState([]);
   const { addItems, openCart } = useContext(CartContext);
+  const { onOpenItemModal } = useItemModal();
   const navigate = useNavigate();
 
   const searchRef = useRef(null);
@@ -108,12 +110,16 @@ const Header = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const onIncrement = (item) => {
+  const onIncrement = (e, item) => {
+    e.stopPropagation();
+
     item.count = item.count + 1;
     setFoundItems([...foundItems]);
   };
 
-  const onDecrement = (item) => {
+  const onDecrement = (e, item) => {
+    e.stopPropagation();
+
     if (item.count <= 0) {
       return;
     }
@@ -121,8 +127,14 @@ const Header = () => {
     setFoundItems([...foundItems]);
   };
 
-  const toCart = (item) => {
+  const toCart = (e, item) => {
+    e.stopPropagation();
     addItems(...Array.from({ length: item.count }).map(() => item));
+  };
+
+  const openItemModal = (e, item) => {
+    onOpenItemModal(item);
+    setIsSearchOpen(false);
   };
 
   const handleOpenCheckoutModal = () => {
@@ -143,7 +155,7 @@ const Header = () => {
     }
     cats.push(category);
     return (
-      <div className={styles.searchItem}>
+      <div key={category.id} className={styles.searchItem}>
         <div className={styles.categoryList}>
           {category.level === 3 ? (
             <>{`${category.parent.parent.name} > `}</>
@@ -174,6 +186,29 @@ const Header = () => {
       </div>
     );
   };
+  const renderFoundItem = (item) => (
+    <div key={item.id} className={styles.searchItem}>
+      <div className={styles.itemInfo} onClick={(e) => openItemModal(e, item)}>
+        <img
+          alt="Картинка"
+          src={
+            foundImages.find((image) => image.id === chooseImage(item))?.data
+          }
+        />
+        <div className={styles.name}>{item.name}</div>
+      </div>
+      <div className={styles.itemButtons}>
+        <div className={styles.counter}>
+          <button onClick={(e) => onDecrement(e, item)}>-</button>
+          <div>{item.count}</div>
+          <button onClick={(e) => onIncrement(e, item)}>+</button>
+        </div>
+        <button className={styles.toCart} onClick={(e) => toCart(e, item)}>
+          В корзину
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -401,38 +436,7 @@ const Header = () => {
                       if (item.level) {
                         return renderFoundCategory(item);
                       }
-                      return (
-                        <div className={styles.searchItem}>
-                          <div className={styles.itemInfo}>
-                            <img
-                              alt="Картинка"
-                              src={
-                                foundImages.find(
-                                  (image) => image.id === chooseImage(item)
-                                )?.data
-                              }
-                            />
-                            <div className={styles.name}>{item.name}</div>
-                          </div>
-                          <div className={styles.itemButtons}>
-                            <div className={styles.counter}>
-                              <button onClick={() => onDecrement(item)}>
-                                -
-                              </button>
-                              <div>{item.count}</div>
-                              <button onClick={() => onIncrement(item)}>
-                                +
-                              </button>
-                            </div>
-                            <button
-                              className={styles.toCart}
-                              onClick={() => toCart(item)}
-                            >
-                              В корзину
-                            </button>
-                          </div>
-                        </div>
-                      );
+                      return renderFoundItem(item);
                     })
                   )}
                 </div>

@@ -1,5 +1,4 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import CartSidebar from "../components/CartSidebar";
 
 export const CartContext = createContext({
   items: [],
@@ -8,6 +7,7 @@ export const CartContext = createContext({
   clearCart: () => {},
   openCart: () => {},
   closeCart: () => {},
+  isOpen: false,
 });
 
 const storageKey = "cart";
@@ -63,9 +63,8 @@ export const CartContextProvider = ({ children }) => {
 
   return (
     <CartContext
-      value={{ items, addItems, removeItems, clearCart, openCart, closeCart }}
+      value={{ items, addItems, removeItems, clearCart, openCart, closeCart, isOpen }}
     >
-      <CartSidebar isOpen={isOpen} onClose={closeCart} />
       {children}
     </CartContext>
   );

@@ -267,11 +267,11 @@ export const Product = ({ data, onClose, articles }) => {
       </label>
 
       <label className={styles.position}>
-        В наличии:
+        Нет в наличии:
         <input
           type="checkbox"
-          checked={inStock}
-          onChange={(e) => setInStock(e.target.checked)}
+          checked={!inStock}
+          onChange={(e) => setInStock(!e.target.checked)}
         />
       </label>
 

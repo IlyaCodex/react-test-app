@@ -32,14 +32,10 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
 
   const handleSubmit = () => {
     onSubmit({
-      fullName: formData.fullName,
-      phone: formData.phone,
-      email: formData.email,
-      deliveryAddress: formData.deliveryAddress,
+      ...formData,
       selfPickup,
-      clinicName: formData.clinicName,
     });
-    onClose(); 
+    onClose();
   };
 
   return (
@@ -130,6 +126,9 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
               <textarea
                 className={styles.textarea}
                 placeholder="Дополнительная информация"
+                name="comment"
+                value={formData.comment}
+                onChange={handleChange}
               ></textarea>
 
               <div className={styles.checkboxContainer}>
@@ -201,6 +200,9 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
               <textarea
                 className={styles.textarea}
                 placeholder="Дополнительная информация"
+                name="comment"
+                value={formData.comment}
+                onChange={handleChange}
               ></textarea>
             </div>
           )}

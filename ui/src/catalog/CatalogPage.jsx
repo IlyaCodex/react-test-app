@@ -17,7 +17,7 @@ const CatalogPage = () => {
   const [searchParams] = useSearchParams();
   const initialMainCategory = searchParams.get("maincategory");
   const initialSubcategory = searchParams.get("subcategory");
-  const initialSubSubCategories = searchParams.get("subsubcategory");
+  const initialSubSubCategory = searchParams.get("subsubcategory");
 
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
@@ -52,27 +52,30 @@ const CatalogPage = () => {
           undefined
       );
     }
-  }, [initialMainCategory, categories]);
-
-  useEffect(() => {
     if (nonNull(initialSubcategory)) {
       setActiveSubCategory(
         categories.find(
           (category) => category?.id?.toString() === initialSubcategory
         ) || undefined
       );
+    } else {
+      setActiveSubCategory(undefined);
     }
-  }, [initialSubcategory, categories]);
-
-  useEffect(() => {
-    if (nonNull(initialSubSubCategories)) {
+    if (nonNull(initialSubSubCategory)) {
       setActiveSubSubCategory(
         categories.find(
-          (category) => category?.id?.toString() === initialSubSubCategories
+          (category) => category?.id?.toString() === initialSubSubCategory
         ) || undefined
       );
+    } else {
+      setActiveSubSubCategory(undefined);
     }
-  }, [initialSubSubCategories, categories]);
+  }, [
+    initialMainCategory,
+    initialSubcategory,
+    initialSubSubCategory,
+    categories,
+  ]);
 
   useEffect(() => {
     Promise.all([
@@ -241,7 +244,7 @@ const CatalogPage = () => {
       }
 
       return (
-        <div className={styles.products}>
+        <div key={subCat.id} className={styles.products}>
           <h3 className={styles.subCategoriesName}>{subCat.name}</h3>
           {subSubCategories.map((subSubCategory) => {
             return (

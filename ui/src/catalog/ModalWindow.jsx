@@ -15,7 +15,10 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
 
   const [sliderImages, setSliderImages] = useState([]);
 
-  const cartItem = useMemo(() => cartItems.find((item) => item.id === product?.id), [cartItems, product]);
+  const cartItem = useMemo(
+    () => cartItems.find((item) => item.id === product?.id),
+    [cartItems, product]
+  );
   const itemCount = cartItem ? cartItem.count : 0;
 
   useEffect(() => {
@@ -185,7 +188,7 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
               <span className={styles.detailLabel}>Производитель:</span>
               <span className={styles.detailValue}>{product.manufacturer}</span>
             </p>
-            {product.attributes.map((attr) => (
+            {product.attributes?.map((attr) => (
               <p key={attr.name}>
                 <span className={styles.detailLabel}>{attr.name}:</span>
                 <span className={styles.detailValue}>{attr.value}</span>
