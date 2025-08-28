@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "./OrderSection.module.css";
 import { api } from "../api";
 
-
-
 const CustomSelect = ({ value, onChange, options, placeholder, className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef(null);
@@ -63,7 +61,7 @@ const OrderSection = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null); 
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const orderSteps = [
     {
@@ -93,9 +91,71 @@ const OrderSection = () => {
     { value: "tel", label: "Звонок" },
   ];
 
+  const formatPhoneNumber = (value) => {
+    const phoneNumber = value.replace(/\D/g, "");
+
+    let formatted = phoneNumber;
+    if (formatted.startsWith("8")) {
+      formatted = "7" + formatted.slice(1);
+    }
+
+    if (!formatted.startsWith("7") && formatted.length > 0) {
+      formatted = "7" + formatted;
+    }
+
+    if (formatted.length > 11) {
+      formatted = formatted.slice(0, 11);
+    }
+
+    if (formatted.length === 0) return "";
+    if (formatted.length <= 1) return "+7";
+    if (formatted.length <= 4) return `+7 (${formatted.slice(1)}`;
+    if (formatted.length <= 7)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(4)}`;
+    if (formatted.length <= 9)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(
+        4,
+        7
+      )} ${formatted.slice(7)}`;
+    if (formatted.length <= 11)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(
+        4,
+        7
+      )} ${formatted.slice(7, 9)} ${formatted.slice(9)}`;
+
+    return value;
+  };
+
+  const handlePhoneFocus = (e) => {
+    if (!formData.phone) {
+      setFormData((prev) => ({
+        ...prev,
+        phone: "+7 ",
+      }));
+    }
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    if (
+      (e.key === "Backspace" || e.key === "Delete") &&
+      formData.phone.length <= 3
+    ) {
+      e.preventDefault();
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "phone") {
+      const formattedPhone = formatPhoneNumber(value);
+      setFormData((prev) => ({
+        ...prev,
+        phone: formattedPhone,
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleTypeChange = (e) => {
@@ -115,7 +175,8 @@ const OrderSection = () => {
 
   const validateForm = () => {
     if (!formData.fio.trim()) return false;
-    if (!formData.phone.trim()) return false;
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 11) return false;
     if (formData.type === "legal" && !formData.organization.trim())
       return false;
     return true;
@@ -133,12 +194,10 @@ const OrderSection = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-   
     const checkoutData =
       formData.type === "legal"
         ? {
-           
-            fullName: `${formData.fio} (${formData.organization})`, 
+            fullName: `${formData.fio} (${formData.organization})`,
             phone: formData.phone,
             email: "",
             deliveryAddress: `Организация: ${formData.fio}, Клиника: ${formData.organization}`,
@@ -149,7 +208,6 @@ const OrderSection = () => {
             clinicName: formData.organization,
           }
         : {
-            
             fullName: formData.fio,
             phone: formData.phone,
             email: "",
@@ -164,15 +222,11 @@ const OrderSection = () => {
             contactMethod: formData.contact || "tel",
           };
 
-
-    
     api
       .checkout(checkoutData, [])
       .then((response) => {
-
         if (response && !response.error) {
           setSubmitStatus("success");
-         
           setFormData({
             type: "individual",
             fio: "",
@@ -194,14 +248,11 @@ const OrderSection = () => {
       })
       .finally(() => {
         setIsSubmitting(false);
-
-        
         setTimeout(() => {
           setSubmitStatus(null);
         }, 2000);
       });
   };
-
 
   return (
     <section className={styles.order}>
@@ -286,10 +337,12 @@ const OrderSection = () => {
                     name="phone"
                     type="tel"
                     required
-                    maxLength="255"
-                    placeholder="+7 (999) 222-22-22"
+                    maxLength="18"
+                    placeholder="+7 (999) 999 99 99"
                     value={formData.phone}
                     onChange={handleInputChange}
+                    onFocus={handlePhoneFocus}
+                    onKeyDown={handlePhoneKeyDown}
                   />
                 </div>
                 {formData.type === "legal" && (
@@ -320,7 +373,6 @@ const OrderSection = () => {
                 )}
               </div>
 
-           
               {submitStatus === "success" && (
                 <div className={styles.successMessage}>
                   Заявка успешно отправлена! Мы свяжемся с вами в ближайшее

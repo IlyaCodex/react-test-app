@@ -27,6 +27,7 @@ const Header = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [foundItems, setFoundItems] = useState(undefined);
   const [foundImages, setFoundImages] = useState([]);
+  const [addedToCart, setAddedToCart] = useState({});
   const { addItems, openCart } = useContext(CartContext);
   const { onOpenItemModal } = useItemModal();
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ const Header = () => {
     } else {
       setFoundItems(undefined);
       setFoundImages([]);
+      setAddedToCart({});
     }
   }, [debouncedSearchQuery]);
 
@@ -112,14 +114,12 @@ const Header = () => {
 
   const onIncrement = (e, item) => {
     e.stopPropagation();
-
     item.count = item.count + 1;
     setFoundItems([...foundItems]);
   };
 
   const onDecrement = (e, item) => {
     e.stopPropagation();
-
     if (item.count <= 0) {
       return;
     }
@@ -130,6 +130,18 @@ const Header = () => {
   const toCart = (e, item) => {
     e.stopPropagation();
     addItems(...Array.from({ length: item.count }).map(() => item));
+
+    setAddedToCart((prev) => ({
+      ...prev,
+      [item.id]: true,
+    }));
+
+    setTimeout(() => {
+      setAddedToCart((prev) => ({
+        ...prev,
+        [item.id]: false,
+      }));
+    }, 7000);
   };
 
   const openItemModal = (e, item) => {
@@ -186,29 +198,46 @@ const Header = () => {
       </div>
     );
   };
-  const renderFoundItem = (item) => (
-    <div key={item.id} className={styles.searchItem}>
-      <div className={styles.itemInfo} onClick={(e) => openItemModal(e, item)}>
-        <img
-          alt="Картинка"
-          src={
-            foundImages.find((image) => image.id === chooseImage(item))?.data
-          }
-        />
-        <div className={styles.name}>{item.name}</div>
-      </div>
-      <div className={styles.itemButtons}>
-        <div className={styles.counter}>
-          <button onClick={(e) => onDecrement(e, item)}>-</button>
-          <div>{item.count}</div>
-          <button onClick={(e) => onIncrement(e, item)}>+</button>
+
+  const renderFoundItem = (item) => {
+    const isInCart = addedToCart[item.id];
+
+    return (
+      <div key={item.id} className={styles.searchItem}>
+        <div
+          className={styles.itemInfo}
+          onClick={(e) => openItemModal(e, item)}
+        >
+          <img
+            alt="Картинка"
+            src={
+              foundImages.find((image) => image.id === chooseImage(item))?.data
+            }
+          />
+          <div className={styles.name}>{item.name}</div>
         </div>
-        <button className={styles.toCart} onClick={(e) => toCart(e, item)}>
-          В корзину
-        </button>
+        <div className={styles.itemButtons}>
+          <div className={styles.counter}>
+            <button onClick={(e) => onDecrement(e, item)}>-</button>
+            <div>{item.count}</div>
+            <button onClick={(e) => onIncrement(e, item)}>+</button>
+          </div>
+          <button
+            className={styles.toCart}
+            onClick={(e) => !isInCart && toCart(e, item)}
+            style={{
+              backgroundColor: isInCart ? "#20ae00" : "",
+              color: isInCart ? "white" : "",
+              cursor: isInCart ? "default" : "pointer",
+              opacity: isInCart ? 0.9 : 1,
+            }}
+          >
+            {isInCart ? "В корзине" : "В корзину"}
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>

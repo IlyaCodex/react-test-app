@@ -146,17 +146,85 @@ const CatalogPage = () => {
     }
     setActiveSubSubCategory(category);
   };
+  
+  const formatPhoneNumber = (value) => {
+    const phoneNumber = value.replace(/\D/g, "");
+
+    let formatted = phoneNumber;
+    if (formatted.startsWith("8")) {
+      formatted = "7" + formatted.slice(1);
+    }
+
+    if (!formatted.startsWith("7") && formatted.length > 0) {
+      formatted = "7" + formatted;
+    }
+
+    if (formatted.length > 11) {
+      formatted = formatted.slice(0, 11);
+    }
+
+    if (formatted.length === 0) return "";
+    if (formatted.length <= 1) return "+7";
+    if (formatted.length <= 4) return `+7 (${formatted.slice(1)}`;
+    if (formatted.length <= 7)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(4)}`;
+    if (formatted.length <= 9)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(
+        4,
+        7
+      )} ${formatted.slice(7)}`;
+    if (formatted.length <= 11)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(
+        4,
+        7
+      )} ${formatted.slice(7, 9)} ${formatted.slice(9)}`;
+
+    return value;
+  };
+
+  const handlePhoneFocus = (e) => {
+    if (!formData.phone) {
+      setFormData((prev) => ({
+        ...prev,
+        phone: "+7 ",
+      }));
+    }
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    if (
+      (e.key === "Backspace" || e.key === "Delete") &&
+      formData.phone.length <= 3
+    ) {
+      e.preventDefault();
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "phone") {
+      const formattedPhone = formatPhoneNumber(value);
+      setFormData((prev) => ({
+        ...prev,
+        phone: formattedPhone,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
+  
 
   const validateForm = () => {
     if (!formData.name.trim()) return false;
-    if (!formData.phone.trim()) return false;
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 11) return false;
     return true;
   };
+  
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -422,11 +490,13 @@ const CatalogPage = () => {
               type="tel"
               name="phone"
               className={styles.formInput}
-              placeholder="+7(999)222 22-22"
+              placeholder="+7 (999) 999 99 99"
               value={formData.phone}
               onChange={handleInputChange}
+              onFocus={handlePhoneFocus}
+              onKeyDown={handlePhoneKeyDown}
               required
-              maxLength="255"
+              maxLength="18"
             />
 
             {submitStatus === "success" && (

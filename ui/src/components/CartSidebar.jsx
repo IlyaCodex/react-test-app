@@ -109,7 +109,16 @@ const CartSidebar = () => {
               <div className={styles.empty}>Корзина пуста</div>
             ) : (
               items.map((item) => (
-                <div key={item.id} className={styles.item}>
+                <div
+                  key={item.id}
+                  className={styles.item}
+                  onClick={(e) => {
+                    if (e.target.tagName !== "BUTTON") {
+                      onOpenItemModal(item);
+                    }
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <img
                     src={
                       images.find((image) => image.id === chooseImage(item))
@@ -117,17 +126,17 @@ const CartSidebar = () => {
                     }
                     alt={item.name}
                     className={styles.image}
-                    onClick={() => onOpenItemModal(item)}
                   />
 
                   <div className={styles.item_info}>
                     <button
                       className={styles.delete}
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.stopPropagation();
                         removeItems(
                           ...Array.from({ length: item.count }, () => item)
-                        )
-                      }
+                        );
+                      }}
                     >
                       ×
                     </button>
@@ -140,9 +149,23 @@ const CartSidebar = () => {
                         {item.price?.toLocaleString("ru-RU")} ₽
                       </p>
                       <div className={styles.counter}>
-                        <button onClick={() => removeItems(item)}>-</button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeItems(item);
+                          }}
+                        >
+                          -
+                        </button>
                         <span>{item.count}</span>
-                        <button onClick={() => addItems(item)}>+</button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addItems(item);
+                          }}
+                        >
+                          +
+                        </button>
                       </div>
                     </div>
                   </div>

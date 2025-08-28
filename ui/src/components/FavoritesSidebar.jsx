@@ -5,6 +5,7 @@ import { nonNull } from "./admin/Utils";
 import { api } from "../api";
 import { useFavorites } from "../context/FavoriteContext";
 import { HeartCrack } from "lucide-react";
+import { useItemModal } from "../context/ItemModalContext";
 
 const chooseImage = (item) => item.images?.[0];
 
@@ -13,6 +14,7 @@ export const FavoritesSidebar = ({ isOpen, onClose, onToCart }) => {
   const { addItems, removeItems } = useContext(CartContext);
   const [images, setImages] = useState([]);
   const [itemCounts, setItemCounts] = useState({});
+  const { onOpenItemModal } = useItemModal();
 
   useEffect(() => {
     if (!Array.isArray(items)) {
@@ -56,7 +58,6 @@ export const FavoritesSidebar = ({ isOpen, onClose, onToCart }) => {
     addItems(item);
   };
 
-  
   const totalSum = items.reduce((sum, item) => {
     const count = itemCounts[item.id] || 0;
     return sum + item.price * count;
@@ -98,7 +99,20 @@ export const FavoritesSidebar = ({ isOpen, onClose, onToCart }) => {
               <div className={styles.empty}>Пусто</div>
             ) : (
               items.map((item, index) => (
-                <div key={item.id} className={styles.item}>
+                <div
+                  key={item.id}
+                  className={styles.item}
+                  onClick={(e) => {
+                    // Проверяем, что клик не по кнопкам
+                    if (
+                      e.target.tagName !== "BUTTON" &&
+                      !e.target.closest("button")
+                    ) {
+                      onOpenItemModal(item);
+                    }
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className={styles.description}>
                     <img
                       src={
@@ -122,7 +136,10 @@ export const FavoritesSidebar = ({ isOpen, onClose, onToCart }) => {
                   <div className={styles.buttons}>
                     <button
                       className={styles.delete}
-                      onClick={() => toggleFavorite(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(item);
+                      }}
                     >
                       <HeartCrack />
                     </button>
@@ -130,20 +147,31 @@ export const FavoritesSidebar = ({ isOpen, onClose, onToCart }) => {
                       {(itemCounts[item.id] || 0) > 0 ? (
                         <div className={styles.counter}>
                           <button
-                            onClick={() => handleRemoveItem(item)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveItem(item);
+                            }}
                             disabled={itemCounts[item.id] <= 0}
                           >
                             -
                           </button>
                           <div>{itemCounts[item.id] || 0}</div>
-                          <button onClick={() => handleIncreaseCount(item)}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleIncreaseCount(item);
+                            }}
+                          >
                             +
                           </button>
                         </div>
                       ) : (
                         <button
                           className={`${styles.toCart} ${styles.toCartBlack}`}
-                          onClick={() => handleIncreaseCount(item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleIncreaseCount(item);
+                          }}
                         >
                           В корзину
                         </button>

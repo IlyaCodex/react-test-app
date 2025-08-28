@@ -15,6 +15,59 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
   });
   const navigate = useNavigate();
 
+  const formatPhoneNumber = (value) => {
+    const phoneNumber = value.replace(/\D/g, "");
+
+    let formatted = phoneNumber;
+    if (formatted.startsWith("8")) {
+      formatted = "7" + formatted.slice(1);
+    }
+
+    if (!formatted.startsWith("7") && formatted.length > 0) {
+      formatted = "7" + formatted;
+    }
+
+    if (formatted.length > 11) {
+      formatted = formatted.slice(0, 11);
+    }
+
+    if (formatted.length === 0) return "";
+    if (formatted.length <= 1) return "+7";
+    if (formatted.length <= 4) return `+7 (${formatted.slice(1)}`;
+    if (formatted.length <= 7)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(4)}`;
+    if (formatted.length <= 9)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(
+        4,
+        7
+      )} ${formatted.slice(7)}`;
+    if (formatted.length <= 11)
+      return `+7 (${formatted.slice(1, 4)}) ${formatted.slice(
+        4,
+        7
+      )} ${formatted.slice(7, 9)} ${formatted.slice(9)}`;
+
+    return value;
+  };
+
+  const handlePhoneFocus = (e) => {
+    if (!formData.phone) {
+      setFormData((prev) => ({
+        ...prev,
+        phone: "+7 ",
+      }));
+    }
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    if (
+      (e.key === "Backspace" || e.key === "Delete") &&
+      formData.phone.length <= 3
+    ) {
+      e.preventDefault();
+    }
+  };
+
   const handleToggle = (type) => {
     setIsIndividual(type === "individual");
     setSelfPickup(false);
@@ -27,10 +80,55 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "phone") {
+      const formattedPhone = formatPhoneNumber(value);
+      setFormData((prev) => ({
+        ...prev,
+        phone: formattedPhone,
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const validateForm = () => {
+    if (!formData.fullName.trim()) {
+      alert("Пожалуйста, введите ФИО");
+      return false;
+    }
+
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    if (phoneDigits.length !== 11) {
+      alert("Пожалуйста, введите полный номер телефона");
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      alert("Пожалуйста, введите email");
+      return false;
+    }
+
+    if (isIndividual) {
+      if (!selfPickup && !formData.deliveryAddress.trim()) {
+        alert("Пожалуйста, введите адрес доставки или выберите самовывоз");
+        return false;
+      }
+    } else {
+      if (!formData.clinicName.trim()) {
+        alert("Пожалуйста, введите название клиники");
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = () => {
+    if (!validateForm()) {
+      return;
+    }
+
     onSubmit({
       ...formData,
       selfPickup,
@@ -90,7 +188,10 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+7 (___) ___-__-__"
+                onFocus={handlePhoneFocus}
+                onKeyDown={handlePhoneKeyDown}
+                placeholder="+7 (999) 999 99 99"
+                maxLength="18"
                 required
               />
               <label className={styles.label}>
@@ -167,7 +268,10 @@ const CheckoutModal = ({ onClose, onSubmit }) => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+7 (___) ___-__-__"
+                onFocus={handlePhoneFocus}
+                onKeyDown={handlePhoneKeyDown}
+                placeholder="+7 (999) 999 99 99"
+                maxLength="18"
                 required
               />
               <label className={styles.label}>
