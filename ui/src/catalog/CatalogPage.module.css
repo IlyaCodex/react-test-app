@@ -145,7 +145,7 @@
 }
 
 .catalogList {
-  margin-top: 20px;
+  margin-top: 30px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 46px 18px;
@@ -560,7 +560,7 @@
 
   .catalogList {
     grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px 12px;
+    grid-gap: 30px 12px;
   }
 
   .cardHead {
@@ -637,7 +637,7 @@
   }
 
   .catalogList {
-    grid-gap: 15px 8px;
+    grid-gap: 30px 8px;
   }
 
   .cardHead {

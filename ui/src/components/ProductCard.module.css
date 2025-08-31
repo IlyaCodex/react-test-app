@@ -121,10 +121,11 @@
 .card__name {
   font-size: 20px;
   font-weight: 500;
-  display: -webkit-box;
+  /* display: -webkit-box; */
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  display: flex;
 }
 
 .card__nameShort {
@@ -151,7 +152,7 @@
 
 @media (max-width: 768px) {
   .card__head {
-    min-height: 200px;
+    min-height: 165px;
     margin-bottom: 20px;
   }
 
