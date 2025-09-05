@@ -460,6 +460,8 @@
     overflow: scroll;
     > * {
       text-wrap: nowrap;
+      display: flex;
+      flex-wrap: nowrap;
     }
   }
   .requestTitle {
