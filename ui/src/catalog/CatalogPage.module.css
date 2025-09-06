@@ -267,6 +267,7 @@
   position: relative;
   overflow: hidden;
   max-width: 1306px;
+  width: 100%;
 }
 
 .requestImg {
