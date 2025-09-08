@@ -9,7 +9,6 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [copied, setCopied] = useState(false);
-  // Добавляем новое состояние для показа полного описания
   const [showFullDescription, setShowFullDescription] = useState(false);
   const imagesPerPage = 4;
 
@@ -23,13 +22,11 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   );
   const itemCount = cartItem ? cartItem.count : 0;
 
-  // Функция для обрезки текста
   const truncateText = (text, maxLength = 250) => {
     if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
 
-  // Проверяем, нужна ли кнопка "показать ещё"
   const needsShowMore = product?.description?.length > 250;
 
   useEffect(() => {

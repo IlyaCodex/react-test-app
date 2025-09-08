@@ -193,7 +193,7 @@
 }
 
 .detailValue, .mobileDetailValue {
-  text-align: right;
+  /* text-align: right; */
   flex-shrink: 0;
   background-color: #fff;
   z-index: 1;
