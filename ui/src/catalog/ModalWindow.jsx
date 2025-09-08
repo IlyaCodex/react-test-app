@@ -9,6 +9,8 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [copied, setCopied] = useState(false);
+  // Добавляем новое состояние для показа полного описания
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const imagesPerPage = 4;
 
   const { items: cartItems, addItems, removeItems } = useContext(CartContext);
@@ -20,6 +22,15 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
     [cartItems, product]
   );
   const itemCount = cartItem ? cartItem.count : 0;
+
+  // Функция для обрезки текста
+  const truncateText = (text, maxLength = 250) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
+  // Проверяем, нужна ли кнопка "показать ещё"
+  const needsShowMore = product?.description?.length > 250;
 
   useEffect(() => {
     Promise.all(
@@ -94,11 +105,29 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
 
         <div className={styles.mobileBlock}>
           <h4 className={styles.mobileProductName}>{product.name}</h4>
-          <p>
-            <span className={styles.mobileDetailValue}>
-              {product.description}
-            </span>
-          </p>
+          <div className={styles.descriptionContainer}>
+            {showFullDescription ? (
+              <div className={styles.fullDescription}>
+                <span className={styles.mobileDetailValue}>
+                  {product.description}
+                </span>
+              </div>
+            ) : (
+              <span
+                className={`${styles.mobileDetailValue} ${styles.truncatedDescription}`}
+              >
+                {truncateText(product.description)}
+              </span>
+            )}
+            {needsShowMore && (
+              <button
+                className={styles.showMoreBtn}
+                onClick={() => setShowFullDescription(!showFullDescription)}
+              >
+                {showFullDescription ? "Скрыть" : "Показать ещё"}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className={styles.modalImageColumn}>
@@ -165,9 +194,27 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
         <div className={styles.modalDetailsColumn}>
           <div className={styles.desktopBlock}>
             <h4 className={styles.productName}>{product.name}</h4>
-            <p>
-              <span className={styles.detailValue}>{product.description}</span>
-            </p>
+            <div className={styles.descriptionContainer}>
+              <span
+                className={`${styles.detailValue} ${
+                  showFullDescription
+                    ? styles.fullDescription
+                    : styles.truncatedDescription
+                }`}
+              >
+                {showFullDescription
+                  ? product.description
+                  : truncateText(product.description)}
+              </span>
+              {needsShowMore && (
+                <button
+                  className={styles.showMoreBtn}
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                >
+                  {showFullDescription ? "Скрыть" : "Показать ещё"}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className={styles.modalDetails}>
