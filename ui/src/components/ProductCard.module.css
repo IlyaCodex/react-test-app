@@ -5,19 +5,20 @@
   position: relative;
   min-height: 280px;
   max-height: 280px;
-  /* min-width: 280px; */
   max-width: 280px;
-  /* background-color: #D9D9D9; */
   border: 1px solid #d9d9d9;
   margin-bottom: 28px;
   border-radius: 14px;
   aspect-ratio: 1/1;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .card__head img {
-  height: 90%;
-  width: 90%;
+  height: 100%;
+  width: 100%;
   object-fit: cover;
+  border-radius: 12px;
 }
 
 .card__headShort {
@@ -27,6 +28,7 @@
 .card__headShort img {
   max-width: 100px;
   height: auto;
+  border-radius: 10px;
 }
 
 .card__favorite {

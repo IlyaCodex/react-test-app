@@ -27,7 +27,7 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
 
-  const needsShowMore = product?.description?.length > 250;
+  const needsShowMore = product?.description?.length > 350;
 
   useEffect(() => {
     Promise.all(
@@ -46,6 +46,10 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
     }
     setCurrentPage(Math.floor(tempIndex / imagesPerPage));
   }, [currentIndex, sliderImages]);
+
+  useEffect(() => {
+    setShowFullDescription(false);
+  }, [product]);
 
   const copyArticleToClipboard = () => {
     navigator.clipboard
