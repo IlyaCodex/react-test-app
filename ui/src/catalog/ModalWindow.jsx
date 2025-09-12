@@ -22,7 +22,7 @@ const ModalWindow = ({ product, onClose, onOpenCart }) => {
   );
   const itemCount = cartItem ? cartItem.count : 0;
 
-  const truncateText = (text, maxLength = 250) => {
+  const truncateText = (text, maxLength = 350) => {
     if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
