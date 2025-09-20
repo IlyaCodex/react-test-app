@@ -458,7 +458,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: -30px;
     width: 100%;
   }
 
@@ -547,7 +547,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: -30px;
     width: 100%;
   }
 
@@ -565,7 +565,7 @@
 
   .catalogSubcategories {
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
 
   .catalogSubcategory {

@@ -44,7 +44,8 @@
 }
 
 .categoriesWrapper {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   justify-content: center;
   gap: 25px;
   margin-bottom: 25px;
@@ -296,6 +297,7 @@
   }
 
   .categoriesWrapper {
+    grid-template-columns: repeat(2, 1fr);
     justify-content: center;
     width: 100%;
   }
@@ -339,9 +341,10 @@
 
 @media (max-width: 768px) {
   .categoriesWrapper {
+    grid-template-columns: repeat(1, 1fr);
     gap: 0px;
     margin-bottom: 0px;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
   }
 
   .container {
